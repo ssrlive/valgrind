@@ -64,20 +64,20 @@ Bool VG_(Clo_Recognised) (void)
 }
 
 Bool VG_(check_clom) (Clo_Mode modes, const HChar* arg, const HChar* option,
-					  Bool recognised)
+                      Bool recognised)
 {
    Bool res = recognised && (modes & VG_(Clo_Mode)());
    Bool dynamic = cloD == VG_(Clo_Mode)();
 
    if (recognised) {
-	  VG_(set_Clo_Recognised) ();
-	  if (dynamic && !res)
-		 VG_(umsg)("Cannot change %s option dynamically\n", option);
-	  else if (dynamic && VG_(clo_verbosity) >= 1)
-		 VG_(umsg)("Handling new value %s for option %s\n", arg, option);
+      VG_(set_Clo_Recognised) ();
+      if (dynamic && !res)
+         VG_(umsg)("Cannot change %s option dynamically\n", option);
+      else if (dynamic && VG_(clo_verbosity) >= 1)
+         VG_(umsg)("Handling new value %s for option %s\n", arg, option);
    }
    if (cloH == VG_(Clo_Mode)() && (cloD & modes))
-	  VG_(list_clo)(option);
+      VG_(list_clo)(option);
 
    return res;
 }
@@ -96,10 +96,10 @@ Bool   VG_(clo_exit_on_first_error) = False;
 Bool   VG_(clo_show_error_list) = False;
 
 #if defined(VGPV_arm_linux_android) \
-	|| defined(VGPV_x86_linux_android) \
-	|| defined(VGPV_mips32_linux_android) \
-	|| defined(VGPV_arm64_linux_android) \
-	|| defined(VGP_nanomips_linux)
+    || defined(VGPV_x86_linux_android) \
+    || defined(VGPV_mips32_linux_android) \
+    || defined(VGPV_arm64_linux_android) \
+    || defined(VGP_nanomips_linux)
 VgVgdb VG_(clo_vgdb)           = Vg_VgdbNo; // currently disabled on Android
 #else
 VgVgdb VG_(clo_vgdb)           = Vg_VgdbYes;
@@ -193,8 +193,8 @@ UInt   VG_(clo_unw_stack_scan_frames) = 5;
 #if defined(VGA_x86) || defined(VGA_amd64) || defined(VGA_s390x)
 VgSmc VG_(clo_smc_check) = Vg_SmcAllNonFile;
 #elif defined(VGA_ppc32) || defined(VGA_ppc64be) || defined(VGA_ppc64le) \
-	  || defined(VGA_arm) || defined(VGA_arm64) \
-	  || defined(VGA_mips32) || defined(VGA_mips64) || defined(VGA_nanomips)
+      || defined(VGA_arm) || defined(VGA_arm64) \
+      || defined(VGA_mips32) || defined(VGA_mips64) || defined(VGA_nanomips)
 VgSmc VG_(clo_smc_check) = Vg_SmcStack;
 #else
 #  error "Unknown arch"
@@ -368,16 +368,16 @@ void VG_(list_clo)(const HChar *qq_option)
 {
    int len = VG_(strlen)(qq_option);
    if (col + len + 1 > 80) {
-	  VG_(printf)("\n");
-	  col = 0;
+      VG_(printf)("\n");
+      col = 0;
    }
 
    if (col == 0) {
-	  VG_(printf)("    ");
-	  col += 4;
+      VG_(printf)("    ");
+      col += 4;
    } else {
-	  VG_(printf)(" ");
-	  col += 1;
+      VG_(printf)(" ");
+      col += 1;
    }
    VG_(printf)("%s", qq_option);
    col += len;
@@ -390,8 +390,8 @@ void VG_(list_dynamic_options) (void)
    VG_(printf)("  dynamically changeable options:\n");
    VG_(process_dynamic_option) (cloH, dummy);
    if (col > 0) {
-	  VG_(printf)("\n");
-	  col = 0;
+      VG_(printf)("\n");
+      col = 0;
    }
 }
 

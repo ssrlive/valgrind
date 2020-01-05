@@ -58,11 +58,6 @@
 /* Enable experimental features? */
 #define CLG_EXPERIMENTAL 0
 
-/* Syscall Timing in microseconds?
- * (define to 0 if you get compile errors) */
-#define CLG_MICROSYSTIME 0
-
-
 
 /*------------------------------------------------------------*/
 /*--- Command line options                                 ---*/
@@ -75,7 +70,7 @@
    systime_msec : collect syscount, systime elapsed, milli second precision.
    systime_usec : collect syscount, systime elapsed, micro second precision.
    systime_nsec : collect syscount, systime elapsed, systime cpu, nano second
-				  precision.  */
+                  precision.  */
 typedef enum {
    systime_no,
    systime_msec,

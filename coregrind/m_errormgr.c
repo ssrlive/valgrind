@@ -524,11 +524,11 @@ void do_actions_on_error(const Error* err, Bool allow_db_attach)
 
    /* if user wants to debug from a certain error nr, then wait for gdb/vgdb */
    if (VG_(clo_vgdb) != Vg_VgdbNo
-	   && allow_db_attach
-	   && VG_(clo_vgdb_error) <= n_errs_shown) {
-	  VG_(umsg)("(action on error) vgdb me ... \n");
-	  VG_(gdbserver)( err->tid );
-	  VG_(umsg)("Continuing ...\n");
+       && allow_db_attach 
+       && VG_(clo_vgdb_error) <= n_errs_shown) {
+      VG_(umsg)("(action on error) vgdb me ... \n");
+      VG_(gdbserver)( err->tid );
+      VG_(umsg)("Continuing ...\n");
    }
 
    /* Or maybe we want to generate the error's suppression? */
@@ -1484,7 +1484,7 @@ void VG_(add_suppression_file)(const HChar *filename)
    HChar *f = VG_(strdup)("errormgr.addsup", filename);
    VG_(addToXA)(VG_(clo_suppressions), &f);
    if (load_suppressions_called)
-	  load_one_suppressions_file( VG_(sizeXA)(VG_(clo_suppressions)) - 1 );
+      load_one_suppressions_file( VG_(sizeXA)(VG_(clo_suppressions)) - 1 );
 }
 
 void VG_(load_suppressions) ( void )

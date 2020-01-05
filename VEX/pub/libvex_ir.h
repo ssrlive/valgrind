@@ -557,6 +557,8 @@ typedef
       Iop_64HLto128,  // :: (I64,I64) -> I128
       /* 1-bit stuff */
       Iop_Not1,   /* :: Ity_Bit -> Ity_Bit */
+      Iop_And1,   /* :: (Ity_Bit, Ity_Bit) -> Ity_Bit.  Evaluates both args! */
+      Iop_Or1,    /* :: (Ity_Bit, Ity_Bit) -> Ity_Bit.  Evaluates both args! */
       Iop_32to1,  /* :: Ity_I32 -> Ity_Bit, just select bit[0] */
       Iop_64to1,  /* :: Ity_I64 -> Ity_Bit, just select bit[0] */
       Iop_1Uto8,  /* :: Ity_Bit -> Ity_I8,  unsigned widen */
@@ -2011,6 +2013,11 @@ extern void typeOfPrimop ( IROp op,
                            /*OUTs*/ IRType* t_dst, IRType* t_arg1,
                            IRType* t_arg2, IRType* t_arg3, IRType* t_arg4 );
 
+/* Might the given primop trap (eg, attempt integer division by zero)?  If in
+   doubt returns True.  However, the vast majority of primops will never
+   trap. */
+extern Bool primopMightTrap ( IROp op );
+
 /* Encoding of IEEE754-specified rounding modes.
    Note, various front and back ends rely on the actual numerical
    values of these, so do not change them. */
@@ -2381,7 +2388,7 @@ IRExpr* mkIRExprCCall ( IRType retty,
 /* Convenience functions for atoms (IRExprs which are either Iex_Tmp or
  * Iex_Const). */
 static inline Bool isIRAtom ( const IRExpr* e ) {
-   return toBool(e->tag == Iex_RdTmp || e->tag == Iex_Const);
+   return e->tag == Iex_RdTmp || e->tag == Iex_Const;
 }
 
 /* Are these two IR atoms identical?  Causes an assertion
@@ -3188,6 +3195,7 @@ extern void sanityCheckIRSB ( const  IRSB*  bb,
                               Bool   require_flatness, 
                               IRType guest_word_size );
 extern Bool isFlatIRStmt ( const IRStmt* );
+extern Bool isFlatIRSB ( const IRSB* );
 
 /* Is this any value actually in the enumeration 'IRType' ? */
 extern Bool isPlausibleIRType ( IRType ty );

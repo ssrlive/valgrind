@@ -524,19 +524,19 @@ Bool CLG_(process_cmd_line_option)(const HChar* arg)
 
    else if VG_BOOL_CLO(arg, "--collect-alloc",   CLG_(clo).collect_alloc) {}
    else if VG_XACT_CLO(arg, "--collect-systime=no",
-					   CLG_(clo).collect_systime, systime_no) {}
+                       CLG_(clo).collect_systime, systime_no) {}
    else if VG_XACT_CLO(arg, "--collect-systime=msec",
-					   CLG_(clo).collect_systime, systime_msec) {}
+                       CLG_(clo).collect_systime, systime_msec) {}
    else if VG_XACT_CLO(arg, "--collect-systime=yes", /* backward compatibility.  */
-					   CLG_(clo).collect_systime, systime_msec) {}
+                       CLG_(clo).collect_systime, systime_msec) {}
    else if VG_XACT_CLO(arg, "--collect-systime=usec",
-					   CLG_(clo).collect_systime, systime_usec) {}
+                       CLG_(clo).collect_systime, systime_usec) {}
    else if VG_XACT_CLO(arg, "--collect-systime=nsec",
-					   CLG_(clo).collect_systime, systime_nsec) {
+                       CLG_(clo).collect_systime, systime_nsec) {
 #  if defined(VGO_darwin)
-	  VG_(fmsg_bad_option)
-		 (arg,
-		  "--collect-systime=nsec not supported on darwin\n");
+      VG_(fmsg_bad_option)
+         (arg,
+          "--collect-systime=nsec not supported on darwin\n");
 #  endif
    }
 

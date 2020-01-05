@@ -1033,6 +1033,18 @@ static IRTemp mathREPLICATE ( IRType ty, IRTemp arg, UInt imm )
    return res;
 }
 
+/* S-widen 8/16/32/64 bit int expr to 64. */
+static IRExpr* widenSto64 ( IRType srcTy, IRExpr* e )
+{
+   switch (srcTy) {
+      case Ity_I64: return e;
+      case Ity_I32: return unop(Iop_32Sto64, e);
+      case Ity_I16: return unop(Iop_16Sto64, e);
+      case Ity_I8:  return unop(Iop_8Sto64, e);
+      default: vpanic("widenSto64(arm64)");
+   }
+}
+
 /* U-widen 8/16/32/64 bit int expr to 64. */
 static IRExpr* widenUto64 ( IRType srcTy, IRExpr* e )
 {
@@ -2390,7 +2402,7 @@ Bool dbm_DecodeBitMasks ( /*OUT*/ULong* wmask, /*OUT*/ULong* tmask,
 
 static
 Bool dis_ARM64_data_processing_immediate(/*MB_OUT*/DisResult* dres,
-                                         UInt insn)
+                                         UInt insn, Bool sigill_diag)
 {
 #  define INSN(_bMax,_bMin)  SLICE_UInt(insn, (_bMax), (_bMin))
 
@@ -2725,7 +2737,9 @@ Bool dis_ARM64_data_processing_immediate(/*MB_OUT*/DisResult* dres,
    }
   after_extr:
 
-   vex_printf("ARM64 front end: data_processing_immediate\n");
+   if (sigill_diag) {
+      vex_printf("ARM64 front end: data_processing_immediate\n");
+   }
    return False;
 #  undef INSN
 }
@@ -2792,7 +2806,7 @@ static IRTemp getShiftedIRegOrZR ( Bool is64,
 
 static
 Bool dis_ARM64_data_processing_register(/*MB_OUT*/DisResult* dres,
-                                        UInt insn)
+                                        UInt insn, Bool sigill_diag)
 {
 #  define INSN(_bMax,_bMin)  SLICE_UInt(insn, (_bMax), (_bMin))
 
@@ -3569,7 +3583,9 @@ Bool dis_ARM64_data_processing_register(/*MB_OUT*/DisResult* dres,
       /* fall through */
    }
 
-   vex_printf("ARM64 front end: data_processing_register\n");
+   if (sigill_diag) {
+      vex_printf("ARM64 front end: data_processing_register\n");
+   }
    return False;
 #  undef INSN
 }
@@ -4634,7 +4650,9 @@ static IRTemp gen_indexed_EA ( /*OUT*/HChar* buf, UInt insn, Bool isInt )
    return res;
 
   fail:
-   vex_printf("gen_indexed_EA: unhandled case optS == 0x%x\n", optS);
+   if (0 /*really, sigill_diag, but that causes too much plumbing*/) {
+      vex_printf("gen_indexed_EA: unhandled case optS == 0x%x\n", optS);
+   }
    return IRTemp_INVALID;
 }
 
@@ -4705,8 +4723,7 @@ const HChar* nameArr_Q_SZ ( UInt bitQ, UInt size )
 
 static
 Bool dis_ARM64_load_store(/*MB_OUT*/DisResult* dres, UInt insn,
-                          const VexAbiInfo* abiinfo
-)
+                          const VexAbiInfo* abiinfo, Bool sigill_diag)
 {
 #  define INSN(_bMax,_bMin)  SLICE_UInt(insn, (_bMax), (_bMin))
 
@@ -6716,7 +6733,141 @@ Bool dis_ARM64_load_store(/*MB_OUT*/DisResult* dres, UInt insn,
       return True;
    }
 
-   vex_printf("ARM64 front end: load_store\n");
+   /* ---------------- ARMv8.1-LSE: Atomic Memory Operations ---------------- */
+   /* 31 29     23 22 21 20 15   11 9 4
+      sz 111000 A  R  1  s  0000 00 n t LDADD{,A}{,L}<sz>  <Rs>, <Rt>, [<Xn|SP>]
+      sz 111000 A  R  1  s  0001 00 n t LDCLR{,A}{,L}<sz>  <Rs>, <Rt>, [<Xn|SP>]
+      sz 111000 A  R  1  s  0010 00 n t LDEOR{,A}{,L}<sz>  <Rs>, <Rt>, [<Xn|SP>]
+      sz 111000 A  R  1  s  0011 00 n t LDSET{,A}{,L}<sz>  <Rs>, <Rt>, [<Xn|SP>]
+      sz 111000 A  R  1  s  0100 00 n t LDSMAX{,A}{,L}<sz> <Rs>, <Rt>, [<Xn|SP>]
+      sz 111000 A  R  1  s  0101 00 n t LDSMIN{,A}{,L}<sz> <Rs>, <Rt>, [<Xn|SP>]
+      sz 111000 A  R  1  s  0110 00 n t LDUMAX{,A}{,L}<sz> <Rs>, <Rt>, [<Xn|SP>]
+      sz 111000 A  R  1  s  0111 00 n t LDUMIN{,A}{,L}<sz> <Rs>, <Rt>, [<Xn|SP>]
+      sz 111000 A  R  1  s  1000 00 n t SWP{,A}{,L}<sz>    <Rs>, <Rt>, [<Xn|SP>]
+   */
+   if (INSN(29,24) == BITS6(1,1,1,0,0,0)
+       && INSN(21,21) == 1
+       && (INSN(15,12) <= BITS4(1,0,0,0))
+       && INSN(11,10) == BITS2(0,0)) {
+      UInt szBlg2 = INSN(31,30);
+      Bool isAcq = INSN(23,23) == 1;
+      Bool isRel = INSN(22,22) == 1;
+      UInt ss  = INSN(20,16);
+      UInt opc = INSN(15,12);
+      UInt nn  = INSN(9,5);
+      UInt tt  = INSN(4,0);
+
+      const HChar* nm = NULL;
+      const HChar* suffix[4] = { "b", "h", "", "" };
+
+      vassert(szBlg2 < 4);
+      UInt  szB = 1 << szBlg2; /* 1, 2, 4 or 8 bytes*/
+      IRType ty = integerIRTypeOfSize(szB);
+      Bool is64 = szB == 8;
+      Bool isSigned = (opc == 4) || (opc == 5) /*smax || smin*/;
+
+      // IR used to emulate these atomic memory ops:
+      // 1) barrier
+      // 2) load
+      // 3) widen operands and do arithmetic/logic op
+      // 4) cas to see if target memory updated
+      // 5) barrier
+      // 6) repeat from 1) if cas says target memory not updated
+      // 7) update register
+
+      IRTemp ea = newTemp(Ity_I64);
+      assign(ea, getIReg64orSP(nn));
+
+      // Insert barrier before loading for acquire and acquire-release variants:
+      // A and AL.
+      if (isAcq && (tt != 31))
+         stmt(IRStmt_MBE(Imbe_Fence));
+
+      // Load LHS from memory, RHS from register.
+      IRTemp orig = newTemp(ty);
+      assign(orig, loadLE(ty, mkexpr(ea)));
+      IRExpr *lhs = mkexpr(orig);
+      IRExpr *rhs = narrowFrom64(ty, getIReg64orZR(ss));
+      IRExpr *res = NULL;
+
+      lhs = isSigned ? widenSto64(ty, lhs) : widenUto64(ty, lhs);
+      rhs = isSigned ? widenSto64(ty, rhs) : widenUto64(ty, rhs);
+
+      // Perform the operation.
+      switch (opc) {
+         case 0:
+            nm = "ldadd";
+            res = binop(Iop_Add64, lhs, rhs);
+            break;
+         case 1:
+            nm = "ldclr";
+            res = binop(Iop_And64, lhs, unop(mkNOT(Ity_I64), rhs));
+            break;
+         case 2:
+            nm = "ldeor";
+            res = binop(Iop_Xor64, lhs, rhs);
+            break;
+         case 3:
+            nm = "ldset";
+            res = binop(Iop_Or64, lhs, rhs);
+            break;
+         case 4:
+            nm = "ldsmax";
+            res = IRExpr_ITE(binop(Iop_CmpLT64S, lhs, rhs), rhs, lhs);
+            break;
+         case 5:
+            nm = "ldsmin";
+            res = IRExpr_ITE(binop(Iop_CmpLT64S, lhs, rhs), lhs, rhs);
+            break;
+         case 6:
+            nm = "ldumax";
+            res = IRExpr_ITE(binop(Iop_CmpLT64U, lhs, rhs), rhs, rhs);
+            break;
+         case 7:
+            nm = "ldumin";
+            res = IRExpr_ITE(binop(Iop_CmpLT64U, lhs, rhs), lhs, rhs);
+            break;
+         case 8:
+            nm = "swp";
+            res = lhs;
+            break;
+         default:
+            vassert(0);
+            break;
+      }
+
+      // Store the result back if LHS remains unchanged in memory.
+      IRTemp old = newTemp(ty);
+      stmt( IRStmt_CAS(mkIRCAS(/*oldHi*/IRTemp_INVALID, old,
+                               Iend_LE, mkexpr(ea),
+                               /*expdHi*/NULL, mkexpr(orig),
+                               /*dataHi*/NULL, narrowFrom64(ty, res))) );
+
+      // Insert barrier after storing for release and acquire-release variants:
+      // L and AL.
+      if (isRel)
+         stmt(IRStmt_MBE(Imbe_Fence));
+
+      // Retry if the CAS failed (i.e. when old != orig).
+      IRConst* nia = IRConst_U64(guest_PC_curr_instr);
+      stmt( IRStmt_Exit(
+                binop(Iop_CasCmpNE64,
+                      widenUto64(ty, mkexpr(old)),
+                      widenUto64(ty, mkexpr(orig))),
+                Ijk_Boring, nia, OFFB_PC ));
+      // Otherwise we succeeded.
+      putIReg64orZR(tt, widenUto64(ty, mkexpr(old)));
+
+      DIP("%s%s%s%s %s, %s, [%s]\n", nm, isAcq ? "a" : "", isRel ? "l" : "",
+          suffix[szBlg2], nameIRegOrZR(is64, ss), nameIRegOrZR(is64, tt),
+          nameIReg64orSP(nn));
+      return True;
+   }
+
+   if (sigill_diag) {
+      vex_printf("ARM64 front end: load_store\n");
+   }
+
    return False;
 #  undef INSN
 }
@@ -6729,7 +6880,7 @@ Bool dis_ARM64_load_store(/*MB_OUT*/DisResult* dres, UInt insn,
 static
 Bool dis_ARM64_branch_etc(/*MB_OUT*/DisResult* dres, UInt insn,
                           const VexArchInfo* archinfo,
-                          const VexAbiInfo* abiinfo)
+                          const VexAbiInfo* abiinfo, Bool sigill_diag)
 {
 #  define INSN(_bMax,_bMin)  SLICE_UInt(insn, (_bMax), (_bMin))
 
@@ -6742,7 +6893,6 @@ Bool dis_ARM64_branch_etc(/*MB_OUT*/DisResult* dres, UInt insn,
       Long  simm64 = (Long)sx_to_64(uimm64, 21);
       vassert(dres->whatNext    == Dis_Continue);
       vassert(dres->len         == 4);
-      vassert(dres->continueAt  == 0);
       vassert(dres->jk_StopHere == Ijk_INVALID);
       stmt( IRStmt_Exit(unop(Iop_64to1, mk_arm64g_calculate_condition(cond)),
                         Ijk_Boring,
@@ -7099,6 +7249,8 @@ Bool dis_ARM64_branch_etc(/*MB_OUT*/DisResult* dres, UInt insn,
    /* D5 0B 7B 001 Rt  dc cvau, rT
    */
    if ((INSN(31,0) & 0xFFFFFFE0) == 0xD50B7B20) {
+      /* JRS 2019Nov24: should we handle DC_CIVAC the same?
+         || (INSN(31,0) & 0xFFFFFFE0) == 0xD50B7E20 */
       /* Exactly the same scheme as for IC IVAU, except we observe the
          dMinLine size, and request an Ijk_FlushDCache instead of
          Ijk_InvalICache. */
@@ -7218,7 +7370,9 @@ Bool dis_ARM64_branch_etc(/*MB_OUT*/DisResult* dres, UInt insn,
       return True;
    }
 
-   vex_printf("ARM64 front end: branch_etc\n");
+   if (sigill_diag) {
+      vex_printf("ARM64 front end: branch_etc\n");
+   }
    return False;
 #  undef INSN
 }
@@ -8292,6 +8446,27 @@ void math_SQDMULH ( /*OUT*/IRTemp* res,
    }
 
    assign(*res, mkexpr(*sat1q));
+}
+
+/* Generate IR for SQRDMLAH and SQRDMLSH: signedly wideningly multiply,
+   double, add a rounding constant, take the high half and accumulate. */
+static
+void math_SQRDMLAH ( /*OUT*/IRTemp* res, /*OUT*/IRTemp* res_nosat, Bool isAdd,
+                     UInt size, IRTemp vD, IRTemp vN, IRTemp vM )
+{
+   vassert(size == X01 || size == X10); /* s or h only */
+
+   /* SQRDMLAH = SQADD(A, SQRDMULH(B, C)) */
+
+   IRTemp mul, mul_nosat, dummy;
+   mul = mul_nosat = dummy = IRTemp_INVALID;
+   math_SQDMULH(&mul, &dummy, &mul_nosat, True/*R*/, size, vN, vM);
+
+   IROp  op = isAdd ? mkVecADD(size)   : mkVecSUB(size);
+   IROp qop = isAdd ? mkVecQADDS(size) : mkVecQSUBS(size);
+   newTempsV128_2(res, res_nosat);
+   assign(*res, binop(qop, mkexpr(vD), mkexpr(mul)));
+   assign(*res_nosat, binop(op, mkexpr(vD), mkexpr(mul_nosat)));
 }
 
 
@@ -10185,6 +10360,59 @@ Bool dis_AdvSIMD_scalar_three_same(/*MB_OUT*/DisResult* dres, UInt insn)
 #  undef INSN
 }
 
+static
+Bool dis_AdvSIMD_scalar_three_same_extra(/*MB_OUT*/DisResult* dres, UInt insn)
+{
+   /* 31 29 28    23   21 20 15     10 9 4
+      01 U  11110 size 0  m  opcode 1  n d
+      Decode fields: u,size,opcode
+   */
+#  define INSN(_bMax,_bMin)  SLICE_UInt(insn, (_bMax), (_bMin))
+   if (INSN(31,30) != BITS2(0,1)
+       || INSN(28,24) != BITS5(1,1,1,1,0)
+       || INSN(21,21) != 0
+       || INSN(10,10) != 1) {
+      return False;
+   }
+   UInt bitU   = INSN(29,29);
+   UInt size   = INSN(23,22);
+   UInt mm     = INSN(20,16);
+   UInt opcode = INSN(15,11);
+   UInt nn     = INSN(9,5);
+   UInt dd     = INSN(4,0);
+   vassert(size < 4);
+   vassert(mm < 32 && nn < 32 && dd < 32);
+
+   if (bitU == 1 && (opcode == BITS5(1,0,0,0,0) || opcode == BITS5(1,0,0,0,1))) {
+      /* -------- xx,10000 SQRDMLAH s and h variants only -------- */
+      /* -------- xx,10001 SQRDMLSH s and h variants only -------- */
+      if (size == X00 || size == X11) return False;
+      Bool isAdd = opcode == BITS5(1,0,0,0,0);
+
+      IRTemp res, res_nosat, vD, vN, vM;
+      res = res_nosat = vD = vN = vM = IRTemp_INVALID;
+      newTempsV128_3(&vD, &vN, &vM);
+      assign(vD, getQReg128(dd));
+      assign(vN, getQReg128(nn));
+      assign(vM, getQReg128(mm));
+
+      math_SQRDMLAH(&res, &res_nosat, isAdd, size, vD, vN, vM);
+      putQReg128(dd,
+                 mkexpr(math_ZERO_ALL_EXCEPT_LOWEST_LANE(size, mkexpr(res))));
+      updateQCFLAGwithDifference(
+         math_ZERO_ALL_EXCEPT_LOWEST_LANE(size, mkexpr(res)),
+         math_ZERO_ALL_EXCEPT_LOWEST_LANE(size, mkexpr(res_nosat)));
+
+      const HChar  arr = "hs"[size];
+      const HChar* nm  = isAdd ? "sqrdmlah" : "sqrdmlsh";
+      DIP("%s %c%u, %c%u, %c%u\n", nm, arr, dd, arr, nn, arr, mm);
+      return True;
+   }
+
+   return False;
+#  undef INSN
+}
+
 
 static
 Bool dis_AdvSIMD_scalar_two_reg_misc(/*MB_OUT*/DisResult* dres, UInt insn)
@@ -10512,7 +10740,7 @@ Bool dis_AdvSIMD_scalar_x_indexed_element(/*MB_OUT*/DisResult* dres, UInt insn)
    */
 #  define INSN(_bMax,_bMin)  SLICE_UInt(insn, (_bMax), (_bMin))
    if (INSN(31,30) != BITS2(0,1)
-       || INSN(28,24) != BITS5(1,1,1,1,1) || INSN(10,10) !=0) {
+       || INSN(28,24) != BITS5(1,1,1,1,1) || INSN(10,10) != 0) {
       return False;
    }
    UInt bitU   = INSN(29,29);
@@ -10646,7 +10874,7 @@ Bool dis_AdvSIMD_scalar_x_indexed_element(/*MB_OUT*/DisResult* dres, UInt insn)
       return True;
    }
 
-   if (opcode == BITS4(1,1,0,0) || opcode == BITS4(1,1,0,1)) {
+   if (bitU == 0 && (opcode == BITS4(1,1,0,0) || opcode == BITS4(1,1,0,1))) {
       /* -------- 0,xx,1100 SQDMULH s and h variants only -------- */
       /* -------- 0,xx,1101 SQRDMULH s and h variants only -------- */
       UInt mm  = 32; // invalid
@@ -10675,6 +10903,45 @@ Bool dis_AdvSIMD_scalar_x_indexed_element(/*MB_OUT*/DisResult* dres, UInt insn)
       putQReg128(dd, unop(opZHI, mkexpr(res)));
       updateQCFLAGwithDifferenceZHI(sat1q, sat1n, opZHI);
       const HChar* nm  = isR ? "sqrdmulh" : "sqdmulh";
+      HChar ch         = size == X01 ? 'h' : 's';
+      DIP("%s %c%u, %c%u, v%d.%c[%u]\n", nm, ch, dd, ch, nn, ch, (Int)dd, ix);
+      return True;
+   }
+
+   if (bitU == 1 && (opcode == BITS4(1,1,0,1) || opcode == BITS4(1,1,1,1))) {
+      /* -------- 0,xx,1101 SQRDMLAH s and h variants only -------- */
+      /* -------- 0,xx,1111 SQRDMLSH s and h variants only -------- */
+      UInt mm  = 32; // invalid
+      UInt ix  = 16; // invalid
+      switch (size) {
+         case X00:
+            return False; // b case is not allowed
+         case X01:
+            mm = mmLO4; ix = (bitH << 2) | (bitL << 1) | (bitM << 0); break;
+         case X10:
+            mm = (bitM << 4) | mmLO4; ix = (bitH << 1) | (bitL << 0); break;
+         case X11:
+            return False; // d case is not allowed
+         default:
+            vassert(0);
+      }
+      vassert(size < 4);
+      vassert(mm < 32 && ix < 16);
+      Bool isAdd = opcode == BITS4(1,1,0,1);
+
+      IRTemp res, res_nosat, vD, vN, vM;
+      res = res_nosat = vD = vN = vM = IRTemp_INVALID;
+      newTempsV128_2(&vD, &vN);
+      assign(vD, getQReg128(dd));
+      assign(vN, getQReg128(nn));
+      vM = math_DUP_VEC_ELEM(getQReg128(mm), size, ix);
+
+      math_SQRDMLAH(&res, &res_nosat, isAdd, size, vD, vN, vM);
+      IROp opZHI = mkVecZEROHIxxOFV128(size);
+      putQReg128(dd, unop(opZHI, mkexpr(res)));
+      updateQCFLAGwithDifferenceZHI(res, res_nosat, opZHI);
+
+      const HChar* nm  = isAdd ? "sqrdmlah" : "sqrdmlsh";
       HChar ch         = size == X01 ? 'h' : 's';
       DIP("%s %c%u, %c%u, v%d.%c[%u]\n", nm, ch, dd, ch, nn, ch, (Int)dd, ix);
       return True;
@@ -12185,6 +12452,61 @@ Bool dis_AdvSIMD_three_same(/*MB_OUT*/DisResult* dres, UInt insn)
 
 
 static
+Bool dis_AdvSIMD_three_same_extra(/*MB_OUT*/DisResult* dres, UInt insn)
+{
+   /* 31 30 29 28    23   21 20 15 14     10 9 4
+      0  Q  U  01110 size 0  m  1  opcode 1  n d
+      Decode fields: u,size,opcode
+   */
+#  define INSN(_bMax,_bMin)  SLICE_UInt(insn, (_bMax), (_bMin))
+   if (INSN(31,31) != 0
+       || INSN(28,24) != BITS5(0,1,1,1,0)
+       || INSN(21,21) != 0
+       || INSN(15,15) != 1
+       || INSN(10,10) != 1) {
+      return False;
+   }
+   UInt bitQ   = INSN(30,30);
+   UInt bitU   = INSN(29,29);
+   UInt size   = INSN(23,22);
+   UInt mm     = INSN(20,16);
+   UInt opcode = INSN(14,11);
+   UInt nn     = INSN(9,5);
+   UInt dd     = INSN(4,0);
+   vassert(size < 4);
+   vassert(mm < 32 && nn < 32 && dd < 32);
+
+   if (bitU == 1 && (opcode == BITS4(0,0,0,0) || opcode == BITS4(0,0,0,1))) {
+      /* -------- 0,xx,10110 SQRDMLAH s and h variants only -------- */
+      /* -------- 1,xx,10110 SQRDMLSH s and h variants only -------- */
+      if (size == X00 || size == X11) return False;
+      Bool isAdd = opcode == BITS4(0,0,0,0);
+
+      IRTemp res, res_nosat, vD, vN, vM;
+      res = res_nosat = vD = vN = vM = IRTemp_INVALID;
+      newTempsV128_3(&vD, &vN, &vM);
+      assign(vD, getQReg128(dd));
+      assign(vN, getQReg128(nn));
+      assign(vM, getQReg128(mm));
+
+      math_SQRDMLAH(&res, &res_nosat, isAdd, size, vD, vN, vM);
+      IROp opZHI = bitQ == 0 ? Iop_ZeroHI64ofV128 : Iop_INVALID;
+      updateQCFLAGwithDifferenceZHI(res, res_nosat, opZHI);
+      putQReg128(dd, math_MAYBE_ZERO_HI64(bitQ, res));
+
+      const HChar* arr = nameArr_Q_SZ(bitQ, size);
+      const HChar* nm  = isAdd ? "sqrdmlah" : "sqrdmlsh";
+      DIP("%s %s.%s, %s.%s, %s.%s\n", nm,
+          nameQReg128(dd), arr, nameQReg128(nn), arr, nameQReg128(mm), arr);
+      return True;
+   }
+
+   return False;
+#  undef INSN
+}
+
+
+static
 Bool dis_AdvSIMD_two_reg_misc(/*MB_OUT*/DisResult* dres, UInt insn)
 {
    /* 31 30 29 28    23   21    16     11 9 4
@@ -13106,7 +13428,7 @@ Bool dis_AdvSIMD_vector_x_indexed_elem(/*MB_OUT*/DisResult* dres, UInt insn)
       return True;
    }
 
-   if (opcode == BITS4(1,1,0,0) || opcode == BITS4(1,1,0,1)) {
+   if (bitU == 0 && (opcode == BITS4(1,1,0,0) || opcode == BITS4(1,1,0,1))) {
       /* -------- 0,xx,1100 SQDMULH s and h variants only -------- */
       /* -------- 0,xx,1101 SQRDMULH s and h variants only -------- */
       UInt mm  = 32; // invalid
@@ -13139,6 +13461,46 @@ Bool dis_AdvSIMD_vector_x_indexed_elem(/*MB_OUT*/DisResult* dres, UInt insn)
       HChar ch         = size == X01 ? 'h' : 's';
       DIP("%s %s.%s, %s.%s, %s.%c[%u]\n", nm,
           nameQReg128(dd), arr, nameQReg128(nn), arr, nameQReg128(dd), ch, ix);
+      return True;
+   }
+
+   if (bitU == 1 && (opcode == BITS4(1,1,0,1) || opcode == BITS4(1,1,1,1))) {
+      /* -------- 0,xx,1101 SQRDMLAH s and h variants only -------- */
+      /* -------- 0,xx,1111 SQRDMLSH s and h variants only -------- */
+      UInt mm  = 32; // invalid
+      UInt ix  = 16; // invalid
+      switch (size) {
+         case X00:
+            return False; // b case is not allowed
+         case X01:        // h
+            mm = mmLO4; ix = (bitH << 2) | (bitL << 1) | (bitM << 0); break;
+         case X10:        // s
+            mm = (bitM << 4) | mmLO4; ix = (bitH << 1) | (bitL << 0); break;
+         case X11:
+            return False; // d case is not allowed
+         default:
+            vassert(0);
+      }
+      vassert(mm < 32 && ix < 16);
+
+      IRTemp res, res_nosat, vD, vN, vM;
+      res = res_nosat = vD = vN = vM = IRTemp_INVALID;
+      newTempsV128_2(&vD, &vN);
+      assign(vD, getQReg128(dd));
+      assign(vN, getQReg128(nn));
+
+      vM = math_DUP_VEC_ELEM(getQReg128(mm), size, ix);
+      Bool isAdd = opcode == BITS4(1,1,0,1);
+      math_SQRDMLAH(&res, &res_nosat, isAdd, size, vD, vN, vM);
+      IROp opZHI = bitQ == 0 ? Iop_ZeroHI64ofV128 : Iop_INVALID;
+      updateQCFLAGwithDifferenceZHI(res, res_nosat, opZHI);
+      putQReg128(dd, math_MAYBE_ZERO_HI64(bitQ, res));
+
+      const HChar* arr = nameArr_Q_SZ(bitQ, size);
+      const HChar* nm  = isAdd ? "sqrdmlah" : "sqrdmlsh";
+      HChar ch         = size == X01 ? 'h' : 's';
+      DIP("%s %s.%s, %s.%s, %s.%c[%u]\n", nm,
+          nameQReg128(dd), arr, nameQReg128(nn), arr, nameQReg128(mm), ch, ix);
       return True;
    }
 
@@ -14386,6 +14748,8 @@ Bool dis_ARM64_simd_and_fp(/*MB_OUT*/DisResult* dres, UInt insn)
    if (UNLIKELY(ok)) return True;
    ok = dis_AdvSIMD_scalar_three_same(dres, insn);
    if (UNLIKELY(ok)) return True;
+   ok = dis_AdvSIMD_scalar_three_same_extra(dres, insn);
+   if (UNLIKELY(ok)) return True;
    ok = dis_AdvSIMD_scalar_two_reg_misc(dres, insn);
    if (UNLIKELY(ok)) return True;
    ok = dis_AdvSIMD_scalar_x_indexed_element(dres, insn);
@@ -14395,6 +14759,8 @@ Bool dis_ARM64_simd_and_fp(/*MB_OUT*/DisResult* dres, UInt insn)
    ok = dis_AdvSIMD_three_different(dres, insn);
    if (UNLIKELY(ok)) return True;
    ok = dis_AdvSIMD_three_same(dres, insn);
+   if (UNLIKELY(ok)) return True;
+   ok = dis_AdvSIMD_three_same_extra(dres, insn);
    if (UNLIKELY(ok)) return True;
    ok = dis_AdvSIMD_two_reg_misc(dres, insn);
    if (UNLIKELY(ok)) return True;
@@ -14442,12 +14808,10 @@ Bool dis_ARM64_simd_and_fp(/*MB_OUT*/DisResult* dres, UInt insn)
 static
 Bool disInstr_ARM64_WRK (
         /*MB_OUT*/DisResult* dres,
-        Bool         (*resteerOkFn) ( /*opaque*/void*, Addr ),
-        Bool         resteerCisOk,
-        void*        callback_opaque,
         const UChar* guest_instr,
         const VexArchInfo* archinfo,
-        const VexAbiInfo*  abiinfo
+        const VexAbiInfo*  abiinfo,
+        Bool sigill_diag
      )
 {
    // A macro to fish bits out of 'insn'.
@@ -14468,7 +14832,6 @@ Bool disInstr_ARM64_WRK (
    /* Set result defaults. */
    dres->whatNext    = Dis_Continue;
    dres->len         = 4;
-   dres->continueAt  = 0;
    dres->jk_StopHere = Ijk_INVALID;
    dres->hint        = Dis_HintNone;
 
@@ -14572,20 +14935,20 @@ Bool disInstr_ARM64_WRK (
    switch (INSN(28,25)) {
       case BITS4(1,0,0,0): case BITS4(1,0,0,1):
          // Data processing - immediate
-         ok = dis_ARM64_data_processing_immediate(dres, insn);
+         ok = dis_ARM64_data_processing_immediate(dres, insn, sigill_diag);
          break;
       case BITS4(1,0,1,0): case BITS4(1,0,1,1):
          // Branch, exception generation and system instructions
-         ok = dis_ARM64_branch_etc(dres, insn, archinfo, abiinfo);
+         ok = dis_ARM64_branch_etc(dres, insn, archinfo, abiinfo, sigill_diag);
          break;
       case BITS4(0,1,0,0): case BITS4(0,1,1,0):
       case BITS4(1,1,0,0): case BITS4(1,1,1,0):
          // Loads and stores
-         ok = dis_ARM64_load_store(dres, insn, abiinfo);
+         ok = dis_ARM64_load_store(dres, insn, abiinfo, sigill_diag);
          break;
       case BITS4(0,1,0,1): case BITS4(1,1,0,1):
          // Data processing - register
-         ok = dis_ARM64_data_processing_register(dres, insn);
+         ok = dis_ARM64_data_processing_register(dres, insn, sigill_diag);
          break;
       case BITS4(0,1,1,1): case BITS4(1,1,1,1): 
          // Data processing - SIMD and floating point
@@ -14604,7 +14967,6 @@ Bool disInstr_ARM64_WRK (
    if (!ok) {
       vassert(dres->whatNext    == Dis_Continue);
       vassert(dres->len         == 4);
-      vassert(dres->continueAt  == 0);
       vassert(dres->jk_StopHere == Ijk_INVALID);
    }
 
@@ -14622,9 +14984,6 @@ Bool disInstr_ARM64_WRK (
    is located in host memory at &guest_code[delta]. */
 
 DisResult disInstr_ARM64 ( IRSB*        irsb_IN,
-                           Bool         (*resteerOkFn) ( void*, Addr ),
-                           Bool         resteerCisOk,
-                           void*        callback_opaque,
                            const UChar* guest_code_IN,
                            Long         delta_IN,
                            Addr         guest_IP,
@@ -14651,19 +15010,14 @@ DisResult disInstr_ARM64 ( IRSB*        irsb_IN,
 
    /* Try to decode */
    Bool ok = disInstr_ARM64_WRK( &dres,
-                                 resteerOkFn, resteerCisOk, callback_opaque,
                                  &guest_code_IN[delta_IN],
-                                 archinfo, abiinfo );
+                                 archinfo, abiinfo, sigill_diag_IN );
    if (ok) {
       /* All decode successes end up here. */
       vassert(dres.len == 4 || dres.len == 20);
       switch (dres.whatNext) {
          case Dis_Continue:
             putPC( mkU64(dres.len + guest_PC_curr_instr) );
-            break;
-         case Dis_ResteerU:
-         case Dis_ResteerC:
-            putPC(mkU64(dres.continueAt));
             break;
          case Dis_StopHere:
             break;
@@ -14699,7 +15053,6 @@ DisResult disInstr_ARM64 ( IRSB*        irsb_IN,
       dres.len         = 0;
       dres.whatNext    = Dis_StopHere;
       dres.jk_StopHere = Ijk_NoDecode;
-      dres.continueAt  = 0;
    }
    return dres;
 }

@@ -44,9 +44,9 @@ int main(int argc, char **argv)
 
    if (argc <= 1)
    {
-	  printf
-		 ("usage: pth_self_kill SIGNALNR [killotherthread] [sleepafterkill]\n");
-	  exit (1);
+      printf
+         ("usage: pth_self_kill SIGNALNR [killotherthread] [sleepafterkill]\n");
+      exit (1);
    }
 
    int s = atoi(argv[1]);
@@ -55,11 +55,11 @@ int main(int argc, char **argv)
    sleep (1);
    if (argc > 2)
    {
-	  pthread_kill(thr, s);
-	  if (argc > 3)
-		 sleep (2);
+      pthread_kill(thr, s);
+      if (argc > 3)
+         sleep (2);
    }
    else
-	  raise(s);
+      raise(s);
    sigaction(15, &sa_old, NULL);
 }

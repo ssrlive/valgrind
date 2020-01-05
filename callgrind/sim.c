@@ -1625,12 +1625,12 @@ void CLG_(init_eventsets)()
 	if (CLG_(clo).collect_alloc)
 	CLG_(register_event_group2)(EG_ALLOC, "allocCount", "allocSize");
 
-	if (CLG_(clo).collect_systime != systime_no) {
-	   if (CLG_(clo).collect_systime == systime_nsec)
-		  CLG_(register_event_group3)(EG_SYS, "sysCount", "sysTime", "sysCpuTime");
-	   else
-		  CLG_(register_event_group2)(EG_SYS, "sysCount", "sysTime");
-	}
+    if (CLG_(clo).collect_systime != systime_no) {
+       if (CLG_(clo).collect_systime == systime_nsec)
+          CLG_(register_event_group3)(EG_SYS, "sysCount", "sysTime", "sysCpuTime");
+       else
+          CLG_(register_event_group2)(EG_SYS, "sysCount", "sysTime");
+    }
 
 	// event set used as base for instruction self cost
 	CLG_(sets).base = CLG_(get_event_set2)(EG_USE, EG_IR);
@@ -1645,35 +1645,36 @@ void CLG_(init_eventsets)()
 	CLG_DEBUG(1, "EventSets:\n");
 	CLG_(print_eventset)(-2, CLG_(sets).base);
 	CLG_(print_eventset)(-2, CLG_(sets).full);
-	}
+    }
 
-	/* Not-existing events are silently ignored */
-	CLG_(dumpmap) = CLG_(get_eventmapping)(CLG_(sets).full);
-	CLG_(append_event)(CLG_(dumpmap), "Ir");
-	CLG_(append_event)(CLG_(dumpmap), "Dr");
-	CLG_(append_event)(CLG_(dumpmap), "Dw");
-	CLG_(append_event)(CLG_(dumpmap), "I1mr");
-	CLG_(append_event)(CLG_(dumpmap), "D1mr");
-	CLG_(append_event)(CLG_(dumpmap), "D1mw");
-	CLG_(append_event)(CLG_(dumpmap), "ILmr");
-	CLG_(append_event)(CLG_(dumpmap), "DLmr");
-	CLG_(append_event)(CLG_(dumpmap), "DLmw");
-	CLG_(append_event)(CLG_(dumpmap), "ILdmr");
-	CLG_(append_event)(CLG_(dumpmap), "DLdmr");
-	CLG_(append_event)(CLG_(dumpmap), "DLdmw");
-	CLG_(append_event)(CLG_(dumpmap), "Bc");
-	CLG_(append_event)(CLG_(dumpmap), "Bcm");
-	CLG_(append_event)(CLG_(dumpmap), "Bi");
-	CLG_(append_event)(CLG_(dumpmap), "Bim");
-	CLG_(append_event)(CLG_(dumpmap), "AcCost1");
-	CLG_(append_event)(CLG_(dumpmap), "SpLoss1");
-	CLG_(append_event)(CLG_(dumpmap), "AcCost2");
-	CLG_(append_event)(CLG_(dumpmap), "SpLoss2");
-	CLG_(append_event)(CLG_(dumpmap), "Ge");
-	CLG_(append_event)(CLG_(dumpmap), "allocCount");
-	CLG_(append_event)(CLG_(dumpmap), "allocSize");
-	CLG_(append_event)(CLG_(dumpmap), "sysCount");
-	CLG_(append_event)(CLG_(dumpmap), "sysTime");
+    /* Not-existing events are silently ignored */
+    CLG_(dumpmap) = CLG_(get_eventmapping)(CLG_(sets).full);
+    CLG_(append_event)(CLG_(dumpmap), "Ir");
+    CLG_(append_event)(CLG_(dumpmap), "Dr");
+    CLG_(append_event)(CLG_(dumpmap), "Dw");
+    CLG_(append_event)(CLG_(dumpmap), "I1mr");
+    CLG_(append_event)(CLG_(dumpmap), "D1mr");
+    CLG_(append_event)(CLG_(dumpmap), "D1mw");
+    CLG_(append_event)(CLG_(dumpmap), "ILmr");
+    CLG_(append_event)(CLG_(dumpmap), "DLmr");
+    CLG_(append_event)(CLG_(dumpmap), "DLmw");
+    CLG_(append_event)(CLG_(dumpmap), "ILdmr");
+    CLG_(append_event)(CLG_(dumpmap), "DLdmr");
+    CLG_(append_event)(CLG_(dumpmap), "DLdmw");
+    CLG_(append_event)(CLG_(dumpmap), "Bc");
+    CLG_(append_event)(CLG_(dumpmap), "Bcm");
+    CLG_(append_event)(CLG_(dumpmap), "Bi");
+    CLG_(append_event)(CLG_(dumpmap), "Bim");
+    CLG_(append_event)(CLG_(dumpmap), "AcCost1");
+    CLG_(append_event)(CLG_(dumpmap), "SpLoss1");
+    CLG_(append_event)(CLG_(dumpmap), "AcCost2");
+    CLG_(append_event)(CLG_(dumpmap), "SpLoss2");
+    CLG_(append_event)(CLG_(dumpmap), "Ge");
+    CLG_(append_event)(CLG_(dumpmap), "allocCount");
+    CLG_(append_event)(CLG_(dumpmap), "allocSize");
+    CLG_(append_event)(CLG_(dumpmap), "sysCount");
+    CLG_(append_event)(CLG_(dumpmap), "sysTime");
+    CLG_(append_event)(CLG_(dumpmap), "sysCpuTime");
 }
 
 

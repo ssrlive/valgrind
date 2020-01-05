@@ -44,10 +44,10 @@
 //      options for --help-dyn-options.
 typedef
    enum {
-	  cloE = 1,
-	  cloP = 2,
-	  cloD = 4,
-	  cloH = 8
+      cloE = 1,
+      cloP = 2,
+      cloD = 4,
+      cloH = 8
    } Clo_Mode;
 
 // Defines often used mode sets, e.g. for options used in several modes.
@@ -81,9 +81,9 @@ void VG_(process_dynamic_option) (Clo_Mode mode, HChar *value);
 // modes.  If current mode is cloH, CHECK_CLOM calls VG_(list_clo) if cloD
 // is allowed by modes.
 Bool VG_(check_clom) (Clo_Mode modes, const HChar* arg, const HChar* option,
-					  Bool recognised);
+                      Bool recognised);
 
-// Higher-level command-line option recognisers;  use in if/else chains.
+// Higher-level command-line option recognisers;  use in if/else chains. 
 // Note that they assign a value to the 'qq_var' argument.  So often they
 // can be used like this:
 //
@@ -108,29 +108,29 @@ extern void VG_(list_clo)(const HChar *qq_option);
 // and the first qq_len characters of qq_arg match qq_option.
 #define VG_STREQN_CLOM(qq_mode, qq_len, qq_arg, qq_option) \
    (VG_(check_clom)                                        \
-	(qq_mode, qq_arg, qq_option,                           \
-	 VG_STREQN(qq_len, qq_arg, qq_option)))
+    (qq_mode, qq_arg, qq_option,                           \
+     VG_STREQN(qq_len, qq_arg, qq_option)))
 
 // True if current option parsing mode matches qq_mode
 // and qq_arg match qq_option.
 #define VG_STREQ_CLOM(qq_mode, qq_arg, qq_option)       \
    (VG_(check_clom)                                     \
-	(qq_mode, qq_arg, qq_option,                        \
-	 VG_STREQ(qq_arg, qq_option)))
+    (qq_mode, qq_arg, qq_option,                        \
+     VG_STREQ(qq_arg, qq_option)))
 
 // String argument, eg. --foo=yes or --foo=no
 #define VG_BOOL_CLOM(qq_mode, qq_arg, qq_option, qq_var)        \
    (VG_(check_clom)                                                     \
-	(qq_mode, qq_arg, qq_option,                                        \
-	 VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
-	({Bool res = True;                                                  \
-	  const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
-	  if      VG_STREQ(val, "yes") (qq_var) = True;                     \
-	  else if VG_STREQ(val, "no")  (qq_var) = False;                    \
-	  else {VG_(fmsg_bad_option)(qq_arg, "Invalid boolean value '%s'"   \
-								 " (should be 'yes' or 'no')\n", val);  \
-		 res = False; }                                                 \
-	  res; }))
+    (qq_mode, qq_arg, qq_option,                                        \
+     VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
+    ({Bool res = True;                                                  \
+      const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
+      if      VG_STREQ(val, "yes") (qq_var) = True;                     \
+      else if VG_STREQ(val, "no")  (qq_var) = False;                    \
+      else {VG_(fmsg_bad_option)(qq_arg, "Invalid boolean value '%s'"   \
+                                 " (should be 'yes' or 'no')\n", val);  \
+         res = False; }                                                 \
+      res; }))
 
 #define VG_BOOL_CLO(qq_arg, qq_option, qq_var) \
    VG_BOOL_CLOM(cloP, qq_arg, qq_option, qq_var)
@@ -138,11 +138,11 @@ extern void VG_(list_clo)(const HChar *qq_option);
 // String argument, eg. --foo=bar
 #define VG_STR_CLOM(qq_mode, qq_arg, qq_option, qq_var)                 \
    (VG_(check_clom)                                                     \
-	(qq_mode, qq_arg, qq_option,                                        \
-	 VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
-	({const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
-	  (qq_var) = val;                                                   \
-	  True; }))
+    (qq_mode, qq_arg, qq_option,                                        \
+     VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
+    ({const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
+      (qq_var) = val;                                                   \
+      True; }))
 
 #define VG_STR_CLO(qq_arg, qq_option, qq_var) \
    VG_STR_CLOM(cloP, qq_arg, qq_option, qq_var)
@@ -151,18 +151,18 @@ extern void VG_(list_clo)(const HChar *qq_option);
 // or --foo=all  (if qq_all is True)
 #define VG_USETGEN_CLOM(qq_mode, qq_arg, qq_option, qq_vals, qq_var, qq_all) \
    (VG_(check_clom)                                                     \
-	(qq_mode, qq_arg, qq_option,                                        \
-	 VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
-	({Bool res = True;                                                  \
-	   const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];        \
-	  if (!VG_(parse_enum_set)(qq_vals,                                 \
-							   qq_all,/*allow_all*/                     \
-							   val,                                     \
-							   &(qq_var))) {                            \
-		 VG_(fmsg_bad_option)(qq_arg, "%s is an invalid %s set\n",      \
-							  val, qq_option+2);                        \
-		 res = False; }                                                 \
-	  res; }))
+    (qq_mode, qq_arg, qq_option,                                        \
+     VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
+    ({Bool res = True;                                                  \
+       const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];        \
+      if (!VG_(parse_enum_set)(qq_vals,                                 \
+                               qq_all,/*allow_all*/                     \
+                               val,                                     \
+                               &(qq_var))) {                            \
+         VG_(fmsg_bad_option)(qq_arg, "%s is an invalid %s set\n",      \
+                              val, qq_option+2);                        \
+         res = False; }                                                 \
+      res; }))
 
 // UInt enum set arg, eg. --foo=fubar,bar,baz or --foo=none or --foo=all
 #define VG_USET_CLO(qq_arg, qq_option, qq_vals, qq_var) \
@@ -180,19 +180,19 @@ extern void VG_(list_clo)(const HChar *qq_option);
 // Unbounded integer arg, eg. --foo=10
 #define VG_INT_CLOM(qq_mode, qq_arg, qq_option, qq_var)                 \
    (VG_(check_clom)                                                     \
-	(qq_mode, qq_arg, qq_option,                                        \
-	 VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
-	({Bool res = True;                                                  \
-	  const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
-	  HChar* s;                                                         \
-	  Long n = VG_(strtoll10)( val, &s );                               \
-	  (qq_var) = n;                                                     \
-	  /* Check for non-numeralness, or overflow. */                     \
-	  if ('\0' != s[0] || (qq_var) != n) {                              \
-		 VG_(fmsg_bad_option)(qq_arg,                                   \
-							  "Invalid integer value '%s'\n", val);     \
-		 res = False; }                                                 \
-	  res; }))
+    (qq_mode, qq_arg, qq_option,                                        \
+     VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
+    ({Bool res = True;                                                  \
+      const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
+      HChar* s;                                                         \
+      Long n = VG_(strtoll10)( val, &s );                               \
+      (qq_var) = n;                                                     \
+      /* Check for non-numeralness, or overflow. */                     \
+      if ('\0' != s[0] || (qq_var) != n) {                              \
+         VG_(fmsg_bad_option)(qq_arg,                                   \
+                              "Invalid integer value '%s'\n", val);     \
+         res = False; }                                                 \
+      res; }))
 
 #define VG_INT_CLO(qq_arg, qq_option, qq_var) \
    VG_INT_CLOM(cloP, qq_arg, qq_option, qq_var)
@@ -201,29 +201,29 @@ extern void VG_(list_clo)(const HChar *qq_option);
 // causes an abort.  'qq_base' can be 10 or 16.
 #define VG_BINTN_CLOM(qq_mode, qq_base, qq_arg, qq_option, qq_var, qq_lo, qq_hi) \
    (VG_(check_clom)                                                     \
-	(qq_mode, qq_arg, qq_option,                                        \
-	 VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
-	({Bool res = True;                                                  \
-	  const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
-	  HChar* s;                                                         \
-	  Long n = VG_(strtoll##qq_base)( val, &s );                        \
-	  (qq_var) = n;                                                     \
-	  /* MMM: separate the two cases, and explain the problem;  likewise */ \
-	  /* for all the other macros in this file. */                      \
-	  /* Check for non-numeralness, or overflow. */                     \
-	  /* Nb: it will overflow if qq_var is unsigned and qq_val is negative! */ \
-	  if ('\0' != s[0] || (qq_var) != n) {                              \
-		 VG_(fmsg_bad_option)(qq_arg,                                   \
-							  "Invalid integer value '%s'\n", val);     \
-		 res = False; }                                                 \
-	  /* Check bounds. */                                               \
-	  if ((qq_var) < (qq_lo) || (qq_var) > (qq_hi)) {                   \
-		 VG_(fmsg_bad_option)(qq_arg,                                   \
-			"'%s' argument must be between %lld and %lld\n",            \
-							  (qq_option), (Long)(qq_lo), (Long)(qq_hi)); \
-		 res = False;                                                  \
-	  }                                                                \
-	  res;}))
+    (qq_mode, qq_arg, qq_option,                                        \
+     VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
+    ({Bool res = True;                                                  \
+      const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
+      HChar* s;                                                         \
+      Long n = VG_(strtoll##qq_base)( val, &s );                        \
+      (qq_var) = n;                                                     \
+      /* MMM: separate the two cases, and explain the problem;  likewise */ \
+      /* for all the other macros in this file. */                      \
+      /* Check for non-numeralness, or overflow. */                     \
+      /* Nb: it will overflow if qq_var is unsigned and qq_val is negative! */ \
+      if ('\0' != s[0] || (qq_var) != n) {                              \
+         VG_(fmsg_bad_option)(qq_arg,                                   \
+                              "Invalid integer value '%s'\n", val);     \
+         res = False; }                                                 \
+      /* Check bounds. */                                               \
+      if ((qq_var) < (qq_lo) || (qq_var) > (qq_hi)) {                   \
+         VG_(fmsg_bad_option)(qq_arg,                                   \
+            "'%s' argument must be between %lld and %lld\n",            \
+                              (qq_option), (Long)(qq_lo), (Long)(qq_hi)); \
+         res = False;                                                  \
+      }                                                                \
+      res;}))
 
 // Bounded decimal integer arg, eg. --foo=100
 #define VG_BINT_CLO(qq_arg, qq_option, qq_var, qq_lo, qq_hi) \
@@ -240,19 +240,19 @@ extern void VG_(list_clo)(const HChar *qq_option);
 // floats at the moment!
 #define VG_DBL_CLOM(qq_mode, qq_arg, qq_option, qq_var) \
    (VG_(check_clom)                                                     \
-	(qq_mode, qq_arg, qq_option,                                        \
-	 VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
-	({Bool res = True;                                                  \
-	  const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
-	  HChar* s;                                                         \
-	  double n = VG_(strtod)( val, &s );                                \
-	  (qq_var) = n;                                                     \
-	  /* Check for non-numeralness */                                   \
-	  if ('\0' != s[0]) {                                               \
-		 VG_(fmsg_bad_option)(qq_arg,                                   \
-							  "Invalid floating point value '%s'\n",val); \
-		 res = False; }                                                 \
-	  res;}))
+    (qq_mode, qq_arg, qq_option,                                        \
+     VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
+    ({Bool res = True;                                                  \
+      const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
+      HChar* s;                                                         \
+      double n = VG_(strtod)( val, &s );                                \
+      (qq_var) = n;                                                     \
+      /* Check for non-numeralness */                                   \
+      if ('\0' != s[0]) {                                               \
+         VG_(fmsg_bad_option)(qq_arg,                                   \
+                              "Invalid floating point value '%s'\n",val); \
+         res = False; }                                                 \
+      res;}))
 
 #define VG_DBL_CLO( qq_arg, qq_option, qq_var) \
    VG_DBL_CLOM(cloP, qq_arg, qq_option, qq_var)
@@ -261,10 +261,10 @@ extern void VG_(list_clo)(const HChar *qq_option);
 // if it matches, qq_var is assigned the value in qq_val.
 #define VG_XACT_CLOM(qq_mode, qq_arg, qq_option, qq_var, qq_val) \
    (VG_(check_clom) \
-	(qq_mode, qq_arg, qq_option,                                \
-	 VG_STREQ((qq_arg), (qq_option))) &&                        \
-	({(qq_var) = (qq_val);                                      \
-	   True; }))
+    (qq_mode, qq_arg, qq_option,                                \
+     VG_STREQ((qq_arg), (qq_option))) &&                        \
+    ({(qq_var) = (qq_val);                                      \
+       True; }))
 
 #define VG_XACT_CLO(qq_arg, qq_option, qq_var, qq_val) \
    VG_XACT_CLOM(cloP, qq_arg, qq_option, qq_var, qq_val)
@@ -274,20 +274,20 @@ extern void VG_(list_clo)(const HChar *qq_option);
 // aborts if not found.
 #define VG_STRINDEX_CLOM(qq_mode, qq_arg, qq_option, qq_strings, qq_ix) \
    (VG_(check_clom)                                                     \
-	(qq_mode, qq_arg, qq_option,                                        \
-	 VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
-	({Bool res = True;                                                  \
-	  const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
-	  for (qq_ix = 0; (qq_strings)[qq_ix]; qq_ix++) {                   \
-		 if (VG_STREQ(val, (qq_strings)[qq_ix]))                        \
-			break;                                                      \
-	  }                                                                 \
-	  if ((qq_strings)[qq_ix] == NULL) {                                \
-		 VG_(fmsg_bad_option)(qq_arg,                                   \
-							  "Invalid string '%s' in '%s'\n", val, qq_arg); \
-		 res = False;                                                   \
-	  } \
-	  res; }))
+    (qq_mode, qq_arg, qq_option,                                        \
+     VG_STREQN(VG_(strlen)(qq_option)+1, qq_arg, qq_option"=")) &&      \
+    ({Bool res = True;                                                  \
+      const HChar* val = &(qq_arg)[ VG_(strlen)(qq_option)+1 ];         \
+      for (qq_ix = 0; (qq_strings)[qq_ix]; qq_ix++) {                   \
+         if (VG_STREQ(val, (qq_strings)[qq_ix]))                        \
+            break;                                                      \
+      }                                                                 \
+      if ((qq_strings)[qq_ix] == NULL) {                                \
+         VG_(fmsg_bad_option)(qq_arg,                                   \
+                              "Invalid string '%s' in '%s'\n", val, qq_arg); \
+         res = False;                                                   \
+      } \
+      res; }))
 
 #define VG_STRINDEX_CLO(qq_arg, qq_option, qq_strings, qq_ix) \
    VG_STRINDEX_CLOM(cloP, qq_arg, qq_option, qq_strings, qq_ix)
@@ -328,10 +328,10 @@ extern Int VG_(clo_redzone_size);
 
 typedef
    enum {
-	  Vg_XTMemory_None,   // Do not do any xtree memory profiling.
-	  Vg_XTMemory_Allocs, // Currently allocated size xtree memory profiling
-	  Vg_XTMemory_Full,   // Full profiling : Current allocated size, total
-	  // allocated size, nr of blocks, total freed size, ...
+      Vg_XTMemory_None,   // Do not do any xtree memory profiling.
+      Vg_XTMemory_Allocs, // Currently allocated size xtree memory profiling
+      Vg_XTMemory_Full,   // Full profiling : Current allocated size, total
+      // allocated size, nr of blocks, total freed size, ...
    }
    VgXTMemory;
 // Tools that replace malloc can optionally implement memory profiling

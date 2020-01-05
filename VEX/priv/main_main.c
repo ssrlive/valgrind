@@ -191,8 +191,7 @@ void LibVEX_default_VexControl ( /*OUT*/ VexControl* vcon )
    vcon->iropt_register_updates_default = VexRegUpdUnwindregsAtMemAccess;
    vcon->iropt_unroll_thresh            = 120;
    vcon->guest_max_insns                = 60;
-   vcon->guest_chase_thresh             = 10;
-   vcon->guest_chase_cond               = False;
+   vcon->guest_chase                    = True;
    vcon->regalloc_version               = 3;
 }
 
@@ -229,10 +228,7 @@ void LibVEX_Init (
    vassert(vcon->iropt_unroll_thresh <= 400);
    vassert(vcon->guest_max_insns >= 1);
    vassert(vcon->guest_max_insns <= 100);
-   vassert(vcon->guest_chase_thresh >= 0);
-   vassert(vcon->guest_chase_thresh < vcon->guest_max_insns);
-   vassert(vcon->guest_chase_cond == True 
-           || vcon->guest_chase_cond == False);
+   vassert(vcon->guest_chase == False || vcon->guest_chase == True);
    vassert(vcon->regalloc_version == 2 || vcon->regalloc_version == 3);
 
    /* Check that Vex has been built with sizes of basic types as
@@ -558,6 +554,8 @@ IRSB* LibVEX_FrontEnd ( /*MOD*/ VexTranslateArgs* vta,
    res->n_sc_extents   = 0;
    res->offs_profInc   = -1;
    res->n_guest_instrs = 0;
+   res->n_uncond_in_trace = 0;
+   res->n_cond_in_trace = 0;
 
 #ifndef VEXMULTIARCH
    /* yet more sanity checks ... */
@@ -585,6 +583,8 @@ IRSB* LibVEX_FrontEnd ( /*MOD*/ VexTranslateArgs* vta,
    irsb = bb_to_IR ( vta->guest_extents,
                      &res->n_sc_extents,
                      &res->n_guest_instrs,
+                     &res->n_uncond_in_trace,
+                     &res->n_cond_in_trace,
                      pxControl,
                      vta->callback_opaque,
                      disInstrFn,

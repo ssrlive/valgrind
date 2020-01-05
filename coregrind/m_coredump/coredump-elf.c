@@ -229,7 +229,7 @@ static void fill_prstatus(const ThreadState *tst,
 			  const vki_siginfo_t *si)
 {
 #if defined(VGP_mips32_linux) || defined(VGP_mips64_linux) \
-	|| defined(VGP_nanomips_linux)
+    || defined(VGP_nanomips_linux)
    vki_elf_greg_t *regs;
 #else
    struct vki_user_regs_struct *regs;
@@ -635,11 +635,11 @@ void dump_one_thread(struct note **notelist, const vki_siginfo_t *si, ThreadId t
 
 	  fill_fpu(&VG_(threads)[tid], &fpu);
 #     if !defined(VGPV_arm_linux_android) \
-		 && !defined(VGPV_x86_linux_android) \
-		 && !defined(VGPV_mips32_linux_android) \
-		 && !defined(VGPV_arm64_linux_android) \
-		 && !defined(VGP_nanomips_linux)
-	  add_note(notelist, "CORE", NT_FPREGSET, &fpu, sizeof(fpu));
+         && !defined(VGPV_x86_linux_android) \
+         && !defined(VGPV_mips32_linux_android) \
+         && !defined(VGPV_arm64_linux_android) \
+         && !defined(VGP_nanomips_linux)
+      add_note(notelist, "CORE", NT_FPREGSET, &fpu, sizeof(fpu));
 #     endif
 
 	  fill_prstatus(&VG_(threads)[tid], &prstatus, si);

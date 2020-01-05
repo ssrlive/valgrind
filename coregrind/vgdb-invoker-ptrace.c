@@ -943,16 +943,16 @@ Bool invoker_invoke_gdbserver (pid_t pid)
 	  XERROR(0, "TBD arm64: vgdb a 32 bits executable with a 64 bits exe");
 
 #elif defined(VGA_s390x)
-	  XERROR(0, "(fn32) s390x has no 32bits implementation");
+      XERROR(0, "(fn32) s390x has no 32bits implementation");
 #elif defined(VGA_mips32) || defined(VGA_nanomips)
-	  /* put check arg in register 4 */
-	  p[4] = check;
-	  /* put NULL return address in ra */
-	  p[31] = bad_return;
-	  p[34] = shared32->invoke_gdbserver;
-	  p[25] = shared32->invoke_gdbserver;
-	  /* make stack space for args */
-	  p[29] = sp - 32;
+      /* put check arg in register 4 */
+      p[4] = check;
+      /* put NULL return address in ra */
+      p[31] = bad_return;
+      p[34] = shared32->invoke_gdbserver;
+      p[25] = shared32->invoke_gdbserver;
+      /* make stack space for args */
+      p[29] = sp - 32;
 
 #elif defined(VGA_mips64)
 	  assert(0); // cannot vgdb a 32 bits executable with a 64 bits exe
@@ -1045,17 +1045,17 @@ Bool invoker_invoke_gdbserver (pid_t pid)
 	  /* put bad_return return address in Link Register */
 	  user_mod.regs.link = bad_return;
 #elif defined(VGA_s390x)
-	  /* put check arg in register r2 */
-	  user_mod.regs.gprs[2] = check;
-	  /* bad_return Return address is in r14 */
-	  user_mod.regs.gprs[14] = bad_return;
-	  /* minimum stack frame */
-	  sp = sp - 160;
-	  user_mod.regs.gprs[15] = sp;
-	  /* set program counter */
-	  user_mod.regs.psw.addr = shared64->invoke_gdbserver;
+      /* put check arg in register r2 */
+      user_mod.regs.gprs[2] = check;
+      /* bad_return Return address is in r14 */
+      user_mod.regs.gprs[14] = bad_return;
+      /* minimum stack frame */
+      sp = sp - 160;
+      user_mod.regs.gprs[15] = sp;
+      /* set program counter */
+      user_mod.regs.psw.addr = shared64->invoke_gdbserver;
 #elif defined(VGA_mips32)  || defined(VGA_nanomips)
-	  assert(0); // cannot vgdb a 64 bits executable with a 32 bits exe
+      assert(0); // cannot vgdb a 64 bits executable with a 32 bits exe
 #elif defined(VGA_mips64)
 	  /* put check arg in register 4 */
 	  user_mod.regs[4] = check;

@@ -47,19 +47,19 @@
 /*--- Architectures, variants, and other arch info    ---*/
 /*-------------------------------------------------------*/
 
-typedef
-   enum {
-	  VexArch_INVALID=0x400,
-	  VexArchX86,
-	  VexArchAMD64,
-	  VexArchARM,
-	  VexArchARM64,
-	  VexArchPPC32,
-	  VexArchPPC64,
-	  VexArchS390X,
-	  VexArchMIPS32,
-	  VexArchMIPS64,
-	  VexArchNANOMIPS,
+typedef 
+   enum { 
+      VexArch_INVALID=0x400,
+      VexArchX86, 
+      VexArchAMD64, 
+      VexArchARM,
+      VexArchARM64,
+      VexArchPPC32,
+      VexArchPPC64,
+      VexArchS390X,
+      VexArchMIPS32,
+      VexArchMIPS64,
+      VexArchNANOMIPS,
    }
    VexArch;
 
@@ -169,20 +169,20 @@ typedef
 
 /* Special value representing all available s390x hwcaps */
 #define VEX_HWCAPS_S390X_ALL   (VEX_HWCAPS_S390X_LDISP | \
-								VEX_HWCAPS_S390X_EIMM  | \
-								VEX_HWCAPS_S390X_GIE   | \
-								VEX_HWCAPS_S390X_DFP   | \
-								VEX_HWCAPS_S390X_FGX   | \
-								VEX_HWCAPS_S390X_STFLE | \
-								VEX_HWCAPS_S390X_STCKF | \
-								VEX_HWCAPS_S390X_FPEXT | \
-								VEX_HWCAPS_S390X_LSC   | \
-								VEX_HWCAPS_S390X_ETF3  | \
-								VEX_HWCAPS_S390X_ETF2  | \
-								VEX_HWCAPS_S390X_PFPO  | \
-								VEX_HWCAPS_S390X_VX    | \
-								VEX_HWCAPS_S390X_MSA5  | \
-								VEX_HWCAPS_S390X_MI2)
+                                VEX_HWCAPS_S390X_EIMM  | \
+                                VEX_HWCAPS_S390X_GIE   | \
+                                VEX_HWCAPS_S390X_DFP   | \
+                                VEX_HWCAPS_S390X_FGX   | \
+                                VEX_HWCAPS_S390X_STFLE | \
+                                VEX_HWCAPS_S390X_STCKF | \
+                                VEX_HWCAPS_S390X_FPEXT | \
+                                VEX_HWCAPS_S390X_LSC   | \
+                                VEX_HWCAPS_S390X_ETF3  | \
+                                VEX_HWCAPS_S390X_ETF2  | \
+                                VEX_HWCAPS_S390X_PFPO  | \
+                                VEX_HWCAPS_S390X_VX    | \
+                                VEX_HWCAPS_S390X_MSA5  | \
+                                VEX_HWCAPS_S390X_MI2)
 
 #define VEX_HWCAPS_S390X(x)  ((x) & ~VEX_S390X_MODEL_MASK)
 #define VEX_S390X_MODEL(x)   ((x) &  VEX_S390X_MODEL_MASK)
@@ -491,41 +491,38 @@ typedef
 
 typedef
    struct {
-	  /* Controls verbosity of iropt.  0 = no output. */
-	  Int iropt_verbosity;
-	  /* Control aggressiveness of iropt.  0 = no opt, 1 = simple
-		 opts, 2 (default) = max optimisation. */
-	  Int iropt_level;
-	  /* Controls when registers are updated in guest state.  Note
-		 that this is the default value.  The VEX client can override
-		 this on a per-IRSB basis if it wants.  bb_to_IR() will query
-		 the client to ask if it wants a different setting for the
-		 block under construction, and that new setting is transported
-		 back to LibVEX_Translate, which feeds it to iropt via the
-		 various do_iropt_BB calls. */
-	  VexRegisterUpdates iropt_register_updates_default;
-	  /* How aggressive should iropt be in unrolling loops?  Higher
-		 numbers make it more enthusiastic about loop unrolling.
-		 Default=120.  A setting of zero disables unrolling.  */
-	  Int iropt_unroll_thresh;
-	  /* What's the maximum basic block length the front end(s) allow?
-		 BBs longer than this are split up.  Default=60 (guest
-		 insns). */
-	  Int guest_max_insns;
-	  /* How aggressive should front ends be in following
-		 unconditional branches to known destinations?  Default=10,
-		 meaning that if a block contains less than 10 guest insns so
-		 far, the front end(s) will attempt to chase into its
-		 successor. A setting of zero disables chasing.  */
-	  Int guest_chase_thresh;
-	  /* EXPERIMENTAL: chase across conditional branches?  Not all
-		 front ends honour this.  Default: NO. */
-	  Bool guest_chase_cond;
-	  /* Register allocator version. Allowed values are:
-		 - '2': previous, good and slow implementation.
-		 - '3': current, faster implementation; perhaps producing slightly worse
-				spilling decisions. */
-	  UInt regalloc_version;
+      /* Controls verbosity of iropt.  0 = no output. */
+      Int iropt_verbosity;
+      /* Control aggressiveness of iropt.  0 = no opt, 1 = simple
+         opts, 2 (default) = max optimisation. */
+      Int iropt_level;
+      /* Controls when registers are updated in guest state.  Note
+         that this is the default value.  The VEX client can override
+         this on a per-IRSB basis if it wants.  bb_to_IR() will query
+         the client to ask if it wants a different setting for the
+         block under construction, and that new setting is transported
+         back to LibVEX_Translate, which feeds it to iropt via the
+         various do_iropt_BB calls. */
+      VexRegisterUpdates iropt_register_updates_default;
+      /* How aggressive should iropt be in unrolling loops?  Higher
+         numbers make it more enthusiastic about loop unrolling.
+         Default=120.  A setting of zero disables unrolling.  */
+      Int iropt_unroll_thresh;
+      /* What's the maximum basic block length the front end(s) allow?
+         BBs longer than this are split up.  Default=60 (guest
+         insns). */
+      Int guest_max_insns;
+      /* Should Vex try to construct superblocks, by chasing unconditional
+         branches/calls to known destinations, and performing AND/OR idiom
+         recognition?  It is recommended to set this to True as that possibly
+         improves performance a bit, and also is important for avoiding certain
+         kinds of false positives in Memcheck.  Default=True.  */
+      Bool guest_chase;
+      /* Register allocator version. Allowed values are:
+         - '2': previous, good and slow implementation.
+         - '3': current, faster implementation; perhaps producing slightly worse
+                spilling decisions. */
+      UInt regalloc_version;
    }
    VexControl;
 
@@ -643,17 +640,23 @@ extern void LibVEX_Init (
 /* Describes the outcome of a translation attempt. */
 typedef
    struct {
-	  /* overall status */
-	  enum { VexTransOK=0x800,
-			 VexTransAccessFail, VexTransOutputFull } status;
-	  /* The number of extents that have a self-check (0 to 3) */
-	  UInt n_sc_extents;
-	  /* Offset in generated code of the profile inc, or -1 if
-		 none.  Needed for later patching. */
-	  Int offs_profInc;
-	  /* Stats only: the number of guest insns included in the
-		 translation.  It may be zero (!). */
-	  UInt n_guest_instrs;
+      /* overall status */
+      enum { VexTransOK=0x800,
+             VexTransAccessFail, VexTransOutputFull } status;
+      /* The number of extents that have a self-check (0 to 3) */
+      UInt n_sc_extents;
+      /* Offset in generated code of the profile inc, or -1 if
+         none.  Needed for later patching. */
+      Int offs_profInc;
+      /* Stats only: the number of guest insns included in the
+         translation.  It may be zero (!). */
+      UInt n_guest_instrs;
+      /* Stats only: the number of unconditional branches incorporated into the
+         trace. */
+      UShort n_uncond_in_trace;
+      /* Stats only: the number of conditional branches incorporated into the
+         trace. */
+      UShort n_cond_in_trace;
    }
    VexTranslateResult;
 

@@ -1001,9 +1001,9 @@ void run_thread_for_a_while ( /*OUT*/HWord* two_words,
 	  = (HWord)VG_(fnptr_to_fnentry)( &VG_(disp_cp_evcheck_fail) );
 
    /* Invalidate any in-flight LL/SC transactions, in the case that we're
-	  using the fallback LL/SC implementation.  See bugs 344524 and 369459. */
+      using the fallback LL/SC implementation.  See bugs 344524 and 369459. */
 #  if defined(VGP_mips32_linux) || defined(VGP_mips64_linux) \
-	  || defined(VGP_nanomips_linux)
+      || defined(VGP_nanomips_linux)
    tst->arch.vex.guest_LLaddr = (RegWord)(-1);
 #  elif defined(VGP_arm64_linux)
    tst->arch.vex.guest_LLSC_SIZE = 0;
@@ -1312,21 +1312,21 @@ VgSchedReturnCode VG_(scheduler) ( ThreadId tid )
 
 		=> a "once only" initialization here is the best compromise. */
    if (!vgdb_startup_action_done) {
-	  vg_assert(tid == 1); // it must be the main thread.
-	  vgdb_startup_action_done = True;
-	  if (VG_(clo_vgdb) != Vg_VgdbNo) {
-		 /* If we have to poll, ensures we do an initial poll at first
-			scheduler call. Otherwise, ensure no poll (unless interrupted
-			by ptrace). */
-		 if (VG_(clo_vgdb_poll))
-			VG_(force_vgdb_poll) ();
-		 else
-			VG_(disable_vgdb_poll) ();
+      vg_assert(tid == 1); // it must be the main thread.
+      vgdb_startup_action_done = True;
+      if (VG_(clo_vgdb) != Vg_VgdbNo) {
+         /* If we have to poll, ensures we do an initial poll at first
+            scheduler call. Otherwise, ensure no poll (unless interrupted
+            by ptrace). */
+         if (VG_(clo_vgdb_poll))
+            VG_(force_vgdb_poll) ();
+         else
+            VG_(disable_vgdb_poll) ();
 
-		 VG_(gdbserver_prerun_action) (1);
-	  } else {
-		 VG_(disable_vgdb_poll) ();
-	  }
+         VG_(gdbserver_prerun_action) (1);
+      } else {
+         VG_(disable_vgdb_poll) ();
+      }
    }
 
    if (SimHintiS(SimHint_no_nptl_pthread_stackcache, VG_(clo_sim_hints))
@@ -2108,95 +2108,95 @@ void do_client_request ( ThreadId tid )
 		 SET_CLREQ_RETVAL( tid, 0 );     /* return value is meaningless */
 	 break;
 
-	  case VG_USERREQ__COUNT_ERRORS:
-		 SET_CLREQ_RETVAL( tid, VG_(get_n_errs_found)() );
-		 break;
+      case VG_USERREQ__COUNT_ERRORS:  
+         SET_CLREQ_RETVAL( tid, VG_(get_n_errs_found)() );
+         break;
 
-	  case VG_USERREQ__CLO_CHANGE:
-		 VG_(process_dynamic_option) (cloD, (HChar *)arg[1]);
-		 SET_CLREQ_RETVAL( tid, 0 );     /* return value is meaningless */
-		 break;
+      case VG_USERREQ__CLO_CHANGE:
+         VG_(process_dynamic_option) (cloD, (HChar *)arg[1]);
+         SET_CLREQ_RETVAL( tid, 0 );     /* return value is meaningless */
+         break;
 
-	  case VG_USERREQ__LOAD_PDB_DEBUGINFO:
-		 VG_(di_notify_pdb_debuginfo)( arg[1], arg[2], arg[3], arg[4] );
-		 SET_CLREQ_RETVAL( tid, 0 );     /* return value is meaningless */
-		 break;
+      case VG_USERREQ__LOAD_PDB_DEBUGINFO:
+         VG_(di_notify_pdb_debuginfo)( arg[1], arg[2], arg[3], arg[4] );
+         SET_CLREQ_RETVAL( tid, 0 );     /* return value is meaningless */
+         break;
 
-	  case VG_USERREQ__MAP_IP_TO_SRCLOC: {
-		 Addr   ip    = arg[1];
-		 HChar* buf64 = (HChar*)arg[2];  // points to a HChar [64] array
-		 const HChar *buf;  // points to a string of unknown size
+      case VG_USERREQ__MAP_IP_TO_SRCLOC: {
+         Addr   ip    = arg[1];
+         HChar* buf64 = (HChar*)arg[2];  // points to a HChar [64] array
+         const HChar *buf;  // points to a string of unknown size
 
-		 VG_(memset)(buf64, 0, 64);
-		 UInt linenum = 0;
+         VG_(memset)(buf64, 0, 64);
+         UInt linenum = 0;
 
-		 // Unless the guest would become epoch aware (and would need to
-		 // describe IP addresses of dlclosed libs), using cur_ep is a
-		 // reasonable choice.
-		 const DiEpoch cur_ep = VG_(current_DiEpoch)();
+         // Unless the guest would become epoch aware (and would need to
+         // describe IP addresses of dlclosed libs), using cur_ep is a
+         // reasonable choice.
+         const DiEpoch cur_ep = VG_(current_DiEpoch)();
 
-		 Bool ok = VG_(get_filename_linenum)(
-					  cur_ep, ip, &buf, NULL, &linenum
-				   );
-		 if (ok) {
-			/* For backward compatibility truncate the filename to
-			   49 characters. */
-			VG_(strncpy)(buf64, buf, 50);
-			buf64[49] = '\0';
-			UInt i;
-			for (i = 0; i < 50; i++) {
-			   if (buf64[i] == 0)
-				  break;
-			}
-			VG_(sprintf)(buf64+i, ":%u", linenum);  // safe
-		 } else {
-			buf64[0] = 0;
-		 }
+         Bool ok = VG_(get_filename_linenum)(
+                      cur_ep, ip, &buf, NULL, &linenum
+                   );
+         if (ok) {
+            /* For backward compatibility truncate the filename to
+               49 characters. */
+            VG_(strncpy)(buf64, buf, 50);
+            buf64[49] = '\0';
+            UInt i;
+            for (i = 0; i < 50; i++) {
+               if (buf64[i] == 0)
+                  break;
+            }
+            VG_(sprintf)(buf64+i, ":%u", linenum);  // safe
+         } else {
+            buf64[0] = 0;
+         }
 
-		 SET_CLREQ_RETVAL( tid, 0 ); /* return value is meaningless */
-		 break;
-	  }
+         SET_CLREQ_RETVAL( tid, 0 ); /* return value is meaningless */
+         break;
+      }
 
-	  case VG_USERREQ__CHANGE_ERR_DISABLEMENT: {
-		 Word delta = arg[1];
-		 vg_assert(delta == 1 || delta == -1);
-		 ThreadState* tst = VG_(get_ThreadState)(tid);
-		 vg_assert(tst);
-		 if (delta == 1 && tst->err_disablement_level < 0xFFFFFFFF) {
-			tst->err_disablement_level++;
-		 }
-		 else
-		 if (delta == -1 && tst->err_disablement_level > 0) {
-			tst->err_disablement_level--;
-		 }
-		 SET_CLREQ_RETVAL( tid, 0 ); /* return value is meaningless */
-		 break;
-	  }
+      case VG_USERREQ__CHANGE_ERR_DISABLEMENT: {
+         Word delta = arg[1];
+         vg_assert(delta == 1 || delta == -1);
+         ThreadState* tst = VG_(get_ThreadState)(tid);
+         vg_assert(tst);
+         if (delta == 1 && tst->err_disablement_level < 0xFFFFFFFF) {
+            tst->err_disablement_level++;
+         }
+         else
+         if (delta == -1 && tst->err_disablement_level > 0) {
+            tst->err_disablement_level--;
+         }
+         SET_CLREQ_RETVAL( tid, 0 ); /* return value is meaningless */
+         break;
+      }
 
-	  case VG_USERREQ__GDB_MONITOR_COMMAND: {
-		 UWord ret;
-		 ret = (UWord) VG_(client_monitor_command) ((HChar*)arg[1]);
-		 SET_CLREQ_RETVAL(tid, ret);
-		 break;
-	  }
+      case VG_USERREQ__GDB_MONITOR_COMMAND: {
+         UWord ret;
+         ret = (UWord) VG_(client_monitor_command) ((HChar*)arg[1]);
+         SET_CLREQ_RETVAL(tid, ret);
+         break;
+      }
 
-	  case VG_USERREQ__MALLOCLIKE_BLOCK:
-	  case VG_USERREQ__RESIZEINPLACE_BLOCK:
-	  case VG_USERREQ__FREELIKE_BLOCK:
-		 // Ignore them if the addr is NULL;  otherwise pass onto the tool.
-		 if (!arg[1]) {
-			SET_CLREQ_RETVAL( tid, 0 );     /* return value is meaningless */
-			break;
-		 } else {
-			goto my_default;
-		 }
+      case VG_USERREQ__MALLOCLIKE_BLOCK:
+      case VG_USERREQ__RESIZEINPLACE_BLOCK:
+      case VG_USERREQ__FREELIKE_BLOCK:
+         // Ignore them if the addr is NULL;  otherwise pass onto the tool.
+         if (!arg[1]) {
+            SET_CLREQ_RETVAL( tid, 0 );     /* return value is meaningless */
+            break;
+         } else {
+            goto my_default;
+         }
 
-	  case VG_USERREQ__VEX_INIT_FOR_IRI:
-		 LibVEX_InitIRI ( (IRICB *)arg[1] );
-		 break;
+      case VG_USERREQ__VEX_INIT_FOR_IRI:
+         LibVEX_InitIRI ( (IRICB *)arg[1] );
+         break;
 
-	  default:
-	   my_default:
+      default:
+       my_default:
 	 if (os_client_request(tid, arg)) {
 		// do nothing, os_client_request() handled it
 		 } else if (VG_(needs).client_requests) {

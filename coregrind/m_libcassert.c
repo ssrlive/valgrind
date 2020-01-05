@@ -221,49 +221,49 @@
 	  }
 #elif defined(VGP_mips64_linux)
 #  define GET_STARTREGS(srP)                              \
-	  { ULong pc, sp, fp, ra, gp;                         \
-	  asm("move $8, $31;"             /* t0 = ra */       \
-		  "bal 0f;"                   /* ra = pc */       \
-		  "0:\n"                                          \
-		  "move %0, $31;"                                 \
-		  "move $31, $8;"             /* restore lr */    \
-		  "move %1, $29;"                                 \
-		  "move %2, $30;"                                 \
-		  "move %3, $31;"                                 \
-		  "move %4, $28;"                                 \
-		  : "=r" (pc),                                    \
-			"=r" (sp),                                    \
-			"=r" (fp),                                    \
-			"=r" (ra),                                    \
-			"=r" (gp)                                     \
-		  : /* reads none */                              \
-		  : "$8" /* trashed */ );                         \
-		(srP)->r_pc = (ULong)pc - 8;                      \
-		(srP)->r_sp = (ULong)sp;                          \
-		(srP)->misc.MIPS64.r30 = (ULong)fp;               \
-		(srP)->misc.MIPS64.r31 = (ULong)ra;               \
-		(srP)->misc.MIPS64.r28 = (ULong)gp;               \
-	  }
+      { ULong pc, sp, fp, ra, gp;                         \
+      asm("move $8, $31;"             /* t0 = ra */       \
+          "bal 0f;"                   /* ra = pc */       \
+          "0:\n"                                          \
+          "move %0, $31;"                                 \
+          "move $31, $8;"             /* restore lr */    \
+          "move %1, $29;"                                 \
+          "move %2, $30;"                                 \
+          "move %3, $31;"                                 \
+          "move %4, $28;"                                 \
+          : "=r" (pc),                                    \
+            "=r" (sp),                                    \
+            "=r" (fp),                                    \
+            "=r" (ra),                                    \
+            "=r" (gp)                                     \
+          : /* reads none */                              \
+          : "$8" /* trashed */ );                         \
+        (srP)->r_pc = (ULong)pc - 8;                      \
+        (srP)->r_sp = (ULong)sp;                          \
+        (srP)->misc.MIPS64.r30 = (ULong)fp;               \
+        (srP)->misc.MIPS64.r31 = (ULong)ra;               \
+        (srP)->misc.MIPS64.r28 = (ULong)gp;               \
+      }
 #elif defined(VGP_nanomips_linux)
 #  define GET_STARTREGS(srP)                              \
-	  { UInt pc=0, sp=0, fp=0, ra=0, gp=0;                \
-	  asm("addiupc[32] %0, -4          \n\t"              \
-		  "move %1, $sp                \n\t"              \
-		  "move %2, $fp                \n\t"              \
-		  "move %3, $ra                \n\t"              \
-		  "move %4, $gp                \n\t"              \
-		  : "=r" (pc),                                    \
-			"=r" (sp),                                    \
-			"=r" (fp),                                    \
-			"=r" (ra),                                    \
-			"=r" (gp)                                     \
-		  );                                              \
-		(srP)->r_pc = (UInt)pc;                           \
-		(srP)->r_sp = (UInt)sp;                           \
-		(srP)->misc.MIPS32.r30 = (UInt)fp;                \
-		(srP)->misc.MIPS32.r31 = (UInt)ra;                \
-		(srP)->misc.MIPS32.r28 = (UInt)gp;                \
-	  }
+      { UInt pc=0, sp=0, fp=0, ra=0, gp=0;                \
+      asm("addiupc[32] %0, -4          \n\t"              \
+          "move %1, $sp                \n\t"              \
+          "move %2, $fp                \n\t"              \
+          "move %3, $ra                \n\t"              \
+          "move %4, $gp                \n\t"              \
+          : "=r" (pc),                                    \
+            "=r" (sp),                                    \
+            "=r" (fp),                                    \
+            "=r" (ra),                                    \
+            "=r" (gp)                                     \
+          );                                              \
+        (srP)->r_pc = (UInt)pc;                           \
+        (srP)->r_sp = (UInt)sp;                           \
+        (srP)->misc.MIPS32.r30 = (UInt)fp;                \
+        (srP)->misc.MIPS32.r31 = (UInt)ra;                \
+        (srP)->misc.MIPS32.r28 = (UInt)gp;                \
+      }
 #else
 #  error Unknown platform
 #endif

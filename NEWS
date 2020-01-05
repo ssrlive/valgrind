@@ -9,7 +9,7 @@ This release supports X86/Linux, AMD64/Linux, ARM32/Linux, ARM64/Linux,
 PPC32/Linux, PPC64BE/Linux, PPC64LE/Linux, S390X/Linux, MIPS32/Linux,
 MIPS64/Linux, ARM/Android, ARM64/Android, MIPS32/Android, X86/Android,
 X86/Solaris, AMD64/Solaris and AMD64/MacOSX 10.12.  There is also preliminary
-support for X86/macOS 10.13 and AMD64/macOS 10.13.
+support for X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * ==================== CORE CHANGES ===================
 
@@ -24,6 +24,10 @@ support for X86/macOS 10.13 and AMD64/macOS 10.13.
   to the valgrind gdbserver.
   Your program can also change the dynamically changeable options using
   the client request VALGRIND_CLO_CHANGE(option).
+
+* ================== PLATFORM CHANGES =================
+
+* mips: preliminary support for nanoMIPS instruction set has been added.
 
 * ==================== TOOL CHANGES ====================
 
@@ -68,6 +72,8 @@ To see details of a given bug, visit
 where XXXXXX is the bug number as listed below.
 
 400593  In Coregrind, use statx for some internal syscalls if [f]stat[64] fail
+404406  s390x: z14 miscellaneous instructions not implemented
+405201  Incorrect size of struct vki_siginfo on 64-bit Linux architectures
 406561  mcinfcallWSRU gdbserver_test fails on ppc64
 406824  Unsupported baseline
 407218  Add support for the copy_file_range syscall
@@ -76,14 +82,20 @@ where XXXXXX is the bug number as listed below.
 408009  Expose rdrand and f16c even on avx if host cpu supports them
 408091  Missing pkey syscalls
 408414  Add support for missing for preadv2 and pwritev2 syscalls
-404406  s390x: z14 miscellaneous instructions not implemented
-405201  Incorrect size of struct vki_siginfo on 64-bit Linux architectures
 409141  Valgrind hangs when SIGKILLed
+409206  Support for Linux PPS and PTP ioctls
 409367  exit_group() after signal to thread waiting in futex() causes hangs
+409780  References to non-existent configure.in
+410556  Add support for BLKIO{MIN,OPT} and BLKALIGNOFF ioctls
 410599  Non-deterministic behaviour of pth_self_kill_15_other test
+410757  discrepancy for preadv2/pwritev2 syscalls across different versions
 411134  Allow the user to change a set of command line options during execution
+411451  amd64->IR of bt/btc/bts/btr with immediate clears zero flag
 412344  Problem setting mips flags with specific paths
+413119  Ioctl wrapper for DRM_IOCTL_I915_GEM_MMAP
+413330  avx-1 test fails on AMD EPYC 7401P 24-Core Processor
 413603  callgrind_annotate/cg_annotate truncate function names at '#'
+414565  Specific use case bug found in SysRes VG_(do_sys_sigprocmask)
 
 n-i-bz  Fix minor one time leaks in dhat.
 n-i-bz  Add --run-cxx-freeres=no in outer args to avoid inner crashes.

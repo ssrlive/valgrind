@@ -210,9 +210,9 @@ static void VG_(bzero_inline) ( void* s, SizeT sz )
  * Original macro can be found in bits/sysmacros.h. */
 #define VG_MAKEDEV(__major, __minor)            \
    ((((ULong) (__major & 0x00000fffu)) <<  8) | \
-	(((ULong) (__major & 0xfffff000u)) << 32) | \
-	(((ULong) (__minor & 0x000000ffu)) <<  0) | \
-	(((ULong) (__minor & 0xffffff00u)) << 12))
+    (((ULong) (__major & 0xfffff000u)) << 32) | \
+    (((ULong) (__minor & 0x000000ffu)) <<  0) | \
+    (((ULong) (__minor & 0xffffff00u)) << 12))
 
 /* ---------------------------------------------------------------------
    Misc useful functions

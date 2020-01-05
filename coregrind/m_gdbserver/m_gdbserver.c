@@ -48,7 +48,6 @@
 
 #include "server.h"
 
-
 /* forward declarations */
 VG_REGPARM(1)
 void VG_(helperc_CallDebugger) ( HWord iaddr );
@@ -83,46 +82,46 @@ static const HChar* ppCallReason(CallReason reason)
 }
 
 /* An instruction instrumented for gdbserver looks like this:
-	1. Ist_Mark (0x1234)
-	2. Put (IP, 0x1234)
-	3. helperc_CallDebugger (0x1234)
-		 This will give control to gdb if there is a break at 0x1234
-		 or if we are single stepping
-	4. ... here the real IR for the instruction at 0x1234
+    1. Ist_Mark (0x1234)
+    2. Put (IP, 0x1234)
+    3. helperc_CallDebugger (0x1234)
+         This will give control to gdb if there is a break at 0x1234
+         or if we are single stepping
+    4. ... here the real IR for the instruction at 0x1234
 
-	When there is a break at 0x1234:
-	  if user does "continue" or "step" or similar,
-		then - the call to debugger returns
-			 - valgrind executes at 3. the real IR(s) for 0x1234
+    When there is a break at 0x1234:
+      if user does "continue" or "step" or similar,
+        then - the call to debugger returns
+             - valgrind executes at 3. the real IR(s) for 0x1234
 
-	  if as part of helperc_CallDebugger, the user calls
-	  some code in gdb e.g print hello_world()
-		then - gdb prepares a dummy stack frame with a specific
-			   return address (typically it uses _start) and
-			   inserts a break at this address
-			 - gdb then puts in EIP the address of hello_world()
-			 - gdb then continues (so the helperc_CallDebugger
-			   returns)
-			 - call_gdbserver() function will then return the
-			   control to the scheduler (using VG_MINIMAL_LONGJMP)
-			   to allow the block of the new EIP
-			   to be executed.
-			 - hello_world code is executed.
-			 - when hello_world() returns, it returns to
-			   _start and encounters the break at _start.
-			 - gdb then removes this break, put 0x1234 in EIP
-			   and does a "step". This causes to jump from
-			   _start to 0x1234, where the call to
-				helperc_CallDebugger is redone.
-			 - This is all ok, the user can then give new gdb
-			   commands.
+      if as part of helperc_CallDebugger, the user calls
+      some code in gdb e.g print hello_world()
+        then - gdb prepares a dummy stack frame with a specific
+               return address (typically it uses _start) and
+               inserts a break at this address
+             - gdb then puts in EIP the address of hello_world()
+             - gdb then continues (so the helperc_CallDebugger
+               returns)
+             - call_gdbserver() function will then return the
+               control to the scheduler (using VG_MINIMAL_LONGJMP)
+               to allow the block of the new EIP
+               to be executed.
+             - hello_world code is executed.
+             - when hello_world() returns, it returns to
+               _start and encounters the break at _start.
+             - gdb then removes this break, put 0x1234 in EIP
+               and does a "step". This causes to jump from
+               _start to 0x1234, where the call to
+                helperc_CallDebugger is redone.
+             - This is all ok, the user can then give new gdb
+               commands.
 
-	However, when continue is given, address 0x1234 is to
-	be executed: gdb gives a single step, which must not
-	report again the break at 0x1234. To avoid a 2nd report
-	of the same break, the below tells that the next
-	helperc_CallDebugger call must ignore a break/stop at
-	this address.
+    However, when continue is given, address 0x1234 is to
+    be executed: gdb gives a single step, which must not
+    report again the break at 0x1234. To avoid a 2nd report
+    of the same break, the below tells that the next
+    helperc_CallDebugger call must ignore a break/stop at
+    this address.
 */
 static Addr ignore_this_break_once = 0;
 
@@ -219,10 +218,10 @@ static void add_gs_address (Addr addr, GS_Kind kind, const HChar* from)
    p->kind = kind;
    VG_(HT_add_node)(gs_addresses, p);
    /* It should be sufficient to discard a range of 1.
-	  We use 2 to ensure the below is not sensitive to the presence
-	  of thumb bit in the range of addresses to discard.
-	  No need to discard translations for Vg_VgdbFull as all
-	  instructions are in any case vgdb-instrumented. */
+      We use 2 to ensure the below is not sensitive to the presence
+      of thumb bit in the range of addresses to discard.
+      No need to discard translations for Vg_VgdbFull as all
+      instructions are in any case vgdb-instrumented. */
    if (VG_(clo_vgdb) != Vg_VgdbFull)
 	  VG_(discard_translations) (addr, 2, from);
 }
@@ -310,31 +309,31 @@ static void breakpoint (Bool insert, CORE_ADDR addr)
 		 g->kind = GS_break;
 	  }
    } else {
-	  /* delete a breakpoint at addr or downgrade its kind */
-	  if (g != NULL && g->kind == GS_break) {
-		 if (valgrind_single_stepping()) {
-			/* keep gdbserved instrumentation while single stepping */
-			g->kind = GS_jump;
-		 } else {
-			remove_gs_address (g, "m_gdbserver breakpoint remove");
-		 }
-	  } else {
-		 dlog (1, "remove break addr %p %s\n",
-			   C2v(addr), (g == NULL ?
-						   "NULL" :
-						   (g->kind == GS_jump ? "GS_jump" : "GS_break")));
-	  }
+      /* delete a breakpoint at addr or downgrade its kind */
+      if (g != NULL && g->kind == GS_break) {
+         if (valgrind_single_stepping()) {
+            /* keep gdbserved instrumentation while single stepping */
+            g->kind = GS_jump;
+         } else {
+            remove_gs_address (g, "m_gdbserver breakpoint remove");
+         }
+      } else {
+         dlog (1, "remove break addr %p %s\n",
+               C2v(addr), (g == NULL ?
+                           "NULL" :
+                           (g->kind == GS_jump ? "GS_jump" : "GS_break")));
+      }
    }
 }
 
 static Bool (*tool_watchpoint) (PointKind kind,
-								Bool insert,
-								Addr addr,
-								SizeT len) = NULL;
+                                Bool insert,
+                                Addr addr,
+                                SizeT len) = NULL;
 void VG_(needs_watchpoint) (Bool (*watchpoint) (PointKind kind,
-												Bool insert,
-												Addr addr,
-												SizeT len))
+                                                Bool insert,
+                                                Addr addr,
+                                                SizeT len))
 {
    tool_watchpoint = watchpoint;
 }
@@ -348,10 +347,10 @@ Bool VG_(gdbserver_point) (PointKind kind, Bool insert,
    Bool is_code = kind == software_breakpoint || kind == hardware_breakpoint;
 
    dlog(1, "%s %s at addr %p %s\n",
-		(insert ? "insert" : "remove"),
-		VG_(ppPointKind) (kind),
-		C2v(addr),
-		sym(addr, is_code));
+        (insert ? "insert" : "remove"),
+        VG_(ppPointKind) (kind),
+        C2v(addr),
+        sym(addr, is_code));
 
    if (is_code) {
 	  breakpoint (insert, addr);
@@ -359,41 +358,41 @@ Bool VG_(gdbserver_point) (PointKind kind, Bool insert,
    }
 
    vg_assert (kind == access_watchpoint
-			  || kind == read_watchpoint
-			  || kind == write_watchpoint);
+              || kind == read_watchpoint
+              || kind == write_watchpoint);
 
    if (tool_watchpoint == NULL)
 	  return False;
 
    res = (*tool_watchpoint) (kind, insert, addr, len);
    if (!res)
-	  return False; /* error or unsupported */
+      return False; /* error or unsupported */
 
    // Protocol says insert/remove must be idempotent.
    // So, we just ignore double insert or (supposed) double delete.
 
    g = lookup_gs_watch (addr, len, kind, &g_ix);
    if (insert) {
-	  if (g == NULL) {
-		 g = VG_(malloc)("gdbserver_point watchpoint", sizeof(GS_Watch));
-		 g->addr = addr;
-		 g->len  = len;
-		 g->kind = kind;
-		 VG_(addToXA)(gs_watches, &g);
-	  } else {
-		 dlog(1,
-			  "VG_(gdbserver_point) addr %p len %d kind %s already inserted\n",
-			   C2v(addr), len, VG_(ppPointKind) (kind));
-	  }
+      if (g == NULL) {
+         g = VG_(malloc)("gdbserver_point watchpoint", sizeof(GS_Watch));
+         g->addr = addr;
+         g->len  = len;
+         g->kind = kind;
+         VG_(addToXA)(gs_watches, &g);
+      } else {
+         dlog(1,
+              "VG_(gdbserver_point) addr %p len %d kind %s already inserted\n",
+               C2v(addr), len, VG_(ppPointKind) (kind));
+      }
    } else {
-	  if (g != NULL) {
-		 VG_(removeIndexXA) (gs_watches, g_ix);
-		 VG_(free) (g);
-	  } else {
-		 dlog(1,
-			  "VG_(gdbserver_point) addr %p len %d kind %s already deleted?\n",
-			  C2v(addr), len, VG_(ppPointKind) (kind));
-	  }
+      if (g != NULL) {
+         VG_(removeIndexXA) (gs_watches, g_ix);
+         VG_(free) (g);
+      } else {
+         dlog(1,
+              "VG_(gdbserver_point) addr %p len %d kind %s already deleted?\n",
+              C2v(addr), len, VG_(ppPointKind) (kind));
+      }
    }
    return True;
 }
@@ -423,8 +422,8 @@ Bool VG_(is_watched)(PointKind kind, Addr addr, Int szB)
    Addr to = addr + szB; // semi-open interval [addr, to[
 
    vg_assert (kind == access_watchpoint
-			  || kind == read_watchpoint
-			  || kind == write_watchpoint);
+              || kind == read_watchpoint
+              || kind == write_watchpoint);
    dlog(1, "tid %u VG_(is_watched) %s addr %p szB %d\n",
 		tid, VG_(ppPointKind) (kind), C2v(addr), szB);
 
@@ -508,16 +507,16 @@ static VgVgdb VG_(gdbserver_instrumentation_needed) (const VexGuestExtents* vge)
    */
    VG_(HT_ResetIter) (gs_addresses);
    while ((g = VG_(HT_Next) (gs_addresses))) {
-	  for (e = 0; e < vge->n_used; e++) {
-		 if (g->addr >= HT_addr(vge->base[e])
-			 && g->addr < HT_addr(vge->base[e]) + vge->len[e]) {
-			dlog(2,
-				 "gdbserver_instrumentation_needed %p %s reason %s\n",
-				 C2v(g->addr), sym(g->addr, /* is_code */ True),
-				 (g->kind == GS_jump ? "GS_jump" : "GS_break"));
-			return Vg_VgdbYes;
-		 }
-	  }
+      for (e = 0; e < vge->n_used; e++) {
+         if (g->addr >= HT_addr(vge->base[e])
+             && g->addr < HT_addr(vge->base[e]) + vge->len[e]) {
+            dlog(2,
+                 "gdbserver_instrumentation_needed %p %s reason %s\n",
+                 C2v(g->addr), sym(g->addr, /* is_code */ True),
+                 (g->kind == GS_jump ? "GS_jump" : "GS_break"));
+            return Vg_VgdbYes;
+         }
+      }
    }
 
    if (VG_(clo_vgdb) == Vg_VgdbFull) {
@@ -542,8 +541,8 @@ static void clear_gdbserved_addresses(Bool clear_only_jumps)
    int i;
 
    dlog(1,
-		"clear_gdbserved_addresses: scanning hash table nodes %u\n",
-		VG_(HT_count_nodes) (gs_addresses));
+        "clear_gdbserved_addresses: scanning hash table nodes %u\n",
+        VG_(HT_count_nodes) (gs_addresses));
    ag = (GS_Address**) VG_(HT_to_array) (gs_addresses, &n_elems);
    for (i = 0; i < n_elems; i++)
 	  if (!clear_only_jumps || ag[i]->kind == GS_jump)
@@ -559,8 +558,8 @@ static void clear_watched_addresses(void)
    Word i;
 
    dlog(1,
-		"clear_watched_addresses: %ld elements\n",
-		n_elems);
+        "clear_watched_addresses: %ld elements\n",
+        n_elems);
 
    for (i = 0; i < n_elems; i++) {
 	  g = index_gs_watches(i);
@@ -603,11 +602,11 @@ void VG_(gdbserver_prerun_action) (ThreadId tid)
    // Using VG_(clo_vgdb_error) allows the user to control if gdbserver
    // stops after a fork.
    if (VG_(clo_vgdb_error) == 0
-	   || VgdbStopAtiS(VgdbStopAt_Startup, VG_(clo_vgdb_stop_at))) {
-	  /* The below call allows gdb to attach at startup
-		 before the first guest instruction is executed. */
-	  VG_(umsg)("(action at startup) vgdb me ... \n");
-	  VG_(gdbserver)(tid);
+       || VgdbStopAtiS(VgdbStopAt_Startup, VG_(clo_vgdb_stop_at))) {
+      /* The below call allows gdb to attach at startup
+         before the first guest instruction is executed. */
+      VG_(umsg)("(action at startup) vgdb me ... \n");
+      VG_(gdbserver)(tid);
    } else {
 	  /* User has activated gdbserver => initialize now the FIFOs
 		 to let vgdb/gdb contact us either via the scheduler poll
@@ -667,11 +666,11 @@ static void call_gdbserver ( ThreadId tid , CallReason reason)
    Addr saved_pc;
 
    dlog(1,
-		"entering call_gdbserver %s ... pid %d tid %u status %s "
-		"sched_jmpbuf_valid %d\n",
-		ppCallReason (reason),
-		VG_(getpid) (), tid, VG_(name_of_ThreadStatus)(tst->status),
-		tst->sched_jmpbuf_valid);
+        "entering call_gdbserver %s ... pid %d tid %u status %s "
+        "sched_jmpbuf_valid %d\n",
+        ppCallReason (reason),
+        VG_(getpid) (), tid, VG_(name_of_ThreadStatus)(tst->status),
+        tst->sched_jmpbuf_valid);
 
    /* If we are about to die, then just run server_main() once to get
 	  the resume reply out and return immediately because most of the state
@@ -726,8 +725,8 @@ static void call_gdbserver ( ThreadId tid , CallReason reason)
 
    ignore_this_break_once = valgrind_get_ignore_break_once();
    if (ignore_this_break_once)
-	  dlog(1, "!!! will ignore_this_break_once %s\n",
-		   sym(ignore_this_break_once, /* is_code */ True));
+      dlog(1, "!!! will ignore_this_break_once %s\n",
+           sym(ignore_this_break_once, /* is_code */ True));
 
 
    if (valgrind_single_stepping()) {
@@ -785,9 +784,9 @@ void VG_(gdbserver) ( ThreadId tid )
 {
    busy++;
    /* called by the rest of valgrind for
-		 --vgdb-error=0 reason
-	  or by scheduler "poll/debug/interrupt" reason
-	  or to terminate. */
+         --vgdb-error=0 reason
+      or by scheduler "poll/debug/interrupt" reason
+      or to terminate. */
    if (tid != 0) {
 	  call_gdbserver (tid, core_reason);
    } else {
@@ -840,13 +839,13 @@ static void give_control_back_to_vgdb(void)
 	  vg_assert2(0, "SIGSTOP for vgdb could not be generated\n");
 
    /* If we arrive here, it means a call was pushed on the stack
-	  by vgdb, but during this call, vgdb and/or connection
-	  died. Alternatively, it is a bug in the vgdb<=>Valgrind gdbserver
-	  ptrace handling. */
+      by vgdb, but during this call, vgdb and/or connection
+      died. Alternatively, it is a bug in the vgdb<=>Valgrind gdbserver
+      ptrace handling. */
    vg_assert2(0,
-			  "vgdb did not took control. Did you kill vgdb ?\n"
-			  "busy %d vgdb_interrupted_tid %u\n",
-			  busy, vgdb_interrupted_tid);
+              "vgdb did not took control. Did you kill vgdb ?\n"
+              "busy %d vgdb_interrupted_tid %u\n",
+              busy, vgdb_interrupted_tid);
 #else /* defined(VGO_solaris) */
    /* On Solaris, this code is run within the context of an agent thread
 	  (see vgdb-invoker-solaris.c and "PCAGENT" control message in
@@ -864,7 +863,7 @@ static void give_control_back_to_vgdb(void)
 void VG_(invoke_gdbserver) ( int check )
 {
    /* ******* Avoid non-reentrant function call from here .....
-	  till the ".... till here" below. */
+      till the ".... till here" below. */
 
    /* We need to determine the state of the various threads to decide
 	  if we directly invoke gdbserver or if we rather indicate to the
@@ -890,28 +889,28 @@ void VG_(invoke_gdbserver) ( int check )
 	  we invoke gdbserver. Otherwise, we tell the scheduler to wake up
 	  asap. */
    for (n_tid = 1; n_tid < VG_N_THREADS; n_tid++) {
-	  switch (VG_(threads)[n_tid].status) {
-	  /* interruptible states. */
-	  case VgTs_WaitSys:
-	  case VgTs_Yielding:
-		 if (vgdb_interrupted_tid_local == 0)
-			vgdb_interrupted_tid_local = n_tid;
-		 break;
+      switch (VG_(threads)[n_tid].status) {
+      /* interruptible states. */
+      case VgTs_WaitSys:
+      case VgTs_Yielding:
+         if (vgdb_interrupted_tid_local == 0)
+            vgdb_interrupted_tid_local = n_tid;
+         break;
 
-	  case VgTs_Empty:
-	  case VgTs_Zombie:
-		 break;
+      case VgTs_Empty:
+      case VgTs_Zombie:
+         break;
 
-	  /* non interruptible states. */
-	  case VgTs_Init:
-	  case VgTs_Runnable:
-		 interrupts_non_interruptible++;
-		 VG_(force_vgdb_poll) ();
-		 give_control_back_to_vgdb();
-		 /* If give_control_back_to_vgdb returns in an non interruptable
-		state something went horribly wrong, fallthrough to vg_assert. */
-	  default:             vg_assert(0);
-	  }
+      /* non interruptible states. */
+      case VgTs_Init:
+      case VgTs_Runnable:
+         interrupts_non_interruptible++;
+         VG_(force_vgdb_poll) ();
+         give_control_back_to_vgdb();
+         /* If give_control_back_to_vgdb returns in an non interruptable
+	    state something went horribly wrong, fallthrough to vg_assert. */
+      default:             vg_assert(0);
+      }
    }
 
    vgdb_interrupted_tid = vgdb_interrupted_tid_local;
@@ -942,10 +941,10 @@ Bool VG_(gdbserver_activity) (ThreadId tid)
    case 0: ret = False; break;
    case 1: ret = True; break;
    case 2:
-	  remote_finish(reset_after_error);
-	  call_gdbserver (tid, init_reason);
-	  ret = False;
-	  break;
+      remote_finish(reset_after_error);
+      call_gdbserver (tid, init_reason);
+      ret = False;
+      break;
    default: vg_assert (0);
    }
    busy--;
@@ -956,12 +955,12 @@ static void dlog_signal (const HChar *who, const vki_siginfo_t *info,
 						 ThreadId tid)
 {
    dlog(1, "VG core calling %s "
-		"vki_nr %d %s gdb_nr %u %s tid %u\n",
-		who,
-		info->si_signo, VG_(signame)(info->si_signo),
-		target_signal_from_host (info->si_signo),
-		target_signal_to_name(target_signal_from_host (info->si_signo)),
-		tid);
+        "vki_nr %d %s gdb_nr %u %s tid %u\n",
+        who,
+        info->si_signo, VG_(signame)(info->si_signo),
+        target_signal_from_host (info->si_signo),
+        target_signal_to_name(target_signal_from_host (info->si_signo)),
+        tid);
 
 }
 
@@ -1101,15 +1100,15 @@ void VG_(helperc_CallDebugger) ( HWord iaddr )
 	  return;
 
    if (valgrind_single_stepping() ||
-	   ((g = VG_(HT_lookup) (gs_addresses, (UWord)HT_addr(iaddr))) &&
-		(g->kind == GS_break))) {
-	  if (iaddr == HT_addr(ignore_this_break_once)) {
-		 dlog(1, "ignoring ignore_this_break_once %s\n",
-			  sym(ignore_this_break_once, /* is_code */ True));
-		 ignore_this_break_once = 0;
-	  } else {
-		 call_gdbserver (VG_(get_running_tid)(), break_reason);
-	  }
+       ((g = VG_(HT_lookup) (gs_addresses, (UWord)HT_addr(iaddr))) &&
+        (g->kind == GS_break))) {
+      if (iaddr == HT_addr(ignore_this_break_once)) {
+         dlog(1, "ignoring ignore_this_break_once %s\n",
+              sym(ignore_this_break_once, /* is_code */ True));
+         ignore_this_break_once = 0;
+      } else {
+         call_gdbserver (VG_(get_running_tid)(), break_reason);
+      }
    }
 }
 
@@ -1152,11 +1151,11 @@ void VG_(helperc_invalidate_if_not_gdbserved) ( Addr addr )
 }
 
 static void VG_(add_stmt_call_invalidate_if_not_gdbserved)
-	 ( IRSB* sb_in,
-	   const VexGuestLayout* layout,
-	   const VexGuestExtents* vge,
-	   IRTemp jmp,
-	   IRSB* irsb)
+     ( IRSB* sb_in,
+       const VexGuestLayout* layout,
+       const VexGuestExtents* vge,
+       IRTemp jmp,
+       IRSB* irsb)
 {
 
    void*    fn;
@@ -1171,7 +1170,7 @@ static void VG_(add_stmt_call_invalidate_if_not_gdbserved)
    nargs = 1;
 
    di = unsafeIRDirty_0_N( nargs/*regparms*/, nm,
-						   VG_(fnptr_to_fnentry)( fn ), args );
+                           VG_(fnptr_to_fnentry)( fn ), args );
 
    di->nFxState = 0;
 
@@ -1190,13 +1189,13 @@ static void VG_(add_stmt_call_invalidate_if_not_gdbserved)
    of other breaks in the same sb_in while the process is stopped), a
    debugger statement will be inserted for all instructions of a block. */
 static void VG_(add_stmt_call_gdbserver)
-	 (IRSB* sb_in,                /* block being translated */
-	  const VexGuestLayout* layout,
-	  const VexGuestExtents* vge,
-	  IRType gWordTy, IRType hWordTy,
-	  Addr  iaddr,                /* Addr of instruction being instrumented */
-	  UChar delta,                /* delta to add to iaddr to obtain IP */
-	  IRSB* irsb)                 /* irsb block to which call is added */
+     (IRSB* sb_in,                /* block being translated */
+      const VexGuestLayout* layout,
+      const VexGuestExtents* vge,
+      IRType gWordTy, IRType hWordTy,
+      Addr  iaddr,                /* Addr of instruction being instrumented */
+      UChar delta,                /* delta to add to iaddr to obtain IP */
+      IRSB* irsb)                 /* irsb block to which call is added */
 {
    void*    fn;
    const HChar*   nm;
@@ -1230,16 +1229,16 @@ static void VG_(add_stmt_call_gdbserver)
    nargs = 1;
 
    di = unsafeIRDirty_0_N( nargs/*regparms*/, nm,
-						   VG_(fnptr_to_fnentry)( fn ), args );
+                           VG_(fnptr_to_fnentry)( fn ), args );
 
    /* Note: in fact, a debugger call can read whatever register
-	  or memory. It can also write whatever register or memory.
-	  So, in theory, we have to indicate the whole universe
-	  can be read and modified. It is however not critical
-	  to indicate precisely what is being read/written
-	  as such indications are needed for tool error detection
-	  and we do not want to have errors being detected for
-	  gdb interactions. */
+      or memory. It can also write whatever register or memory.
+      So, in theory, we have to indicate the whole universe
+      can be read and modified. It is however not critical
+      to indicate precisely what is being read/written
+      as such indications are needed for tool error detection
+      and we do not want to have errors being detected for
+      gdb interactions. */
 
    di->nFxState = 2;
    di->fxState[0].fx        = Ifx_Read;
@@ -1272,9 +1271,9 @@ static void VG_(add_stmt_call_invalidate_exit_target_if_not_gdbserved)
 	IRSB* irsb)
 {
    if (sb_in->next->tag == Iex_Const) {
-	 VG_(invalidate_if_not_gdbserved) (gWordTy == Ity_I64 ?
-									   sb_in->next->Iex.Const.con->Ico.U64
-									   : sb_in->next->Iex.Const.con->Ico.U32);
+     VG_(invalidate_if_not_gdbserved) (gWordTy == Ity_I64 ?
+                                       sb_in->next->Iex.Const.con->Ico.U64
+                                       : sb_in->next->Iex.Const.con->Ico.U32);
    } else if (sb_in->next->tag == Iex_RdTmp) {
 	 VG_(add_stmt_call_invalidate_if_not_gdbserved)
 	   (sb_in, layout, vge, sb_in->next->Iex.RdTmp.tmp, irsb);
@@ -1301,40 +1300,40 @@ IRSB* VG_(instrument_for_gdbserver_if_needed)
    sb_out = deepCopyIRSBExceptStmts(sb_in);
 
    for (i = 0; i < sb_in->stmts_used; i++) {
-	  IRStmt* st = sb_in->stmts[i];
+      IRStmt* st = sb_in->stmts[i];
 
-	  if (!st || st->tag == Ist_NoOp) continue;
+      if (!st || st->tag == Ist_NoOp) continue;
 
-	  if (st->tag == Ist_Exit && instr_needed == Vg_VgdbYes) {
-		VG_(invalidate_if_not_gdbserved)
-		  (hWordTy == Ity_I64 ?
-		   st->Ist.Exit.dst->Ico.U64 :
-		   st->Ist.Exit.dst->Ico.U32);
-	  }
-	  addStmtToIRSB( sb_out, st );
-	  if (st->tag == Ist_IMark) {
-		 /* For an Ist_Mark, add a call to debugger. */
-		 switch (instr_needed) {
-		 case Vg_VgdbNo: vg_assert (0);
-		 case Vg_VgdbYes:
-		 case Vg_VgdbFull:
-			VG_(add_stmt_call_gdbserver) ( sb_in, layout, vge,
-										   gWordTy, hWordTy,
-										   st->Ist.IMark.addr,
-										   st->Ist.IMark.delta,
-										   sb_out);
-			/* There is an optimisation possible here for Vg_VgdbFull:
-			   Put a guard ensuring we only call gdbserver if 'FullCallNeeded'.
-			   FullCallNeeded would be set to 1 we have just switched on
-			   Single Stepping or have just encountered a watchpoint
-			   or have just inserted a breakpoint.
-			   (as gdb by default removes and re-insert breakpoints), we would
-			   need to also implement the notion of 'breakpoint pending removal'
-			   to remove at the next 'continue/step' packet. */
-			break;
-		 default: vg_assert (0);
-		 }
-	  }
+      if (st->tag == Ist_Exit && instr_needed == Vg_VgdbYes) {
+        VG_(invalidate_if_not_gdbserved)
+          (hWordTy == Ity_I64 ?
+           st->Ist.Exit.dst->Ico.U64 :
+           st->Ist.Exit.dst->Ico.U32);
+      }
+      addStmtToIRSB( sb_out, st );
+      if (st->tag == Ist_IMark) {
+         /* For an Ist_Mark, add a call to debugger. */
+         switch (instr_needed) {
+         case Vg_VgdbNo: vg_assert (0);
+         case Vg_VgdbYes:
+         case Vg_VgdbFull:
+            VG_(add_stmt_call_gdbserver) ( sb_in, layout, vge,
+                                           gWordTy, hWordTy,
+                                           st->Ist.IMark.addr,
+                                           st->Ist.IMark.delta,
+                                           sb_out);
+            /* There is an optimisation possible here for Vg_VgdbFull:
+               Put a guard ensuring we only call gdbserver if 'FullCallNeeded'.
+               FullCallNeeded would be set to 1 we have just switched on
+               Single Stepping or have just encountered a watchpoint
+               or have just inserted a breakpoint.
+               (as gdb by default removes and re-insert breakpoints), we would
+               need to also implement the notion of 'breakpoint pending removal'
+               to remove at the next 'continue/step' packet. */
+            break;
+         default: vg_assert (0);
+         }
+      }
    }
 
    if (instr_needed == Vg_VgdbYes) {
@@ -1412,62 +1411,62 @@ Int VG_(keyword_id) (const HChar* keywords, const HChar* input_word,
    }
 
    for (pass = 0; pass < 2; pass++) {
-	  VG_(strcpy) (kwds, keywords);
-	  if (pass == 1)
-		 VG_(gdb_printf) ("%s can match",
-						  (il == 0 ? "<empty string>" : iw));
-	  for (kw = VG_(strtok_r) (kwds, " ", &kwdssaveptr);
-		   kw != NULL;
-		   kw = VG_(strtok_r) (NULL, " ", &kwdssaveptr)) {
-		 kwl = VG_(strlen) (kw);
-		 kpos++;
+      VG_(strcpy) (kwds, keywords);
+      if (pass == 1)
+         VG_(gdb_printf) ("%s can match",
+                          (il == 0 ? "<empty string>" : iw));
+      for (kw = VG_(strtok_r) (kwds, " ", &kwdssaveptr);
+           kw != NULL;
+           kw = VG_(strtok_r) (NULL, " ", &kwdssaveptr)) {
+         kwl = VG_(strlen) (kw);
+         kpos++;
 
-		 if (il > kwl) {
-			; /* ishtar !~ is */
-		 } else if (il == kwl) {
-			if (VG_(strcmp) (kw, iw) == 0) {
-			   /* exact match */
-			   if (pass == 1)
-				  VG_(gdb_printf) (" %s", kw);
-			   if (full_match != -1)
-				  pass1needed++;
-			   full_match = kpos;
-			}
-		 } else {
-			/* il < kwl */
-			if (VG_(strncmp) (iw, kw, il) == 0) {
-			   /* partial match */
-			   if (pass == 1)
-				  VG_(gdb_printf) (" %s", kw);
-			   if (partial_match != -1)
-				  pass1needed++;
-			   partial_match = kpos;
-			}
-		 }
-	  }
-	  /* check for success or for no match at all */
-	  if (pass1needed == 0) {
-		 if (full_match != -1) {
-			return full_match;
-		 } else {
-			if (report == kwd_report_all && partial_match == -1) {
-			   VG_(gdb_printf) ("%s does not match any of '%s'\n",
-								iw, keywords);
-			}
-			return partial_match;
-		 }
-	  }
+         if (il > kwl) {
+            ; /* ishtar !~ is */
+         } else if (il == kwl) {
+            if (VG_(strcmp) (kw, iw) == 0) {
+               /* exact match */
+               if (pass == 1)
+                  VG_(gdb_printf) (" %s", kw);
+               if (full_match != -1)
+                  pass1needed++;
+               full_match = kpos;
+            }
+         } else {
+            /* il < kwl */
+            if (VG_(strncmp) (iw, kw, il) == 0) {
+               /* partial match */
+               if (pass == 1)
+                  VG_(gdb_printf) (" %s", kw);
+               if (partial_match != -1)
+                  pass1needed++;
+               partial_match = kpos;
+            }
+         }
+      }
+      /* check for success or for no match at all */
+      if (pass1needed == 0) {
+         if (full_match != -1) {
+            return full_match;
+         } else {
+            if (report == kwd_report_all && partial_match == -1) {
+               VG_(gdb_printf) ("%s does not match any of '%s'\n",
+                                iw, keywords);
+            }
+            return partial_match;
+         }
+      }
 
-	  /* here we have duplicated match error */
-	  if (pass == 1 || report == kwd_report_none) {
-		 if (report != kwd_report_none) {
-			VG_(gdb_printf) ("\n");
-		 }
-		 if (partial_match != -1 || full_match != -1)
-			return -2;
-		 else
-			return -1;
-	  }
+      /* here we have duplicated match error */
+      if (pass == 1 || report == kwd_report_none) {
+         if (report != kwd_report_none) {
+            VG_(gdb_printf) ("\n");
+         }
+         if (partial_match != -1 || full_match != -1)
+            return -2;
+         else
+            return -1;
+      }
    }
    /* UNREACHED */
    vg_assert (0);
@@ -1492,8 +1491,8 @@ static Bool is_zero_b (const HChar *s)
 }
 
 Bool VG_(strtok_get_address_and_size) (Addr* address,
-									   SizeT* szB,
-									   HChar **ssaveptr)
+                                       SizeT* szB,
+                                       HChar **ssaveptr)
 {
    HChar* wa;
    HChar* ws;
@@ -1534,11 +1533,11 @@ Bool VG_(strtok_get_address_and_size) (Addr* address,
    }
 
    if (ws != NULL && *endptr != '\0') {
-	  VG_(gdb_printf) ("malformed integer, expecting "
-					   "hex 0x..... or dec ...... or binary 0b.....\n");
-	  *address = (Addr) 0;
-	  *szB = 0;
-	  return False;
+      VG_(gdb_printf) ("malformed integer, expecting "
+                       "hex 0x..... or dec ...... or binary 0b.....\n");
+      *address = (Addr) 0;
+      *szB = 0;
+      return False;
    }
 
    return True;
@@ -1547,28 +1546,28 @@ Bool VG_(strtok_get_address_and_size) (Addr* address,
 void VG_(gdbserver_status_output)(void)
 {
    const int nr_gdbserved_addresses
-	  = (gs_addresses == NULL ? -1 : VG_(HT_count_nodes) (gs_addresses));
+      = (gs_addresses == NULL ? -1 : VG_(HT_count_nodes) (gs_addresses));
    const int nr_watchpoints
 	  = (gs_watches == NULL ? -1 : (int) VG_(sizeXA) (gs_watches));
    remote_utils_output_status();
    VG_(umsg)
-	  ("nr of calls to gdbserver: %d\n"
-	   "single stepping %d\n"
-	   "interrupts intr_tid %u gs_non_busy %d gs_busy %d tid_non_intr %d\n"
-	   "gdbserved addresses %d (-1 = not initialized)\n"
-	   "watchpoints %d (-1 = not initialized)\n"
-	   "vgdb-error %d\n"
-	   "hostvisibility %s\n",
-	   gdbserver_called,
-	   valgrind_single_stepping(),
+      ("nr of calls to gdbserver: %d\n"
+       "single stepping %d\n"
+       "interrupts intr_tid %u gs_non_busy %d gs_busy %d tid_non_intr %d\n"
+       "gdbserved addresses %d (-1 = not initialized)\n"
+       "watchpoints %d (-1 = not initialized)\n"
+       "vgdb-error %d\n"
+       "hostvisibility %s\n",
+       gdbserver_called,
+       valgrind_single_stepping(),
 
-	   vgdb_interrupted_tid,
-	   interrupts_non_busy,
-	   interrupts_while_busy,
-	   interrupts_non_interruptible,
+       vgdb_interrupted_tid,
+       interrupts_non_busy,
+       interrupts_while_busy,
+       interrupts_non_interruptible,
 
-	   nr_gdbserved_addresses,
-	   nr_watchpoints,
-	   VG_(clo_vgdb_error),
-	   hostvisibility ? "yes" : "no");
+       nr_gdbserved_addresses,
+       nr_watchpoints,
+       VG_(clo_vgdb_error),
+       hostvisibility ? "yes" : "no");
 }

@@ -1548,10 +1548,10 @@ static HChar* readlink_path (const HChar *path)
    UInt   tries = 6;
 
    while (tries > 0) {
-	  SysRes res;
+      SysRes res;
 #if defined(VGP_arm64_linux) || defined(VGP_nanomips_linux)
-	  res = VG_(do_syscall4)(__NR_readlinkat, VKI_AT_FDCWD,
-											  (UWord)path, (UWord)buf, bufsiz);
+      res = VG_(do_syscall4)(__NR_readlinkat, VKI_AT_FDCWD,
+                                              (UWord)path, (UWord)buf, bufsiz);
 #elif defined(VGO_linux) || defined(VGO_darwin)
 	  res = VG_(do_syscall3)(__NR_readlink, (UWord)path, (UWord)buf, bufsiz);
 #elif defined(VGO_solaris)
@@ -2388,21 +2388,21 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
 
 	  /* PLT is different on different platforms, it seems. */
 #     if defined(VGP_x86_linux) || defined(VGP_amd64_linux) \
-		 || defined(VGP_arm_linux) || defined (VGP_s390x_linux) \
-		 || defined(VGP_mips32_linux) || defined(VGP_mips64_linux) \
-		 || defined(VGP_arm64_linux) || defined(VGP_nanomips_linux) \
-		 || defined(VGP_x86_solaris) || defined(VGP_amd64_solaris)
-	  /* Accept .plt where mapped as rx (code) */
-	  if (0 == VG_(strcmp)(name, ".plt")) {
-		 if (inrx && !di->plt_present) {
-			di->plt_present = True;
-			di->plt_avma = svma + inrx->bias;
-			di->plt_size = size;
-			TRACE_SYMTAB("acquiring .plt avma = %#lx\n", di->plt_avma);
-		 } else {
-			BAD(".plt");
-		 }
-	  }
+         || defined(VGP_arm_linux) || defined (VGP_s390x_linux) \
+         || defined(VGP_mips32_linux) || defined(VGP_mips64_linux) \
+         || defined(VGP_arm64_linux) || defined(VGP_nanomips_linux) \
+         || defined(VGP_x86_solaris) || defined(VGP_amd64_solaris)
+      /* Accept .plt where mapped as rx (code) */
+      if (0 == VG_(strcmp)(name, ".plt")) {
+         if (inrx && !di->plt_present) {
+            di->plt_present = True;
+            di->plt_avma = svma + inrx->bias;
+            di->plt_size = size;
+            TRACE_SYMTAB("acquiring .plt avma = %#lx\n", di->plt_avma);
+         } else {
+            BAD(".plt");
+         }
+      }
 #     elif defined(VGP_ppc32_linux)
 	  /* Accept .plt where mapped as rw (data) */
 	  if (0 == VG_(strcmp)(name, ".plt")) {

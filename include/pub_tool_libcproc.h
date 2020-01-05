@@ -108,7 +108,7 @@ extern Int  VG_(gettimeofday)(struct vki_timeval *tv, struct vki_timezone *tz);
 extern void VG_(clock_gettime)(struct vki_timespec *ts, vki_clockid_t clk_id);
 #  elif defined(VGO_darwin)
   /* It seems clock_gettime is only available on recent Darwin versions.
-	 For the moment, let's assume it is not available.  */
+     For the moment, let's assume it is not available.  */
 #  else
 #    error "Unknown OS"
 #  endif

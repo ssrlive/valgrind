@@ -552,16 +552,16 @@ void getSyscallArgsFromGuestState ( /*OUT*/SyscallArgs*       canonical,
 	  canonical->arg7  = *((UInt*) (gst->guest_r29 + 24));    // 24(guest_SP)
 	  canonical->arg8 = 0;
    } else {
-	  // Fixme hack handle syscall()
-	  canonical->sysno = gst->guest_r4;    // a0
-	  canonical->arg1  = gst->guest_r5;    // a1
-	  canonical->arg2  = gst->guest_r6;    // a2
-	  canonical->arg3  = gst->guest_r7;    // a3
-	  canonical->arg4  = *((UInt*) (gst->guest_r29 + 16));    // 16(guest_SP/sp)
-	  canonical->arg5  = *((UInt*) (gst->guest_r29 + 20));    // 20(guest_SP/sp)
-	  canonical->arg6  = *((UInt*) (gst->guest_r29 + 24));    // 24(guest_SP/sp)
-	  canonical->arg7  = *((UInt*) (gst->guest_r29 + 28));    // 28(guest_SP/sp)
-	  canonical->arg8 = __NR_syscall;
+      // Fixme hack handle syscall()
+      canonical->sysno = gst->guest_r4;    // a0
+      canonical->arg1  = gst->guest_r5;    // a1
+      canonical->arg2  = gst->guest_r6;    // a2
+      canonical->arg3  = gst->guest_r7;    // a3
+      canonical->arg4  = *((UInt*) (gst->guest_r29 + 16));    // 16(guest_SP/sp)
+      canonical->arg5  = *((UInt*) (gst->guest_r29 + 20));    // 20(guest_SP/sp)
+      canonical->arg6  = *((UInt*) (gst->guest_r29 + 24));    // 24(guest_SP/sp)
+      canonical->arg7  = *((UInt*) (gst->guest_r29 + 28));    // 28(guest_SP/sp)
+      canonical->arg8 = __NR_syscall;
    }
 
 #elif defined(VGP_mips64_linux)
@@ -897,25 +897,25 @@ void putSyscallArgsIntoGuestState ( /*IN*/ SyscallArgs*       canonical,
 #elif defined(VGP_mips32_linux)
    VexGuestMIPS32State* gst = (VexGuestMIPS32State*)gst_vanilla;
    if (canonical->arg8 != __NR_syscall) {
-	  gst->guest_r2 = canonical->sysno;
-	  gst->guest_r4 = canonical->arg1;
-	  gst->guest_r5 = canonical->arg2;
-	  gst->guest_r6 = canonical->arg3;
-	  gst->guest_r7 = canonical->arg4;
-	  *((UInt*) (gst->guest_r29 + 16)) = canonical->arg5; // 16(guest_GPR29/sp)
-	  *((UInt*) (gst->guest_r29 + 20)) = canonical->arg6; // 20(sp)
-	  *((UInt*) (gst->guest_r29 + 24)) = canonical->arg7; // 24(sp)
+      gst->guest_r2 = canonical->sysno;
+      gst->guest_r4 = canonical->arg1;
+      gst->guest_r5 = canonical->arg2;
+      gst->guest_r6 = canonical->arg3;
+      gst->guest_r7 = canonical->arg4;
+      *((UInt*) (gst->guest_r29 + 16)) = canonical->arg5; // 16(guest_GPR29/sp)
+      *((UInt*) (gst->guest_r29 + 20)) = canonical->arg6; // 20(sp)
+      *((UInt*) (gst->guest_r29 + 24)) = canonical->arg7; // 24(sp)
    } else {
-	  canonical->arg8 = 0;
-	  gst->guest_r2 = __NR_syscall;
-	  gst->guest_r4 = canonical->sysno;
-	  gst->guest_r5 = canonical->arg1;
-	  gst->guest_r6 = canonical->arg2;
-	  gst->guest_r7 = canonical->arg3;
-	  *((UInt*) (gst->guest_r29 + 16)) = canonical->arg4; // 16(guest_GPR29/sp)
-	  *((UInt*) (gst->guest_r29 + 20)) = canonical->arg5; // 20(sp)
-	  *((UInt*) (gst->guest_r29 + 24)) = canonical->arg6; // 24(sp)
-	  *((UInt*) (gst->guest_r29 + 28)) = canonical->arg7; // 28(sp)
+      canonical->arg8 = 0;
+      gst->guest_r2 = __NR_syscall;
+      gst->guest_r4 = canonical->sysno;
+      gst->guest_r5 = canonical->arg1;
+      gst->guest_r6 = canonical->arg2;
+      gst->guest_r7 = canonical->arg3;
+      *((UInt*) (gst->guest_r29 + 16)) = canonical->arg4; // 16(guest_GPR29/sp)
+      *((UInt*) (gst->guest_r29 + 20)) = canonical->arg5; // 20(sp)
+      *((UInt*) (gst->guest_r29 + 24)) = canonical->arg6; // 24(sp)
+      *((UInt*) (gst->guest_r29 + 28)) = canonical->arg7; // 28(sp)
    }
 
 #elif defined(VGP_nanomips_linux)
@@ -1039,8 +1039,7 @@ void getSyscallStatusFromGuestState ( /*OUT*/SyscallStatus*     canonical,
 #  elif defined(VGP_nanomips_linux)
    VexGuestMIPS32State* gst = (VexGuestMIPS32State*)gst_vanilla;
    RegWord  a0 = gst->guest_r4;    // a0
-   RegWord  a1 = gst->guest_r5;    // a1
-   canonical->sres = VG_(mk_SysRes_nanomips_linux)(a0, a1);
+   canonical->sres = VG_(mk_SysRes_nanomips_linux)(a0);
    canonical->what = SsComplete;
 
 #  elif defined(VGP_x86_darwin)
@@ -1353,6 +1352,13 @@ void putSyscallStatusIntoGuestState ( /*IN*/ ThreadId tid,
    VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
 			 OFFSET_mips32_r5, sizeof(UWord) );
 
+#  elif defined(VGP_nanomips_linux)
+   VexGuestMIPS32State* gst = (VexGuestMIPS32State*)gst_vanilla;
+   vg_assert(canonical->what == SsComplete);
+   gst->guest_r4 = canonical->sres._val;
+   VG_TRACK( post_reg_write, Vg_CoreSysCall, tid,
+             OFFSET_mips32_r4, sizeof(UWord) );
+
 #  elif defined(VGP_x86_solaris)
    VexGuestX86State* gst = (VexGuestX86State*)gst_vanilla;
    SysRes sres = canonical->sres;
@@ -1509,6 +1515,7 @@ void getSyscallArgLayout ( /*OUT*/SyscallArgLayout* layout )
    layout->o_arg6   = OFFSET_mips32_r9;
    layout->uu_arg7  = -1; /* impossible value */
    layout->uu_arg8  = -1; /* impossible value */
+
 #elif defined(VGP_mips64_linux)
    layout->o_sysno  = OFFSET_mips64_r2;
    layout->o_arg1   = OFFSET_mips64_r4;
@@ -2144,7 +2151,7 @@ void VG_(post_syscall) (ThreadId tid)
 
    getSyscallStatusFromGuestState( &test_status, &tst->arch.vex );
    if (!(sci->flags & SfNoWriteResult)) {
-	  vg_assert(eq_SyscallStatus( sysno, &sci->status, &test_status ));
+      vg_assert(eq_SyscallStatus( sysno, &sci->status, &test_status ));
    }
    /* Failure of the above assertion on Darwin can indicate a problem
 	  in the syscall wrappers that pre-fail or pre-succeed the
@@ -2512,6 +2519,27 @@ void ML_(fixup_guest_state_to_restart_syscall) ( ThreadArchState* arch )
 #     endif
    }
 
+#elif defined(VGP_nanomips_linux)
+   {
+      /* Make sure our caller is actually sane, and we're really backing
+         back over a syscall.
+      */
+      arch->vex.guest_PC -= 2;
+      /* PC has to be 16-bit aligned. */
+      vg_assert((arch->vex.guest_PC & 1) == 0);
+
+      UShort *p = ASSUME_ALIGNED(UShort *, (Addr)(arch->vex.guest_PC));
+
+      if (((*p) & 0xFFFD) != 0x1008) {
+         if (((*(p - 1)) & 0xFFFD) != 0x0008) {
+            VG_(message)(Vg_DebugMsg,
+                         "?! restarting over syscall at %#x %08lx\n",
+                         arch->vex.guest_PC, (UWord)(*p));
+            vg_assert(0);
+         }
+         arch->vex.guest_PC -= 2;
+      }
+   }
 #elif defined(VGP_x86_solaris)
    arch->vex.guest_EIP -= 2;   // sizeof(int $0x91) or sizeof(syscall)
 

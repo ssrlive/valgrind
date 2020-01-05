@@ -132,7 +132,7 @@ void VG_(get_UnwindStartRegs) ( /*OUT*/UnwindStartRegs* regs,
    regs->misc.S390X.r_f6
 	  = VG_(threads)[tid].arch.vex.guest_v6.w64[0];
    regs->misc.S390X.r_f7
-	  = VG_(threads)[tid].arch.vex.guest_v7.w64[0];
+      = VG_(threads)[tid].arch.vex.guest_v7.w64[0];
 #  elif defined(VGA_mips32) || defined(VGP_nanomips_linux)
    regs->r_pc = VG_(threads)[tid].arch.vex.guest_PC;
    regs->r_sp = VG_(threads)[tid].arch.vex.guest_r29;
@@ -477,8 +477,8 @@ Int VG_(machine_arm_archlevel) = 4;
 /* For hwcaps detection on ppc32/64, s390x, and arm we'll need to do SIGILL
    testing, so we need a VG_MINIMAL_JMP_BUF. */
 #if defined(VGA_ppc32) || defined(VGA_ppc64be) || defined(VGA_ppc64le) \
-	|| defined(VGA_arm) || defined(VGA_s390x) || defined(VGA_mips32) \
-	|| defined(VGA_mips64)
+    || defined(VGA_arm) || defined(VGA_s390x) || defined(VGA_mips32) \
+    || defined(VGA_mips64)
 #include "pub_core_libcsetjmp.h"
 static VG_MINIMAL_JMP_BUF(env_unsup_insn);
 static void handler_unsup_insn ( Int x ) {
@@ -565,22 +565,22 @@ static UInt VG_(get_machine_model)(void)
 	  const HChar name[5];
 	  UInt  id;
    } model_map[] = {
-	  { "2064", VEX_S390X_MODEL_Z900 },
-	  { "2066", VEX_S390X_MODEL_Z800 },
-	  { "2084", VEX_S390X_MODEL_Z990 },
-	  { "2086", VEX_S390X_MODEL_Z890 },
-	  { "2094", VEX_S390X_MODEL_Z9_EC },
-	  { "2096", VEX_S390X_MODEL_Z9_BC },
-	  { "2097", VEX_S390X_MODEL_Z10_EC },
-	  { "2098", VEX_S390X_MODEL_Z10_BC },
-	  { "2817", VEX_S390X_MODEL_Z196 },
-	  { "2818", VEX_S390X_MODEL_Z114 },
-	  { "2827", VEX_S390X_MODEL_ZEC12 },
-	  { "2828", VEX_S390X_MODEL_ZBC12 },
-	  { "2964", VEX_S390X_MODEL_Z13 },
-	  { "2965", VEX_S390X_MODEL_Z13S },
-	  { "3906", VEX_S390X_MODEL_Z14 },
-	  { "3907", VEX_S390X_MODEL_Z14_ZR1 },
+      { "2064", VEX_S390X_MODEL_Z900 },
+      { "2066", VEX_S390X_MODEL_Z800 },
+      { "2084", VEX_S390X_MODEL_Z990 },
+      { "2086", VEX_S390X_MODEL_Z890 },
+      { "2094", VEX_S390X_MODEL_Z9_EC },
+      { "2096", VEX_S390X_MODEL_Z9_BC },
+      { "2097", VEX_S390X_MODEL_Z10_EC },
+      { "2098", VEX_S390X_MODEL_Z10_BC },
+      { "2817", VEX_S390X_MODEL_Z196 },
+      { "2818", VEX_S390X_MODEL_Z114 },
+      { "2827", VEX_S390X_MODEL_ZEC12 },
+      { "2828", VEX_S390X_MODEL_ZBC12 },
+      { "2964", VEX_S390X_MODEL_Z13 },
+      { "2965", VEX_S390X_MODEL_Z13S },
+      { "3906", VEX_S390X_MODEL_Z14 },
+      { "3907", VEX_S390X_MODEL_Z14_ZR1 },
    };
 
    Int    model, n, fh;
@@ -964,145 +964,145 @@ Bool VG_(machine_get_hwcaps)( void )
 
 #elif defined(VGA_amd64)
    { Bool have_sse3, have_ssse3, have_cx8, have_cx16;
-	 Bool have_lzcnt, have_avx, have_bmi, have_avx2;
-	 Bool have_rdtscp, have_rdrand, have_f16c;
-	 UInt eax, ebx, ecx, edx, max_basic, max_extended;
-	 ULong xgetbv_0 = 0;
-	 HChar vstr[13];
-	 vstr[0] = 0;
+     Bool have_lzcnt, have_avx, have_bmi, have_avx2;
+     Bool have_rdtscp, have_rdrand, have_f16c;
+     UInt eax, ebx, ecx, edx, max_basic, max_extended;
+     ULong xgetbv_0 = 0;
+     HChar vstr[13];
+     vstr[0] = 0;
 
-	 have_sse3 = have_ssse3 = have_cx8 = have_cx16
-			   = have_lzcnt = have_avx = have_bmi = have_avx2
-			   = have_rdtscp = have_rdrand = have_f16c = False;
+     have_sse3 = have_ssse3 = have_cx8 = have_cx16
+               = have_lzcnt = have_avx = have_bmi = have_avx2
+               = have_rdtscp = have_rdrand = have_f16c = False;
 
-	 eax = ebx = ecx = edx = max_basic = max_extended = 0;
+     eax = ebx = ecx = edx = max_basic = max_extended = 0;
 
-	 if (!VG_(has_cpuid)())
-		/* we can't do cpuid at all.  Give up. */
-		return False;
+     if (!VG_(has_cpuid)())
+        /* we can't do cpuid at all.  Give up. */
+        return False;
 
-	 VG_(cpuid)(0, 0, &eax, &ebx, &ecx, &edx);
-	 max_basic = eax;
-	 if (max_basic < 1)
-		/* we can't ask for cpuid(x) for x > 0.  Give up. */
-		return False;
+     VG_(cpuid)(0, 0, &eax, &ebx, &ecx, &edx);
+     max_basic = eax;
+     if (max_basic < 1)
+        /* we can't ask for cpuid(x) for x > 0.  Give up. */
+        return False;
 
-	 /* Get processor ID string, and max basic/extended index
-		values. */
-	 VG_(memcpy)(&vstr[0], &ebx, 4);
-	 VG_(memcpy)(&vstr[4], &edx, 4);
-	 VG_(memcpy)(&vstr[8], &ecx, 4);
-	 vstr[12] = 0;
+     /* Get processor ID string, and max basic/extended index
+        values. */
+     VG_(memcpy)(&vstr[0], &ebx, 4);
+     VG_(memcpy)(&vstr[4], &edx, 4);
+     VG_(memcpy)(&vstr[8], &ecx, 4);
+     vstr[12] = 0;
 
-	 VG_(cpuid)(0x80000000, 0, &eax, &ebx, &ecx, &edx);
-	 max_extended = eax;
+     VG_(cpuid)(0x80000000, 0, &eax, &ebx, &ecx, &edx);
+     max_extended = eax;
 
-	 /* get capabilities bits into edx */
-	 VG_(cpuid)(1, 0, &eax, &ebx, &ecx, &edx);
+     /* get capabilities bits into edx */
+     VG_(cpuid)(1, 0, &eax, &ebx, &ecx, &edx);
 
-	 // we assume that SSE1 and SSE2 are available by default
-	 have_sse3  = (ecx & (1<<0)) != 0;  /* True => have sse3 insns */
-	 have_ssse3 = (ecx & (1<<9)) != 0;  /* True => have Sup SSE3 insns */
-	 // fma     is ecx:12
-	 // sse41   is ecx:19
-	 // sse42   is ecx:20
-	 // xsave   is ecx:26
-	 // osxsave is ecx:27
-	 // avx     is ecx:28
-	 have_f16c   = (ecx & (1<<29)) != 0; /* True => have F16C insns */
-	 have_rdrand = (ecx & (1<<30)) != 0; /* True => have RDRAND insns */
+     // we assume that SSE1 and SSE2 are available by default
+     have_sse3  = (ecx & (1<<0)) != 0;  /* True => have sse3 insns */
+     have_ssse3 = (ecx & (1<<9)) != 0;  /* True => have Sup SSE3 insns */
+     // fma     is ecx:12
+     // sse41   is ecx:19
+     // sse42   is ecx:20
+     // xsave   is ecx:26
+     // osxsave is ecx:27
+     // avx     is ecx:28
+     have_f16c   = (ecx & (1<<29)) != 0; /* True => have F16C insns */
+     have_rdrand = (ecx & (1<<30)) != 0; /* True => have RDRAND insns */
 
-	 have_avx = False;
-	 /* have_fma = False; */
-	 if ( (ecx & ((1<<28)|(1<<27)|(1<<26))) == ((1<<28)|(1<<27)|(1<<26)) ) {
-		/* Processor supports AVX instructions and XGETBV is enabled
-		   by OS and AVX instructions are enabled by the OS. */
-		ULong w;
-		__asm__ __volatile__("movq $0,%%rcx ; "
-							 ".byte 0x0F,0x01,0xD0 ; " /* xgetbv */
-							 "movq %%rax,%0"
-							 :/*OUT*/"=r"(w) :/*IN*/
-							 :/*TRASH*/"rdx","rcx","rax");
-		xgetbv_0 = w;
-		if ((xgetbv_0 & 7) == 7) {
-		   /* Only say we have AVX if the XSAVE-allowable
-			  bitfield-mask allows x87, SSE and AVX state.  We could
-			  actually run with a more restrictive XGETBV(0) value,
-			  but VEX's implementation of XSAVE and XRSTOR assumes
-			  that all 3 bits are enabled.
+     have_avx = False;
+     /* have_fma = False; */
+     if ( (ecx & ((1<<28)|(1<<27)|(1<<26))) == ((1<<28)|(1<<27)|(1<<26)) ) {
+        /* Processor supports AVX instructions and XGETBV is enabled
+           by OS and AVX instructions are enabled by the OS. */
+        ULong w;
+        __asm__ __volatile__("movq $0,%%rcx ; "
+                             ".byte 0x0F,0x01,0xD0 ; " /* xgetbv */
+                             "movq %%rax,%0"
+                             :/*OUT*/"=r"(w) :/*IN*/
+                             :/*TRASH*/"rdx","rcx","rax");
+        xgetbv_0 = w;
+        if ((xgetbv_0 & 7) == 7) {
+           /* Only say we have AVX if the XSAVE-allowable
+              bitfield-mask allows x87, SSE and AVX state.  We could
+              actually run with a more restrictive XGETBV(0) value,
+              but VEX's implementation of XSAVE and XRSTOR assumes
+              that all 3 bits are enabled.
 
-			  Also, the VEX implementation of XSAVE/XRSTOR assumes that
-			  state component [2] (the YMM high halves) are located in
-			  the XSAVE image at offsets 576 .. 831.  So we have to
-			  check that here before declaring AVX to be supported. */
-		   UInt eax2, ebx2, ecx2, edx2;
-		   VG_(cpuid)(0xD, 2, &eax2, &ebx2, &ecx2, &edx2);
-		   if (ebx2 == 576 && eax2 == 256) {
-			  have_avx = True;
-		   }
-		   /* have_fma = (ecx & (1<<12)) != 0; */
-		   /* have_fma: Probably correct, but gcc complains due to
-			  unusedness. */
-		}
-	 }
+              Also, the VEX implementation of XSAVE/XRSTOR assumes that
+              state component [2] (the YMM high halves) are located in
+              the XSAVE image at offsets 576 .. 831.  So we have to
+              check that here before declaring AVX to be supported. */
+           UInt eax2, ebx2, ecx2, edx2;
+           VG_(cpuid)(0xD, 2, &eax2, &ebx2, &ecx2, &edx2);
+           if (ebx2 == 576 && eax2 == 256) {
+              have_avx = True;
+           }
+           /* have_fma = (ecx & (1<<12)) != 0; */
+           /* have_fma: Probably correct, but gcc complains due to
+              unusedness. */
+        }
+     }
 
-	 /* cmpxchg8b is a minimum requirement now; if we don't have it we
-		must simply give up.  But all CPUs since Pentium-I have it, so
-		that doesn't seem like much of a restriction. */
-	 have_cx8 = (edx & (1<<8)) != 0; /* True => have cmpxchg8b */
-	 if (!have_cx8)
-		return False;
+     /* cmpxchg8b is a minimum requirement now; if we don't have it we
+        must simply give up.  But all CPUs since Pentium-I have it, so
+        that doesn't seem like much of a restriction. */
+     have_cx8 = (edx & (1<<8)) != 0; /* True => have cmpxchg8b */
+     if (!have_cx8)
+        return False;
 
-	 /* on amd64 we tolerate older cpus, which don't have cmpxchg16b */
-	 have_cx16 = (ecx & (1<<13)) != 0; /* True => have cmpxchg16b */
+     /* on amd64 we tolerate older cpus, which don't have cmpxchg16b */
+     have_cx16 = (ecx & (1<<13)) != 0; /* True => have cmpxchg16b */
 
-	 /* Figure out if this CPU can do LZCNT. */
-	 have_lzcnt = False;
-	 if (max_extended >= 0x80000001) {
-		VG_(cpuid)(0x80000001, 0, &eax, &ebx, &ecx, &edx);
-		have_lzcnt = (ecx & (1<<5)) != 0; /* True => have LZCNT */
-	 }
+     /* Figure out if this CPU can do LZCNT. */
+     have_lzcnt = False;
+     if (max_extended >= 0x80000001) {
+        VG_(cpuid)(0x80000001, 0, &eax, &ebx, &ecx, &edx);
+        have_lzcnt = (ecx & (1<<5)) != 0; /* True => have LZCNT */
+     }
 
-	 /* Can we do RDTSCP? */
-	 have_rdtscp = False;
-	 if (max_extended >= 0x80000001) {
-		VG_(cpuid)(0x80000001, 0, &eax, &ebx, &ecx, &edx);
-		have_rdtscp = (edx & (1<<27)) != 0; /* True => have RDTSVCP */
-	 }
+     /* Can we do RDTSCP? */
+     have_rdtscp = False;
+     if (max_extended >= 0x80000001) {
+        VG_(cpuid)(0x80000001, 0, &eax, &ebx, &ecx, &edx);
+        have_rdtscp = (edx & (1<<27)) != 0; /* True => have RDTSVCP */
+     }
 
-	 /* Check for BMI1 and AVX2.  If we have AVX1 (plus OS support). */
-	 have_bmi  = False;
-	 have_avx2 = False;
-	 if (have_avx && max_basic >= 7) {
-		VG_(cpuid)(7, 0, &eax, &ebx, &ecx, &edx);
-		have_bmi  = (ebx & (1<<3)) != 0; /* True => have BMI1 */
-		have_avx2 = (ebx & (1<<5)) != 0; /* True => have AVX2 */
-	 }
+     /* Check for BMI1 and AVX2.  If we have AVX1 (plus OS support). */
+     have_bmi  = False;
+     have_avx2 = False;
+     if (have_avx && max_basic >= 7) {
+        VG_(cpuid)(7, 0, &eax, &ebx, &ecx, &edx);
+        have_bmi  = (ebx & (1<<3)) != 0; /* True => have BMI1 */
+        have_avx2 = (ebx & (1<<5)) != 0; /* True => have AVX2 */
+     }
 
-	 /* Sanity check for RDRAND and F16C.  These don't actually *need* AVX, but
-		it's convenient to restrict them to the AVX case since the simulated
-		CPUID we'll offer them on has AVX as a base. */
-	 if (!have_avx) {
-		have_f16c   = False;
-		have_rdrand = False;
-	 }
+     /* Sanity check for RDRAND and F16C.  These don't actually *need* AVX, but
+        it's convenient to restrict them to the AVX case since the simulated
+        CPUID we'll offer them on has AVX as a base. */
+     if (!have_avx) {
+        have_f16c   = False;
+        have_rdrand = False;
+     }
 
-	 va          = VexArchAMD64;
-	 vai.endness = VexEndnessLE;
-	 vai.hwcaps  = (have_sse3   ? VEX_HWCAPS_AMD64_SSE3   : 0)
-				 | (have_ssse3  ? VEX_HWCAPS_AMD64_SSSE3  : 0)
-				 | (have_cx16   ? VEX_HWCAPS_AMD64_CX16   : 0)
-				 | (have_lzcnt  ? VEX_HWCAPS_AMD64_LZCNT  : 0)
-				 | (have_avx    ? VEX_HWCAPS_AMD64_AVX    : 0)
-				 | (have_bmi    ? VEX_HWCAPS_AMD64_BMI    : 0)
-				 | (have_avx2   ? VEX_HWCAPS_AMD64_AVX2   : 0)
-				 | (have_rdtscp ? VEX_HWCAPS_AMD64_RDTSCP : 0)
-				 | (have_f16c   ? VEX_HWCAPS_AMD64_F16C   : 0)
-				 | (have_rdrand ? VEX_HWCAPS_AMD64_RDRAND : 0);
+     va          = VexArchAMD64;
+     vai.endness = VexEndnessLE;
+     vai.hwcaps  = (have_sse3   ? VEX_HWCAPS_AMD64_SSE3   : 0)
+                 | (have_ssse3  ? VEX_HWCAPS_AMD64_SSSE3  : 0)
+                 | (have_cx16   ? VEX_HWCAPS_AMD64_CX16   : 0)
+                 | (have_lzcnt  ? VEX_HWCAPS_AMD64_LZCNT  : 0)
+                 | (have_avx    ? VEX_HWCAPS_AMD64_AVX    : 0)
+                 | (have_bmi    ? VEX_HWCAPS_AMD64_BMI    : 0)
+                 | (have_avx2   ? VEX_HWCAPS_AMD64_AVX2   : 0)
+                 | (have_rdtscp ? VEX_HWCAPS_AMD64_RDTSCP : 0)
+                 | (have_f16c   ? VEX_HWCAPS_AMD64_F16C   : 0)
+                 | (have_rdrand ? VEX_HWCAPS_AMD64_RDRAND : 0);
 
-	 VG_(machine_get_cache_info)(&vai);
+     VG_(machine_get_cache_info)(&vai);
 
-	 return True;
+     return True;
    }
 
 #elif defined(VGA_ppc32)
@@ -1432,145 +1432,145 @@ Bool VG_(machine_get_hwcaps)( void )
 #  include "libvex_s390x_common.h"
 
    {
-	 /* Instruction set detection code borrowed from ppc above. */
-	 vki_sigset_t          saved_set, tmp_set;
-	 vki_sigaction_fromK_t saved_sigill_act;
-	 vki_sigaction_toK_t     tmp_sigill_act;
+     /* Instruction set detection code borrowed from ppc above. */
+     vki_sigset_t          saved_set, tmp_set;
+     vki_sigaction_fromK_t saved_sigill_act;
+     vki_sigaction_toK_t     tmp_sigill_act;
 
-	 volatile Bool have_LDISP, have_STFLE;
-	 Int i, r, model;
+     volatile Bool have_LDISP, have_STFLE;
+     Int i, r, model;
 
-	 /* If the model is "unknown" don't treat this as an error. Assume
-		this is a brand-new machine model for which we don't have the
-		identification yet. Keeping fingers crossed. */
-	 model = VG_(get_machine_model)();
+     /* If the model is "unknown" don't treat this as an error. Assume
+        this is a brand-new machine model for which we don't have the 
+        identification yet. Keeping fingers crossed. */
+     model = VG_(get_machine_model)();
 
-	 /* Unblock SIGILL and stash away the old action for that signal */
-	 VG_(sigemptyset)(&tmp_set);
-	 VG_(sigaddset)(&tmp_set, VKI_SIGILL);
+     /* Unblock SIGILL and stash away the old action for that signal */
+     VG_(sigemptyset)(&tmp_set);
+     VG_(sigaddset)(&tmp_set, VKI_SIGILL);
 
-	 r = VG_(sigprocmask)(VKI_SIG_UNBLOCK, &tmp_set, &saved_set);
-	 vg_assert(r == 0);
+     r = VG_(sigprocmask)(VKI_SIG_UNBLOCK, &tmp_set, &saved_set);
+     vg_assert(r == 0);
 
-	 r = VG_(sigaction)(VKI_SIGILL, NULL, &saved_sigill_act);
-	 vg_assert(r == 0);
-	 tmp_sigill_act = saved_sigill_act;
+     r = VG_(sigaction)(VKI_SIGILL, NULL, &saved_sigill_act);
+     vg_assert(r == 0);
+     tmp_sigill_act = saved_sigill_act;
 
-	 /* NODEFER: signal handler does not return (from the kernel's point of
-		view), hence if it is to successfully catch a signal more than once,
-		we need the NODEFER flag. */
-	 tmp_sigill_act.sa_flags &= ~VKI_SA_RESETHAND;
-	 tmp_sigill_act.sa_flags &= ~VKI_SA_SIGINFO;
-	 tmp_sigill_act.sa_flags |=  VKI_SA_NODEFER;
-	 tmp_sigill_act.ksa_handler = handler_unsup_insn;
-	 VG_(sigaction)(VKI_SIGILL, &tmp_sigill_act, NULL);
+     /* NODEFER: signal handler does not return (from the kernel's point of
+        view), hence if it is to successfully catch a signal more than once,
+        we need the NODEFER flag. */
+     tmp_sigill_act.sa_flags &= ~VKI_SA_RESETHAND;
+     tmp_sigill_act.sa_flags &= ~VKI_SA_SIGINFO;
+     tmp_sigill_act.sa_flags |=  VKI_SA_NODEFER;
+     tmp_sigill_act.ksa_handler = handler_unsup_insn;
+     VG_(sigaction)(VKI_SIGILL, &tmp_sigill_act, NULL);
 
-	 /* Determine hwcaps. Note, we cannot use the stfle insn because it
-		is not supported on z900. */
+     /* Determine hwcaps. Note, we cannot use the stfle insn because it
+        is not supported on z900. */
 
-	 have_LDISP = True;
-	 if (VG_MINIMAL_SETJMP(env_unsup_insn)) {
-		have_LDISP = False;
-	 } else {
-	   /* BASR loads the address of the next insn into r1. Needed to avoid
-		  a segfault in XY. */
-		__asm__ __volatile__("basr %%r1,%%r0\n\t"
-							 ".long  0xe3001000\n\t"  /* XY  0,0(%r1) */
-							 ".short 0x0057" : : : "r0", "r1", "cc", "memory");
-	 }
+     have_LDISP = True;
+     if (VG_MINIMAL_SETJMP(env_unsup_insn)) {
+        have_LDISP = False;
+     } else {
+       /* BASR loads the address of the next insn into r1. Needed to avoid
+          a segfault in XY. */
+        __asm__ __volatile__("basr %%r1,%%r0\n\t"
+                             ".long  0xe3001000\n\t"  /* XY  0,0(%r1) */
+                             ".short 0x0057" : : : "r0", "r1", "cc", "memory");
+     }
 
-	 /* Check availability of STFLE. If available store facility bits
-		in hoststfle. */
-	 ULong hoststfle[S390_NUM_FACILITY_DW];
+     /* Check availability of STFLE. If available store facility bits
+        in hoststfle. */
+     ULong hoststfle[S390_NUM_FACILITY_DW];
 
-	 for (i = 0; i < S390_NUM_FACILITY_DW; ++i)
-		hoststfle[i] = 0;
+     for (i = 0; i < S390_NUM_FACILITY_DW; ++i)
+        hoststfle[i] = 0;
 
-	 have_STFLE = True;
-	 if (VG_MINIMAL_SETJMP(env_unsup_insn)) {
-		have_STFLE = False;
-	 } else {
-		 register ULong reg0 asm("0") = S390_NUM_FACILITY_DW - 1;
+     have_STFLE = True;
+     if (VG_MINIMAL_SETJMP(env_unsup_insn)) {
+        have_STFLE = False;
+     } else {
+         register ULong reg0 asm("0") = S390_NUM_FACILITY_DW - 1;
 
-		 __asm__ __volatile__(" .insn s,0xb2b00000,%0\n"   /* stfle */
-							  : "=m" (hoststfle), "+d"(reg0)
-							  : : "cc", "memory");
-	 }
+         __asm__ __volatile__(" .insn s,0xb2b00000,%0\n"   /* stfle */
+                              : "=m" (hoststfle), "+d"(reg0)
+                              : : "cc", "memory");
+     }
 
-	 /* Restore signals */
-	 r = VG_(sigaction)(VKI_SIGILL, &saved_sigill_act, NULL);
-	 vg_assert(r == 0);
-	 r = VG_(sigprocmask)(VKI_SIG_SETMASK, &saved_set, NULL);
-	 vg_assert(r == 0);
-	 va = VexArchS390X;
-	 vai.endness = VexEndnessBE;
+     /* Restore signals */
+     r = VG_(sigaction)(VKI_SIGILL, &saved_sigill_act, NULL);
+     vg_assert(r == 0);
+     r = VG_(sigprocmask)(VKI_SIG_SETMASK, &saved_set, NULL);
+     vg_assert(r == 0);
+     va = VexArchS390X;
+     vai.endness = VexEndnessBE;
 
-	 vai.hwcaps = model;
-	 if (have_STFLE) vai.hwcaps |= VEX_HWCAPS_S390X_STFLE;
-	 if (have_LDISP) {
-		/* Use long displacement only on machines >= z990. For all other
-		   machines it is millicoded and therefore slow. */
-		if (model >= VEX_S390X_MODEL_Z990)
-		   vai.hwcaps |= VEX_HWCAPS_S390X_LDISP;
-	 }
+     vai.hwcaps = model;
+     if (have_STFLE) vai.hwcaps |= VEX_HWCAPS_S390X_STFLE;
+     if (have_LDISP) {
+        /* Use long displacement only on machines >= z990. For all other
+           machines it is millicoded and therefore slow. */
+        if (model >= VEX_S390X_MODEL_Z990)
+           vai.hwcaps |= VEX_HWCAPS_S390X_LDISP;
+     }
 
-	 /* Detect presence of certain facilities using the STFLE insn.
-		Note, that these facilities were introduced at the same time or later
-		as STFLE, so the absence of STLFE implies the absence of the facility
-		we're trying to detect. */
-	 struct fac_hwcaps_map {
-		UInt installed;
-		UInt facility_bit;
-		UInt hwcaps_bit;
-		const HChar name[6];   // may need adjustment for new facility names
-	 } fac_hwcaps[] = {
-		{ False, S390_FAC_EIMM,  VEX_HWCAPS_S390X_EIMM,  "EIMM"  },
-		{ False, S390_FAC_GIE,   VEX_HWCAPS_S390X_GIE,   "GIE"   },
-		{ False, S390_FAC_DFP,   VEX_HWCAPS_S390X_DFP,   "DFP"   },
-		{ False, S390_FAC_FPSE,  VEX_HWCAPS_S390X_FGX,   "FGX"   },
-		{ False, S390_FAC_ETF2,  VEX_HWCAPS_S390X_ETF2,  "ETF2"  },
-		{ False, S390_FAC_ETF3,  VEX_HWCAPS_S390X_ETF3,  "ETF3"  },
-		{ False, S390_FAC_STCKF, VEX_HWCAPS_S390X_STCKF, "STCKF" },
-		{ False, S390_FAC_FPEXT, VEX_HWCAPS_S390X_FPEXT, "FPEXT" },
-		{ False, S390_FAC_LSC,   VEX_HWCAPS_S390X_LSC,   "LSC"   },
-		{ False, S390_FAC_PFPO,  VEX_HWCAPS_S390X_PFPO,  "PFPO"  },
-		{ False, S390_FAC_VX,    VEX_HWCAPS_S390X_VX,    "VX"    },
-		{ False, S390_FAC_MSA5,  VEX_HWCAPS_S390X_MSA5,  "MSA5"  },
-		{ False, S390_FAC_MI2,   VEX_HWCAPS_S390X_MI2,   "MI2"   },
-	 };
+     /* Detect presence of certain facilities using the STFLE insn.
+        Note, that these facilities were introduced at the same time or later
+        as STFLE, so the absence of STLFE implies the absence of the facility
+        we're trying to detect. */
+     struct fac_hwcaps_map {
+        UInt installed;
+        UInt facility_bit;
+        UInt hwcaps_bit;
+        const HChar name[6];   // may need adjustment for new facility names
+     } fac_hwcaps[] = {
+        { False, S390_FAC_EIMM,  VEX_HWCAPS_S390X_EIMM,  "EIMM"  },
+        { False, S390_FAC_GIE,   VEX_HWCAPS_S390X_GIE,   "GIE"   },
+        { False, S390_FAC_DFP,   VEX_HWCAPS_S390X_DFP,   "DFP"   },
+        { False, S390_FAC_FPSE,  VEX_HWCAPS_S390X_FGX,   "FGX"   },
+        { False, S390_FAC_ETF2,  VEX_HWCAPS_S390X_ETF2,  "ETF2"  },
+        { False, S390_FAC_ETF3,  VEX_HWCAPS_S390X_ETF3,  "ETF3"  },
+        { False, S390_FAC_STCKF, VEX_HWCAPS_S390X_STCKF, "STCKF" },
+        { False, S390_FAC_FPEXT, VEX_HWCAPS_S390X_FPEXT, "FPEXT" },
+        { False, S390_FAC_LSC,   VEX_HWCAPS_S390X_LSC,   "LSC"   },
+        { False, S390_FAC_PFPO,  VEX_HWCAPS_S390X_PFPO,  "PFPO"  },
+        { False, S390_FAC_VX,    VEX_HWCAPS_S390X_VX,    "VX"    },
+        { False, S390_FAC_MSA5,  VEX_HWCAPS_S390X_MSA5,  "MSA5"  },
+        { False, S390_FAC_MI2,   VEX_HWCAPS_S390X_MI2,   "MI2"   },
+     };
 
-	 /* Set hwcaps according to the detected facilities */
-	 UChar dw_number = 0;
-	 UChar fac_bit = 0;
-	 for (i=0; i < sizeof fac_hwcaps / sizeof fac_hwcaps[0]; ++i) {
-		vg_assert(fac_hwcaps[i].facility_bit <= 191);  // for now
-		dw_number = fac_hwcaps[i].facility_bit / 64;
-		fac_bit = fac_hwcaps[i].facility_bit % 64;
-		if (hoststfle[dw_number] & (1ULL << (63 - fac_bit))) {
-		   fac_hwcaps[i].installed = True;
-		   vai.hwcaps |= fac_hwcaps[i].hwcaps_bit;
-		}
-	 }
+     /* Set hwcaps according to the detected facilities */
+     UChar dw_number = 0;
+     UChar fac_bit = 0;
+     for (i=0; i < sizeof fac_hwcaps / sizeof fac_hwcaps[0]; ++i) {
+        vg_assert(fac_hwcaps[i].facility_bit <= 191);  // for now
+        dw_number = fac_hwcaps[i].facility_bit / 64;
+        fac_bit = fac_hwcaps[i].facility_bit % 64;
+        if (hoststfle[dw_number] & (1ULL << (63 - fac_bit))) {
+           fac_hwcaps[i].installed = True;
+           vai.hwcaps |= fac_hwcaps[i].hwcaps_bit;
+        }
+     }
 
-	 /* Build up a string showing the probed-for facilities */
-	 HChar fac_str[(sizeof fac_hwcaps / sizeof fac_hwcaps[0]) *
-				   (sizeof fac_hwcaps[0].name + 3) + //  %s %d
-				   7 + 1 + 4 + 2  // machine %4d
-				   + 1];  // \0
-	 HChar *p = fac_str;
-	 p += VG_(sprintf)(p, "machine %4d  ", model);
-	 for (i=0; i < sizeof fac_hwcaps / sizeof fac_hwcaps[0]; ++i) {
-		p += VG_(sprintf)(p, " %s %1u", fac_hwcaps[i].name,
-						  fac_hwcaps[i].installed);
-	 }
-	 *p++ = '\0';
+     /* Build up a string showing the probed-for facilities */
+     HChar fac_str[(sizeof fac_hwcaps / sizeof fac_hwcaps[0]) *
+                   (sizeof fac_hwcaps[0].name + 3) + //  %s %d
+                   7 + 1 + 4 + 2  // machine %4d
+                   + 1];  // \0
+     HChar *p = fac_str;
+     p += VG_(sprintf)(p, "machine %4d  ", model);
+     for (i=0; i < sizeof fac_hwcaps / sizeof fac_hwcaps[0]; ++i) {
+        p += VG_(sprintf)(p, " %s %1u", fac_hwcaps[i].name,
+                          fac_hwcaps[i].installed);
+     }
+     *p++ = '\0';
 
-	 VG_(debugLog)(1, "machine", "%s\n", fac_str);
-	 VG_(debugLog)(1, "machine", "hwcaps = 0x%x\n", vai.hwcaps);
+     VG_(debugLog)(1, "machine", "%s\n", fac_str);
+     VG_(debugLog)(1, "machine", "hwcaps = 0x%x\n", vai.hwcaps);
 
-	 VG_(machine_get_cache_info)(&vai);
+     VG_(machine_get_cache_info)(&vai);
 
-	 return True;
+     return True;
    }
 
 #elif defined(VGA_arm)
@@ -1929,22 +1929,22 @@ Bool VG_(machine_get_hwcaps)( void )
 
 #elif defined(VGP_nanomips_linux)
    {
-	 va = VexArchNANOMIPS;
-	 vai.hwcaps = 0;
+     va = VexArchNANOMIPS;
+     vai.hwcaps = 0;
 
 #    if defined(VKI_LITTLE_ENDIAN)
-	 vai.endness = VexEndnessLE;
+     vai.endness = VexEndnessLE;
 #    elif defined(VKI_BIG_ENDIAN)
-	 vai.endness = VexEndnessBE;
+     vai.endness = VexEndnessBE;
 #    else
-	 vai.endness = VexEndness_INVALID;
+     vai.endness = VexEndness_INVALID;
 #    endif
 
-	 VG_(debugLog)(1, "machine", "hwcaps = 0x%x\n", vai.hwcaps);
+     VG_(debugLog)(1, "machine", "hwcaps = 0x%x\n", vai.hwcaps);
 
-	 VG_(machine_get_cache_info)(&vai);
+     VG_(machine_get_cache_info)(&vai);
 
-	 return True;
+     return True;
    }
 #else
 #  error "Unknown arch"
@@ -2090,12 +2090,12 @@ Int VG_(machine_get_size_of_largest_guest_register) ( void )
 void* VG_(fnptr_to_fnentry)( void* f )
 {
 #  if defined(VGP_x86_linux) || defined(VGP_amd64_linux)  \
-	  || defined(VGP_arm_linux) || defined(VGO_darwin)          \
-	  || defined(VGP_ppc32_linux) || defined(VGP_ppc64le_linux) \
-	  || defined(VGP_s390x_linux) || defined(VGP_mips32_linux) \
-	  || defined(VGP_mips64_linux) || defined(VGP_arm64_linux) \
-	  || defined(VGP_x86_solaris) || defined(VGP_amd64_solaris) \
-	  || defined(VGP_nanomips_linux)
+      || defined(VGP_arm_linux) || defined(VGO_darwin)          \
+      || defined(VGP_ppc32_linux) || defined(VGP_ppc64le_linux) \
+      || defined(VGP_s390x_linux) || defined(VGP_mips32_linux) \
+      || defined(VGP_mips64_linux) || defined(VGP_arm64_linux) \
+      || defined(VGP_x86_solaris) || defined(VGP_amd64_solaris) \
+      || defined(VGP_nanomips_linux)
    return f;
 #  elif defined(VGP_ppc64be_linux)
    /* ppc64-linux uses the AIX scheme, in which f is a pointer to a

@@ -148,7 +148,7 @@ SysRes VG_(am_do_mmap_NO_NOTIFY)( Addr start, SizeT length, UInt prot,
    res = VG_(do_syscall6)(__NR3264_mmap, (UWord)start, length,
 						 prot, flags, fd, offset);
 #  elif defined(VGP_x86_linux) || defined(VGP_ppc32_linux) \
-		|| defined(VGP_arm_linux) || defined(VGP_nanomips_linux)
+        || defined(VGP_arm_linux) || defined(VGP_nanomips_linux)
    /* mmap2 uses 4096 chunks even if actual page size is bigger. */
    aspacem_assert((offset % 4096) == 0);
    res = VG_(do_syscall6)(__NR_mmap2, (UWord)start, length,
@@ -323,18 +323,18 @@ Bool ML_(am_get_fd_d_i_m)( Int fd,
    struct vki_statx bufx;
    const char* file_name = "";
    res = VG_(do_syscall5)(__NR_statx, fd, (RegWord)file_name,
-						  VKI_AT_EMPTY_PATH, VKI_STATX_ALL, (RegWord)&bufx);
+                          VKI_AT_EMPTY_PATH, VKI_STATX_ALL, (RegWord)&bufx);
    if (!sr_isError(res)) {
-	  *dev  = VG_MAKEDEV(bufx.stx_dev_major, bufx.stx_dev_minor);
-	  *ino  = (ULong)bufx.stx_ino;
-	  *mode = (UInt)bufx.stx_mode;
-	  return True;
+      *dev  = VG_MAKEDEV(bufx.stx_dev_major, bufx.stx_dev_minor);
+      *ino  = (ULong)bufx.stx_ino;
+      *mode = (UInt)bufx.stx_mode;
+      return True;
    }
 #  endif
 #  if defined(VGO_linux) && defined(__NR_fstat64)
    /* fstat64 is second candidate as it can cope with minor and major device
-	  numbers outside the 0-255 range and it works properly for x86
-	  binaries on amd64 systems where fstat seems to be broken. */
+      numbers outside the 0-255 range and it works properly for x86
+      binaries on amd64 systems where fstat seems to be broken. */
    struct vki_stat64 buf64;
    res = VG_(do_syscall2)(__NR_fstat64, fd, (UWord)&buf64);
    if (!sr_isError(res)) {

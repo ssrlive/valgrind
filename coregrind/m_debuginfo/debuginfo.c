@@ -1174,7 +1174,7 @@ ULong VG_(di_notify_mmap)( Addr a, Bool allow_SkFileV, Int use_fd )
    is_ro_map = False;
 
 #  if defined(VGA_x86) || defined(VGA_ppc32) || defined(VGA_mips32) \
-	  || defined(VGA_mips64) || defined(VGA_nanomips)
+      || defined(VGA_mips64) || defined(VGA_nanomips)
    is_rx_map = seg->hasR && seg->hasX;
    is_rw_map = seg->hasR && seg->hasW;
 #  elif defined(VGA_amd64) || defined(VGA_ppc64be) || defined(VGA_ppc64le)  \
@@ -2862,16 +2862,16 @@ UWord evalCfiExpr ( const XArray* exprs, Int ix,
 			case Creg_ARM_R12: return eec->uregs->r12;
 			case Creg_ARM_R7:  return eec->uregs->r7;
 #           elif defined(VGA_s390x)
-			case Creg_S390_IA: return eec->uregs->ia;
-			case Creg_S390_SP: return eec->uregs->sp;
-			case Creg_S390_FP: return eec->uregs->fp;
-			case Creg_S390_LR: return eec->uregs->lr;
+            case Creg_S390_IA: return eec->uregs->ia;
+            case Creg_S390_SP: return eec->uregs->sp;
+            case Creg_S390_FP: return eec->uregs->fp;
+            case Creg_S390_LR: return eec->uregs->lr;
 #           elif defined(VGA_mips32) || defined(VGA_mips64) \
-			  || defined(VGA_nanomips)
-			case Creg_IA_IP: return eec->uregs->pc;
-			case Creg_IA_SP: return eec->uregs->sp;
-			case Creg_IA_BP: return eec->uregs->fp;
-			case Creg_MIPS_RA: return eec->uregs->ra;
+              || defined(VGA_nanomips)
+            case Creg_IA_IP: return eec->uregs->pc;
+            case Creg_IA_SP: return eec->uregs->sp;
+            case Creg_IA_BP: return eec->uregs->fp;
+            case Creg_MIPS_RA: return eec->uregs->ra;
 #           elif defined(VGA_ppc32) || defined(VGA_ppc64be) \
 			   || defined(VGA_ppc64le)
 #           elif defined(VGP_arm64_linux)
@@ -3112,33 +3112,33 @@ static Addr compute_cfa ( const D3UnwindRegs* uregs,
 		 cfa = cfsi_m->cfa_off + uregs->r7;
 		 break;
 #     elif defined(VGA_s390x)
-	  case CFIC_IA_SPREL:
-		 cfa = cfsi_m->cfa_off + uregs->sp;
-		 break;
-	  case CFIR_MEMCFAREL:
-	  {
-		 Addr a = uregs->sp + cfsi_m->cfa_off;
-		 if (a < min_accessible || a > max_accessible-sizeof(Addr))
-			break;
-		 cfa = ML_(read_Addr)((void *)a);
-		 break;
-	  }
-	  case CFIR_SAME:
-		 cfa = uregs->fp;
-		 break;
-	  case CFIC_IA_BPREL:
-		 cfa = cfsi_m->cfa_off + uregs->fp;
-		 break;
+      case CFIC_IA_SPREL:
+         cfa = cfsi_m->cfa_off + uregs->sp;
+         break;
+      case CFIR_MEMCFAREL:
+      {
+         Addr a = uregs->sp + cfsi_m->cfa_off;
+         if (a < min_accessible || a > max_accessible-sizeof(Addr))
+            break;
+         cfa = ML_(read_Addr)((void *)a);
+         break;
+      }
+      case CFIR_SAME:
+         cfa = uregs->fp;
+         break;
+      case CFIC_IA_BPREL:
+         cfa = cfsi_m->cfa_off + uregs->fp;
+         break;
 #     elif defined(VGA_mips32) || defined(VGA_mips64) || defined(VGA_nanomips)
-	  case CFIC_IA_SPREL:
-		 cfa = cfsi_m->cfa_off + uregs->sp;
-		 break;
-	  case CFIR_SAME:
-		 cfa = uregs->fp;
-		 break;
-	  case CFIC_IA_BPREL:
-		 cfa = cfsi_m->cfa_off + uregs->fp;
-		 break;
+      case CFIC_IA_SPREL:
+         cfa = cfsi_m->cfa_off + uregs->sp;
+         break;
+      case CFIR_SAME:
+         cfa = uregs->fp;
+         break;
+      case CFIC_IA_BPREL:
+         cfa = cfsi_m->cfa_off + uregs->fp;
+         break;
 #     elif defined(VGA_ppc32) || defined(VGA_ppc64be) || defined(VGA_ppc64le)
 #     elif defined(VGP_arm64_linux)
 	  case CFIC_ARM64_SPREL:

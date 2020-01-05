@@ -151,17 +151,17 @@ static const char *select_platform(const char *clientname)
    VG_(debugLog)(2, "launcher", "selecting platform for '%s'\n", clientname);
 
    if (strchr(clientname, '/') == NULL)
-	  client = find_client(clientname);
+      client = find_client(clientname);
    else
-	  client = strdup(clientname);
+      client = strdup(clientname);
 
    if (strcmp (client, clientname) != 0)
-	  VG_(debugLog)(2, "launcher", "selecting platform for '%s'\n", client);
+      VG_(debugLog)(2, "launcher", "selecting platform for '%s'\n", client);
 
    if ((fd = open(clientname, O_RDONLY)) < 0) {
-	 return_null:
-	  free (client);
-	  return NULL;
+     return_null:
+      free (client);
+      return NULL;
    }
    //   barf("open(%s): %s", clientname, strerror(errno));
 
@@ -170,11 +170,11 @@ static const char *select_platform(const char *clientname)
    n_bytes = read(fd, header.c, sizeof(header));
    close(fd);
    if (n_bytes < 2) {
-	  goto return_null;
+      goto return_null;
    }
 
    VG_(debugLog)(2, "launcher", "read %ld bytes from '%s'\n",
-					(long int)n_bytes, client);
+                    (long int)n_bytes, client);
 
    if (header.c[0] == '#' && header.c[1] == '!') {
 	  int i = 2;
@@ -227,69 +227,69 @@ static const char *select_platform(const char *clientname)
 			}
 			else
 #           endif
-			if (header.ehdr32.e_machine == EM_386 &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
-			   platform = "x86-linux";
-			}
-			else
-			if (header.ehdr32.e_machine == EM_ARM &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
-			   platform = "arm-linux";
-			}
-			else
-			if (header.ehdr32.e_machine == EM_MIPS &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX) &&
-				 (header.ehdr32.e_flags & E_MIPS_ABI_O32)) {
-			   platform = "mips32-linux";
-			}
-			else
-			if (header.ehdr32.e_machine == EM_MIPS &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX) &&
-				 (header.ehdr32.e_flags & E_MIPS_ABI2)) {
-			   platform = "mips64-linux";
-			}
-			else
-			if (header.ehdr32.e_machine == EM_NANOMIPS &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
-			   platform = "nanomips-linux";
-			}
-		 }
-		 else if (header.c[EI_DATA] == ELFDATA2MSB) {
-			if (header.ehdr32.e_machine == EM_PPC &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
-			   platform = "ppc32-linux";
-			}
-			else
-			if (header.ehdr32.e_machine == EM_MIPS &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX) &&
-				 (header.ehdr32.e_flags & E_MIPS_ABI_O32)) {
-			   platform = "mips32-linux";
-			}
-			else
-			if (header.ehdr32.e_machine == EM_MIPS &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX) &&
-				 (header.ehdr32.e_flags & E_MIPS_ABI2)) {
-			   platform = "mips64-linux";
-			}
-			else
-			if (header.ehdr32.e_machine == EM_NANOMIPS &&
-				(header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
-				 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
-			   platform = "nanomips-linux";
-			}
-		 }
+            if (header.ehdr32.e_machine == EM_386 &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
+               platform = "x86-linux";
+            }
+            else 
+            if (header.ehdr32.e_machine == EM_ARM &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
+               platform = "arm-linux";
+            }
+            else
+            if (header.ehdr32.e_machine == EM_MIPS &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX) &&
+                 (header.ehdr32.e_flags & E_MIPS_ABI_O32)) {
+               platform = "mips32-linux";
+            }
+            else
+            if (header.ehdr32.e_machine == EM_MIPS &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX) &&
+                 (header.ehdr32.e_flags & E_MIPS_ABI2)) {
+               platform = "mips64-linux";
+            }
+            else
+            if (header.ehdr32.e_machine == EM_NANOMIPS &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
+               platform = "nanomips-linux";
+            }
+         }
+         else if (header.c[EI_DATA] == ELFDATA2MSB) {
+            if (header.ehdr32.e_machine == EM_PPC &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
+               platform = "ppc32-linux";
+            }
+            else 
+            if (header.ehdr32.e_machine == EM_MIPS &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX) &&
+                 (header.ehdr32.e_flags & E_MIPS_ABI_O32)) {
+               platform = "mips32-linux";
+            }
+            else
+            if (header.ehdr32.e_machine == EM_MIPS &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX) &&
+                 (header.ehdr32.e_flags & E_MIPS_ABI2)) {
+               platform = "mips64-linux";
+            }
+            else
+            if (header.ehdr32.e_machine == EM_NANOMIPS &&
+                (header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
+                 header.ehdr32.e_ident[EI_OSABI] == ELFOSABI_LINUX)) {
+               platform = "nanomips-linux";
+            }
+         }
 
-	  } else if (n_bytes >= sizeof(Elf64_Ehdr) && header.c[EI_CLASS] == ELFCLASS64) {
+      } else if (n_bytes >= sizeof(Elf64_Ehdr) && header.c[EI_CLASS] == ELFCLASS64) {
 
-		 if (header.c[EI_DATA] == ELFDATA2LSB) {
+         if (header.c[EI_DATA] == ELFDATA2LSB) {
 #           if defined(VGO_solaris)
 			if (header.ehdr64.e_machine == EM_X86_64 &&
 				(header.ehdr64.e_ident[EI_OSABI] == ELFOSABI_SYSV ||
@@ -342,6 +342,8 @@ static const char *select_platform(const char *clientname)
 
    VG_(debugLog)(2, "launcher", "selected platform '%s'\n",
 				 platform ? platform : "unknown");
+
+   free (client);
 
    free (client);
 
@@ -406,17 +408,17 @@ int main(int argc, char** argv, char** envp)
 	  secondary build target. */
 #  if defined(VGO_linux)
    if ((0==strcmp(VG_PLATFORM,"x86-linux"))    ||
-	   (0==strcmp(VG_PLATFORM,"amd64-linux"))  ||
-	   (0==strcmp(VG_PLATFORM,"ppc32-linux"))  ||
-	   (0==strcmp(VG_PLATFORM,"ppc64be-linux"))  ||
-	   (0==strcmp(VG_PLATFORM,"ppc64le-linux"))  ||
-	   (0==strcmp(VG_PLATFORM,"arm-linux"))    ||
-	   (0==strcmp(VG_PLATFORM,"arm64-linux"))  ||
-	   (0==strcmp(VG_PLATFORM,"s390x-linux"))  ||
-	   (0==strcmp(VG_PLATFORM,"mips32-linux")) ||
-	   (0==strcmp(VG_PLATFORM,"mips64-linux")) ||
-	   (0==strcmp(VG_PLATFORM,"nanomips-linux")))
-	  default_platform = VG_PLATFORM;
+       (0==strcmp(VG_PLATFORM,"amd64-linux"))  ||
+       (0==strcmp(VG_PLATFORM,"ppc32-linux"))  ||
+       (0==strcmp(VG_PLATFORM,"ppc64be-linux"))  ||
+       (0==strcmp(VG_PLATFORM,"ppc64le-linux"))  ||
+       (0==strcmp(VG_PLATFORM,"arm-linux"))    ||
+       (0==strcmp(VG_PLATFORM,"arm64-linux"))  ||
+       (0==strcmp(VG_PLATFORM,"s390x-linux"))  ||
+       (0==strcmp(VG_PLATFORM,"mips32-linux")) ||
+       (0==strcmp(VG_PLATFORM,"mips64-linux")) ||
+       (0==strcmp(VG_PLATFORM,"nanomips-linux")))
+      default_platform = VG_PLATFORM;
 #  elif defined(VGO_solaris)
    if ((0==strcmp(VG_PLATFORM,"x86-solaris")) ||
 	   (0==strcmp(VG_PLATFORM,"amd64-solaris")))

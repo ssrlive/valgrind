@@ -2555,11 +2555,11 @@ void VG_(init_tt_tc) ( void )
    else if (sizeof(HWord) == 4) {
 	  vg_assert(sizeof(TTEntryH) <= 20);
 #     if defined(VGP_ppc32_linux) || defined(VGP_mips32_linux) \
-		 || (defined(VGP_mips64_linux) && defined(VGABI_N32)) \
-		 || defined(VGP_nanomips_linux) || defined(VGP_arm_linux)
-	  /* On PPC32, MIPS32, ARM32 platforms, alignof(ULong) == 8, so the
-		 structure is larger than on other 32 bit targets. */
-	  vg_assert(sizeof(TTEntryC) <= 96);
+         || (defined(VGP_mips64_linux) && defined(VGABI_N32)) \
+         || defined(VGP_nanomips_linux) || defined(VGP_arm_linux)
+      /* On PPC32, MIPS32, ARM32 platforms, alignof(ULong) == 8, so the
+         structure is larger than on other 32 bit targets. */
+      vg_assert(sizeof(TTEntryC) <= 96);
 #     else
 	  vg_assert(sizeof(TTEntryC) <= 88);
 #     endif

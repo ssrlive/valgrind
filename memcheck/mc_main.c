@@ -5982,149 +5982,149 @@ static Bool mc_process_cmd_line_options(const HChar* arg)
 	  --track-origins=yes as meaningless.
    */
    if VG_BOOL_CLO(arg, "--undef-value-errors", tmp_show) {
-	  if (tmp_show) {
-		 if (MC_(clo_mc_level) == 1)
-			MC_(clo_mc_level) = 2;
-	  } else {
-		 if (MC_(clo_mc_level) == 3) {
-			goto bad_level;
-		 } else {
-			MC_(clo_mc_level) = 1;
-		 }
-	  }
+      if (tmp_show) {
+         if (MC_(clo_mc_level) == 1)
+            MC_(clo_mc_level) = 2;
+      } else {
+         if (MC_(clo_mc_level) == 3) {
+            goto bad_level;
+         } else {
+            MC_(clo_mc_level) = 1;
+         }
+      }
    }
    else if VG_BOOL_CLO(arg, "--track-origins", tmp_show) {
-	  if (tmp_show)  {
-		 if (MC_(clo_mc_level) == 1) {
-			goto bad_level;
-		 } else {
-			MC_(clo_mc_level) = 3;
-		 }
-	  } else {
-	  if (MC_(clo_mc_level) == 3)
-		 MC_(clo_mc_level) = 2;
-	  }
+      if (tmp_show)  {
+         if (MC_(clo_mc_level) == 1) {
+            goto bad_level;
+         } else {
+            MC_(clo_mc_level) = 3;
+         }
+      } else {
+      if (MC_(clo_mc_level) == 3)
+         MC_(clo_mc_level) = 2;
+      }
    }
    else if VG_BOOL_CLO(arg, "--partial-loads-ok", MC_(clo_partial_loads_ok)) {}
    else if VG_USET_CLOM(cloPD, arg, "--errors-for-leak-kinds",
-						MC_(parse_leak_kinds_tokens),
-						MC_(clo_error_for_leak_kinds)) {}
+                        MC_(parse_leak_kinds_tokens),
+                        MC_(clo_error_for_leak_kinds)) {}
    else if VG_USET_CLOM(cloPD, arg, "--show-leak-kinds",
-						MC_(parse_leak_kinds_tokens),
-						MC_(clo_show_leak_kinds)) {}
+                        MC_(parse_leak_kinds_tokens),
+                        MC_(clo_show_leak_kinds)) {}
    else if VG_USET_CLOM(cloPD, arg, "--leak-check-heuristics",
-						MC_(parse_leak_heuristics_tokens),
-						MC_(clo_leak_check_heuristics)) {}
+                        MC_(parse_leak_heuristics_tokens),
+                        MC_(clo_leak_check_heuristics)) {}
    else if (VG_BOOL_CLOM(cloPD, arg, "--show-reachable", tmp_show)) {
-	  if (tmp_show) {
-		 MC_(clo_show_leak_kinds) = MC_(all_Reachedness)();
-	  } else {
-		 MC_(clo_show_leak_kinds) &= ~R2S(Reachable);
-	  }
+      if (tmp_show) {
+         MC_(clo_show_leak_kinds) = MC_(all_Reachedness)();
+      } else {
+         MC_(clo_show_leak_kinds) &= ~R2S(Reachable);
+      }
    }
    else if VG_BOOL_CLOM(cloPD, arg, "--show-possibly-lost", tmp_show) {
-	  if (tmp_show) {
-		 MC_(clo_show_leak_kinds) |= R2S(Possible);
-	  } else {
-		 MC_(clo_show_leak_kinds) &= ~R2S(Possible);
-	  }
+      if (tmp_show) {
+         MC_(clo_show_leak_kinds) |= R2S(Possible);
+      } else {
+         MC_(clo_show_leak_kinds) &= ~R2S(Possible);
+      }
    }
    else if VG_BOOL_CLO(arg, "--workaround-gcc296-bugs",
-					   MC_(clo_workaround_gcc296_bugs)) {}
+                       MC_(clo_workaround_gcc296_bugs)) {}
 
    else if VG_BINT_CLOM(cloPD, arg, "--freelist-vol",  MC_(clo_freelist_vol),
-						0, 10*1000*1000*1000LL) {}
+                        0, 10*1000*1000*1000LL) {}
 
    else if VG_BINT_CLOM(cloPD, arg, "--freelist-big-blocks",
-						MC_(clo_freelist_big_blocks),
-						0, 10*1000*1000*1000LL) {}
+                        MC_(clo_freelist_big_blocks),
+                        0, 10*1000*1000*1000LL) {}
 
    else if VG_XACT_CLOM(cloPD, arg, "--leak-check=no",
-					   MC_(clo_leak_check), LC_Off) {}
+                       MC_(clo_leak_check), LC_Off) {}
    else if VG_XACT_CLOM(cloPD, arg, "--leak-check=summary",
-					   MC_(clo_leak_check), LC_Summary) {}
+                       MC_(clo_leak_check), LC_Summary) {}
    else if VG_XACT_CLOM(cloPD, arg, "--leak-check=yes",
-					   MC_(clo_leak_check), LC_Full) {}
+                       MC_(clo_leak_check), LC_Full) {}
    else if VG_XACT_CLOM(cloPD, arg, "--leak-check=full",
-					   MC_(clo_leak_check), LC_Full) {}
+                       MC_(clo_leak_check), LC_Full) {}
 
    else if VG_XACT_CLO(arg, "--leak-resolution=low",
-							MC_(clo_leak_resolution), Vg_LowRes) {}
+                       MC_(clo_leak_resolution), Vg_LowRes) {}
    else if VG_XACT_CLO(arg, "--leak-resolution=med",
-							MC_(clo_leak_resolution), Vg_MedRes) {}
+                       MC_(clo_leak_resolution), Vg_MedRes) {}
    else if VG_XACT_CLO(arg, "--leak-resolution=high",
-							MC_(clo_leak_resolution), Vg_HighRes) {}
+                       MC_(clo_leak_resolution), Vg_HighRes) {}
 
    else if VG_STR_CLOM(cloPD, arg, "--ignore-ranges", tmp_str) {
-	  Bool ok = parse_ignore_ranges(tmp_str);
-	  if (!ok) {
-		 VG_(message)(Vg_DebugMsg,
-			"ERROR: --ignore-ranges: "
-			"invalid syntax, or end <= start in range\n");
-		 return False;
-	  }
-	  if (gIgnoredAddressRanges) {
-		 UInt i;
-		 for (i = 0; i < VG_(sizeRangeMap)(gIgnoredAddressRanges); i++) {
-			UWord val     = IAR_INVALID;
-			UWord key_min = ~(UWord)0;
-			UWord key_max = (UWord)0;
-			VG_(indexRangeMap)( &key_min, &key_max, &val,
-								gIgnoredAddressRanges, i );
-			tl_assert(key_min <= key_max);
-			UWord limit = 0x4000000; /* 64M - entirely arbitrary limit */
-			if (key_max - key_min > limit && val == IAR_CommandLine) {
-			   VG_(message)(Vg_DebugMsg,
-				  "ERROR: --ignore-ranges: suspiciously large range:\n");
-			   VG_(message)(Vg_DebugMsg,
-				   "       0x%lx-0x%lx (size %lu)\n", key_min, key_max,
-				   key_max - key_min + 1);
-			   return False;
-			}
-		 }
-	  }
+      Bool ok = parse_ignore_ranges(tmp_str);
+      if (!ok) {
+         VG_(message)(Vg_DebugMsg,
+            "ERROR: --ignore-ranges: "
+            "invalid syntax, or end <= start in range\n");
+         return False;
+      }
+      if (gIgnoredAddressRanges) {
+         UInt i;
+         for (i = 0; i < VG_(sizeRangeMap)(gIgnoredAddressRanges); i++) {
+            UWord val     = IAR_INVALID;
+            UWord key_min = ~(UWord)0;
+            UWord key_max = (UWord)0;
+            VG_(indexRangeMap)( &key_min, &key_max, &val,
+                                gIgnoredAddressRanges, i );
+            tl_assert(key_min <= key_max);
+            UWord limit = 0x4000000; /* 64M - entirely arbitrary limit */
+            if (key_max - key_min > limit && val == IAR_CommandLine) {
+               VG_(message)(Vg_DebugMsg,
+                  "ERROR: --ignore-ranges: suspiciously large range:\n");
+               VG_(message)(Vg_DebugMsg,
+                   "       0x%lx-0x%lx (size %lu)\n", key_min, key_max,
+                   key_max - key_min + 1);
+               return False;
+            }
+         }
+      }
    }
 
    else if VG_STR_CLOM(cloPD, arg, "--ignore-range-below-sp", tmp_str) {
-	  /* This seems at first a bit weird, but: in order to imply
-		 a non-wrapped-around address range, the first offset needs to be
-		 larger than the second one.  For example
-			--ignore-range-below-sp=8192,8189
-		 would cause accesses to in the range [SP-8192, SP-8189] to be
-		 ignored. */
-	  UInt offs1 = 0, offs2 = 0;
-	  Bool ok = parse_UInt_pair(&tmp_str, &offs1, &offs2);
-	  // Ensure we used all the text after the '=' sign.
-	  if (ok && *tmp_str != 0) ok = False;
-	  if (!ok) {
-		 VG_(message)(Vg_DebugMsg,
-					  "ERROR: --ignore-range-below-sp: invalid syntax. "
-					  " Expected \"...=decimalnumber-decimalnumber\".\n");
-		 return False;
-	  }
-	  if (offs1 > 1000*1000 /*arbitrary*/ || offs2 > 1000*1000 /*ditto*/) {
-		 VG_(message)(Vg_DebugMsg,
-					  "ERROR: --ignore-range-below-sp: suspiciously large "
-					  "offset(s): %u and %u\n", offs1, offs2);
-		 return False;
-	  }
-	  if (offs1 <= offs2) {
-		 VG_(message)(Vg_DebugMsg,
-					  "ERROR: --ignore-range-below-sp: invalid offsets "
-					  "(the first must be larger): %u and %u\n", offs1, offs2);
-		 return False;
-	  }
-	  tl_assert(offs1 > offs2);
-	  if (offs1 - offs2 > 4096 /*arbitrary*/) {
-		 VG_(message)(Vg_DebugMsg,
-					  "ERROR: --ignore-range-below-sp: suspiciously large "
-					  "range: %u-%u (size %u)\n", offs1, offs2, offs1 - offs2);
-		 return False;
-	  }
-	  MC_(clo_ignore_range_below_sp) = True;
-	  MC_(clo_ignore_range_below_sp__first_offset) = offs1;
-	  MC_(clo_ignore_range_below_sp__last_offset)  = offs2;
-	  return True;
+      /* This seems at first a bit weird, but: in order to imply
+         a non-wrapped-around address range, the first offset needs to be
+         larger than the second one.  For example
+            --ignore-range-below-sp=8192,8189
+         would cause accesses to in the range [SP-8192, SP-8189] to be
+         ignored. */
+      UInt offs1 = 0, offs2 = 0;
+      Bool ok = parse_UInt_pair(&tmp_str, &offs1, &offs2);
+      // Ensure we used all the text after the '=' sign.
+      if (ok && *tmp_str != 0) ok = False;
+      if (!ok) {
+         VG_(message)(Vg_DebugMsg,
+                      "ERROR: --ignore-range-below-sp: invalid syntax. "
+                      " Expected \"...=decimalnumber-decimalnumber\".\n");
+         return False;
+      }
+      if (offs1 > 1000*1000 /*arbitrary*/ || offs2 > 1000*1000 /*ditto*/) {
+         VG_(message)(Vg_DebugMsg,
+                      "ERROR: --ignore-range-below-sp: suspiciously large "
+                      "offset(s): %u and %u\n", offs1, offs2);
+         return False;
+      }
+      if (offs1 <= offs2) {
+         VG_(message)(Vg_DebugMsg,
+                      "ERROR: --ignore-range-below-sp: invalid offsets "
+                      "(the first must be larger): %u and %u\n", offs1, offs2);
+         return False;
+      }
+      tl_assert(offs1 > offs2);
+      if (offs1 - offs2 > 4096 /*arbitrary*/) {
+         VG_(message)(Vg_DebugMsg,
+                      "ERROR: --ignore-range-below-sp: suspiciously large "
+                      "range: %u-%u (size %u)\n", offs1, offs2, offs1 - offs2);
+         return False;
+      }
+      MC_(clo_ignore_range_below_sp) = True;
+      MC_(clo_ignore_range_below_sp__first_offset) = offs1;
+      MC_(clo_ignore_range_below_sp__last_offset)  = offs2;
+      return True;
    }
 
    else if VG_BHEX_CLO(arg, "--malloc-fill", MC_(clo_malloc_fill), 0x00,0xFF) {}
@@ -6142,7 +6142,7 @@ static Bool mc_process_cmd_line_options(const HChar* arg)
 					   MC_(clo_keep_stacktraces), KS_none) {}
 
    else if VG_BOOL_CLOM(cloPD, arg, "--show-mismatched-frees",
-						MC_(clo_show_mismatched_frees)) {}
+                        MC_(clo_show_mismatched_frees)) {}
 
    else if VG_XACT_CLO(arg, "--expensive-definedness-checks=no",
 							MC_(clo_expensive_definedness_checks), EdcNO) {}
@@ -6164,7 +6164,7 @@ static Bool mc_process_cmd_line_options(const HChar* arg)
 
   bad_level:
    VG_(fmsg_bad_option)(arg,
-	  "--track-origins=yes has no effect when --undef-value-errors=no.\n");
+      "--track-origins=yes has no effect when --undef-value-errors=no.\n");
    return False;
 }
 
@@ -6794,49 +6794,49 @@ static Bool handle_gdb_monitor_command (ThreadId tid, HChar *req)
    }
 
    case  7: { /* xb */
-	  Addr address;
-	  SizeT szB = 1;
-	  if (VG_(strtok_get_address_and_size) (&address, &szB, &ssaveptr)) {
-		 UChar vbits[8];
-		 Int res[8];
-		 Int i;
-		 Int unaddressable = 0;
-		 for (i = 0; i < szB; i++) {
-			Int bnr = i % 8;
-			/* We going to print the first vabits of a new line.
-			   Terminate the previous line if needed: prints a line with the
-			   address and the data. */
-			if (bnr == 0) {
-			   if (i != 0) {
-				  VG_(printf) ("\n");
-				  gdb_xb (address + i - 8, 8, res);
-			   }
-			   VG_(printf) ("\t"); // To align VABITS with gdb_xb layout
-			}
-			res[bnr] = mc_get_or_set_vbits_for_client
-			   (address+i, (Addr) &vbits[bnr], 1,
-				False, /* get them */
-				False  /* is client request */ );
-			if (res[bnr] == 1) {
-			   VG_(printf) ("\t  %02x", vbits[bnr]);
-			} else {
-			   tl_assert(3 == res[bnr]);
-			   unaddressable++;
-			   VG_(printf) ("\t  __");
-			}
-		 }
-		 VG_(printf) ("\n");
-		 if (szB % 8 == 0 && szB > 0)
-			gdb_xb (address + szB - 8, 8, res);
-		 else
-			gdb_xb (address + szB - szB % 8, szB % 8, res);
-		 if (unaddressable) {
-			VG_(printf)
-			   ("Address %p len %lu has %d bytes unaddressable\n",
-				(void *)address, szB, unaddressable);
-		 }
-	  }
-	  return True;
+      Addr address;
+      SizeT szB = 1;
+      if (VG_(strtok_get_address_and_size) (&address, &szB, &ssaveptr)) {
+         UChar vbits[8];
+         Int res[8];
+         Int i;
+         Int unaddressable = 0;
+         for (i = 0; i < szB; i++) {
+            Int bnr = i % 8;
+            /* We going to print the first vabits of a new line.
+               Terminate the previous line if needed: prints a line with the
+               address and the data. */
+            if (bnr == 0) {
+               if (i != 0) {
+                  VG_(printf) ("\n");
+                  gdb_xb (address + i - 8, 8, res);
+               }
+               VG_(printf) ("\t"); // To align VABITS with gdb_xb layout
+            }
+            res[bnr] = mc_get_or_set_vbits_for_client
+               (address+i, (Addr) &vbits[bnr], 1,
+                False, /* get them */
+                False  /* is client request */ );
+            if (res[bnr] == 1) {
+               VG_(printf) ("\t  %02x", vbits[bnr]);
+            } else {
+               tl_assert(3 == res[bnr]);
+               unaddressable++;
+               VG_(printf) ("\t  __");
+            }
+         }
+         VG_(printf) ("\n");
+         if (szB % 8 == 0 && szB > 0)
+            gdb_xb (address + szB - 8, 8, res);
+         else
+            gdb_xb (address + szB - szB % 8, szB % 8, res);
+         if (unaddressable) {
+            VG_(printf)
+               ("Address %p len %lu has %d bytes unaddressable\n",
+                (void *)address, szB, unaddressable);
+         }
+      }
+      return True;
    }
 
    case  8: { /* xtmemory */

@@ -800,17 +800,17 @@ Addr setup_client_stack( void*  init_sp,
 			break;
 
 #        if !defined(VGP_ppc32_linux) && !defined(VGP_ppc64be_linux) \
-			&& !defined(VGP_ppc64le_linux) \
-			&& !defined(VGP_mips32_linux) && !defined(VGP_mips64_linux) \
-			&& !defined(VGP_nanomips_linux)
-		 case AT_SYSINFO_EHDR: {
-			/* Trash this, because we don't reproduce it */
-			const NSegment* ehdrseg = VG_(am_find_nsegment)((Addr)auxv->u.a_ptr);
-			vg_assert(ehdrseg);
-			VG_(am_munmap_valgrind)(ehdrseg->start, ehdrseg->end - ehdrseg->start);
-			auxv->a_type = AT_IGNORE;
-			break;
-		 }
+            && !defined(VGP_ppc64le_linux) \
+            && !defined(VGP_mips32_linux) && !defined(VGP_mips64_linux) \
+            && !defined(VGP_nanomips_linux)
+         case AT_SYSINFO_EHDR: {
+            /* Trash this, because we don't reproduce it */
+            const NSegment* ehdrseg = VG_(am_find_nsegment)((Addr)auxv->u.a_ptr);
+            vg_assert(ehdrseg);
+            VG_(am_munmap_valgrind)(ehdrseg->start, ehdrseg->end - ehdrseg->start);
+            auxv->a_type = AT_IGNORE;
+            break;
+         }
 #        endif
 
 		 case AT_RANDOM:

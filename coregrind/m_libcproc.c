@@ -608,17 +608,17 @@ Int VG_(getrlimit) (Int resource, struct vki_rlimit *rlim)
    if (sr_isError(res) && sr_Err(res) == VKI_ENOSYS)
 #  if defined(VGP_nanomips_linux)
    {
-	  struct vki_rlimit64 new_rlimit;
-	  res = VG_(do_syscall4)(__NR_prlimit64, 0, resource, 0, (UWord)&new_rlimit);
-	  if (new_rlimit.rlim_cur > 2147483647 || new_rlimit.rlim_max > 2147483647)
-		 res = VG_(mk_SysRes_Error)(VKI_ENOSYS);
-	  else {
-		 rlim->rlim_cur = new_rlimit.rlim_cur;
-		 rlim->rlim_max = new_rlimit.rlim_max;
-	  }
+      struct vki_rlimit64 new_rlimit;
+      res = VG_(do_syscall4)(__NR_prlimit64, 0, resource, 0, (UWord)&new_rlimit);
+      if (new_rlimit.rlim_cur > 2147483647 || new_rlimit.rlim_max > 2147483647)
+         res = VG_(mk_SysRes_Error)(VKI_ENOSYS);
+      else {
+         rlim->rlim_cur = new_rlimit.rlim_cur;
+         rlim->rlim_max = new_rlimit.rlim_max;
+      }
    }
 #  else
-	  res = VG_(do_syscall2)(__NR_getrlimit, resource, (UWord)rlim);
+      res = VG_(do_syscall2)(__NR_getrlimit, resource, (UWord)rlim);
 #  endif
    return sr_isError(res) ? -1 : sr_Res(res);
 }
@@ -665,25 +665,25 @@ Int VG_(gettid)(void)
    SysRes res = VG_(do_syscall0)(__NR_gettid);
 
    if (sr_isError(res) && sr_Res(res) == VKI_ENOSYS) {
-	  HChar pid[16];
-	  /*
-	   * The gettid system call does not exist. The obvious assumption
-	   * to make at this point would be that we are running on an older
-	   * system where the getpid system call actually returns the ID of
-	   * the current thread.
-	   *
-	   * Unfortunately it seems that there are some systems with a kernel
-	   * where getpid has been changed to return the ID of the thread group
-	   * leader but where the gettid system call has not yet been added.
-	   *
-	   * So instead of calling getpid here we use readlink to see where
-	   * the /proc/self link is pointing...
-	   */
+      HChar pid[16];      
+      /*
+       * The gettid system call does not exist. The obvious assumption
+       * to make at this point would be that we are running on an older
+       * system where the getpid system call actually returns the ID of
+       * the current thread.
+       *
+       * Unfortunately it seems that there are some systems with a kernel
+       * where getpid has been changed to return the ID of the thread group
+       * leader but where the gettid system call has not yet been added.
+       *
+       * So instead of calling getpid here we use readlink to see where
+       * the /proc/self link is pointing...
+       */
 
 #     if defined(VGP_arm64_linux) || defined(VGP_nanomips_linux)
-	  res = VG_(do_syscall4)(__NR_readlinkat, VKI_AT_FDCWD,
-							 (UWord)"/proc/self",
-							 (UWord)pid, sizeof(pid));
+      res = VG_(do_syscall4)(__NR_readlinkat, VKI_AT_FDCWD,
+                             (UWord)"/proc/self",
+                             (UWord)pid, sizeof(pid));
 #     else
 	  res = VG_(do_syscall3)(__NR_readlink, (UWord)"/proc/self",
 							 (UWord)pid, sizeof(pid));
@@ -819,10 +819,10 @@ Int VG_(getgroups)( Int size, UInt* list )
    return sr_Res(sres);
 
 #  elif defined(VGP_amd64_linux) || defined(VGP_arm_linux) \
-		|| defined(VGP_ppc64be_linux) || defined(VGP_ppc64le_linux)  \
-		|| defined(VGO_darwin) || defined(VGP_s390x_linux)    \
-		|| defined(VGP_mips32_linux) || defined(VGP_arm64_linux) \
-		|| defined(VGO_solaris) || defined(VGP_nanomips_linux)
+        || defined(VGP_ppc64be_linux) || defined(VGP_ppc64le_linux)  \
+        || defined(VGO_darwin) || defined(VGP_s390x_linux)    \
+        || defined(VGP_mips32_linux) || defined(VGP_arm64_linux) \
+        || defined(VGO_solaris) || defined(VGP_nanomips_linux)
    SysRes sres;
    sres = VG_(do_syscall2)(__NR_getgroups, size, (Addr)list);
    if (sr_isError(sres))
@@ -965,10 +965,10 @@ UInt VG_(read_millisecond_timer) ( void )
 #  if defined(VGO_linux) || defined(VGO_solaris)
 void VG_(clock_gettime) ( struct vki_timespec *ts, vki_clockid_t clk_id )
 {
-	SysRes res;
-	res = VG_(do_syscall2)(__NR_clock_gettime, clk_id,
-						   (UWord)ts);
-	vg_assert (sr_isError(res) == 0);
+    SysRes res;
+    res = VG_(do_syscall2)(__NR_clock_gettime, clk_id,
+                           (UWord)ts);
+    vg_assert (sr_isError(res) == 0);
 }
 #  elif defined(VGO_darwin)
   /* See pub_tool_libcproc.h */
@@ -1251,6 +1251,10 @@ void VG_(invalidate_icache) ( void *ptr, SizeT nbytes )
    SysRes sres = VG_(do_syscall3)(__NR_cacheflush, (UWord) ptr,
 								 (UWord) nbytes, (UWord) 3);
    vg_assert( !sr_isError(sres) );
+
+# elif defined(VGA_nanomips)
+
+   __builtin___clear_cache(ptr, (char*)ptr + nbytes);
 
 #  endif
 }
