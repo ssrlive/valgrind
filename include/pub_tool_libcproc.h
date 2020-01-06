@@ -8,7 +8,7 @@
    framework.
 
    Copyright (C) 2000-2017 Julian Seward
-	  jseward@acm.org
+      jseward@acm.org
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -49,12 +49,12 @@ extern const HChar *VG_(libdir);
 // platforms.
 extern const HChar* VG_(LD_PRELOAD_var_name);
 
-/* Resolves filename of VG_(cl_exec_fd) and copies it to the buffer.
+/* Resolves filename of VG_(cl_exec_fd) and copies it to the buffer. 
    Buffer must not be NULL and buf_size must be at least 1.
    If buffer is not large enough it is terminated with '\0' only
    when 'terminate_with_NUL == True'. */
 extern void VG_(client_fname)(HChar *buffer, SizeT buf_size,
-							  Bool terminate_with_NUL);
+                              Bool terminate_with_NUL);
 
 /* Concatenates client exename and command line arguments into
    the buffer. Buffer must not be NULL and buf_size must be
@@ -78,8 +78,8 @@ extern Int  VG_(sysctl) ( Int *name, UInt namelen, void *oldp, SizeT *oldlenp, v
 
 extern Int VG_(getrlimit) ( Int resource, struct vki_rlimit *rlim );
 extern Int VG_(setrlimit) ( Int resource, const struct vki_rlimit *rlim );
-extern Int VG_(prctl) (Int option,
-					   ULong arg2, ULong arg3, ULong arg4, ULong arg5);
+extern Int VG_(prctl) (Int option, 
+                       ULong arg2, ULong arg3, ULong arg4, ULong arg5);
 
 /* ---------------------------------------------------------------------
    pids, etc

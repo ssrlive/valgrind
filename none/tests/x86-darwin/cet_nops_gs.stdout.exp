@@ -1,2 +1,1 @@
-start testing GS prefix ..
-done
+../x86-linux/cet_nops_gs.stdout.exp

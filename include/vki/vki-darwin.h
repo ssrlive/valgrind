@@ -8,7 +8,7 @@
    framework.
 
    Copyright (C) 2007-2017 Apple Inc.
-	  Greg Parker  gparker@apple.com
+      Greg Parker  gparker@apple.com
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -432,18 +432,18 @@ typedef struct {
 
 typedef
    struct {
-	  void* ksa_handler;
-	  void (*sa_tramp)(void*,UWord,UWord,void*,void*);
-	  vki_sigset_t sa_mask;
-	  int sa_flags;
+      void* ksa_handler;
+      void (*sa_tramp)(void*,UWord,UWord,void*,void*);
+      vki_sigset_t sa_mask;
+      int sa_flags;
    }
    vki_sigaction_toK_t;
 
 typedef
    struct {
-	  void* ksa_handler;
-	  vki_sigset_t sa_mask;
-	  int sa_flags;
+      void* ksa_handler;
+      vki_sigset_t sa_mask;
+      int sa_flags;
    }
    vki_sigaction_fromK_t;
 
@@ -813,15 +813,15 @@ typedef
 // xnu_root/bsd/sys/event.h
 
 struct vki_kevent_qos_s {
-	uint64_t    ident;      /* identifier for this event */
-	int16_t     filter;     /* filter for event */
-	uint16_t    flags;      /* general flags */
-	int32_t     qos;        /* quality of service */
-	uint64_t    udata;      /* opaque user data identifier */
-	uint32_t    fflags;     /* filter-specific flags */
-	uint32_t    xflags;     /* extra filter-specific flags */
-	int64_t     data;       /* filter-specific data */
-	uint64_t    ext[4];     /* filter-specific extensions */
+    uint64_t    ident;      /* identifier for this event */
+    int16_t     filter;     /* filter for event */
+    uint16_t    flags;      /* general flags */
+    int32_t     qos;        /* quality of service */
+    uint64_t    udata;      /* opaque user data identifier */
+    uint32_t    fflags;     /* filter-specific flags */
+    uint32_t    xflags;     /* extra filter-specific flags */
+    int64_t     data;       /* filter-specific data */
+    uint64_t    ext[4];     /* filter-specific extensions */
 };
 
 #include <sys/ev.h>
@@ -844,12 +844,12 @@ typedef struct eventreq vki_eventreq;
 
 struct ByteRangeLockPB2
 {
-	unsigned long long offset;        /* offset to first byte to lock */
-	unsigned long long length;        /* nbr of bytes to lock */
-	unsigned long long retRangeStart; /* nbr of 1st byte locked if successful */
-	unsigned char unLockFlag;         /* 1 = unlock, 0 = lock */
-	unsigned char startEndFlag;       /* 1=rel to end of fork, 0=rel to start */
-	int fd;                           /* file desc to assoc this lock with */
+    unsigned long long offset;        /* offset to first byte to lock */
+    unsigned long long length;        /* nbr of bytes to lock */
+    unsigned long long retRangeStart; /* nbr of 1st byte locked if successful */
+    unsigned char unLockFlag;         /* 1 = unlock, 0 = lock */
+    unsigned char startEndFlag;       /* 1=rel to end of fork, 0=rel to start */
+    int fd;                           /* file desc to assoc this lock with */
 };
 
 #define afpfsByteRangeLock2FSCTL _IOWR('z', 23, struct ByteRangeLockPB2)
@@ -1065,29 +1065,29 @@ struct ByteRangeLockPB2
 
 #include <bsm/audit.h>
 
-#define	VKI_A_GETPOLICY	A_GETPOLICY
-#define	VKI_A_SETPOLICY	A_SETPOLICY
-#define	VKI_A_GETKMASK	A_GETKMASK
-#define	VKI_A_SETKMASK	A_SETKMASK
-#define	VKI_A_GETQCTRL	A_GETQCTRL
-#define	VKI_A_SETQCTRL	A_SETQCTRL
-#define	VKI_A_GETCWD	A_GETCWD
-#define	VKI_A_GETCAR	A_GETCAR
-#define	VKI_A_GETSTAT	A_GETSTAT
-#define	VKI_A_SETSTAT	A_SETSTAT
-#define	VKI_A_SETUMASK	A_SETUMASK
-#define	VKI_A_SETSMASK	A_SETSMASK
-#define	VKI_A_GETCOND	A_GETCOND
-#define	VKI_A_SETCOND	A_SETCOND
-#define	VKI_A_GETCLASS	A_GETCLASS
-#define	VKI_A_SETCLASS	A_SETCLASS
-#define	VKI_A_GETPINFO	A_GETPINFO
-#define	VKI_A_SETPMASK	A_SETPMASK
-#define	VKI_A_SETFSIZE	A_SETFSIZE
-#define	VKI_A_GETFSIZE	A_GETFSIZE
-#define	VKI_A_GETPINFO_ADDR	A_GETPINFO_ADDR
-#define	VKI_A_GETKAUDIT	A_GETKAUDIT
-#define	VKI_A_SETKAUDIT	A_SETKAUDIT
+#define	VKI_A_GETPOLICY	A_GETPOLICY	
+#define	VKI_A_SETPOLICY	A_SETPOLICY	
+#define	VKI_A_GETKMASK	A_GETKMASK	
+#define	VKI_A_SETKMASK	A_SETKMASK	
+#define	VKI_A_GETQCTRL	A_GETQCTRL	
+#define	VKI_A_SETQCTRL	A_SETQCTRL	
+#define	VKI_A_GETCWD	A_GETCWD	
+#define	VKI_A_GETCAR	A_GETCAR	
+#define	VKI_A_GETSTAT	A_GETSTAT	
+#define	VKI_A_SETSTAT	A_SETSTAT	
+#define	VKI_A_SETUMASK	A_SETUMASK	
+#define	VKI_A_SETSMASK	A_SETSMASK	
+#define	VKI_A_GETCOND	A_GETCOND	
+#define	VKI_A_SETCOND	A_SETCOND	
+#define	VKI_A_GETCLASS	A_GETCLASS	
+#define	VKI_A_SETCLASS	A_SETCLASS	
+#define	VKI_A_GETPINFO	A_GETPINFO	
+#define	VKI_A_SETPMASK	A_SETPMASK	
+#define	VKI_A_SETFSIZE	A_SETFSIZE	
+#define	VKI_A_GETFSIZE	A_GETFSIZE	
+#define	VKI_A_GETPINFO_ADDR	A_GETPINFO_ADDR	
+#define	VKI_A_GETKAUDIT	A_GETKAUDIT	
+#define	VKI_A_SETKAUDIT	A_SETKAUDIT	
 #if DARWIN_VERS >= DARWIN_10_6
 #define VKI_A_SENDTRIGGER A_SENDTRIGGER
 #define VKI_A_GETSINFO_ADDR A_GETSINFO_ADDR

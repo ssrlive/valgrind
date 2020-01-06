@@ -339,8 +339,8 @@ static void usage_NORETURN ( int need_help )
    VG_(log_output_sink).type = VgLogTo_Fd;
 
    if (VG_(needs).malloc_replacement) {
-	  VG_(sprintf)(default_alignment,    "%d",  VG_MIN_MALLOC_SZB);
-	  VG_(sprintf)(default_redzone_size, "%lu", VG_(tdict).tool_client_redzone_szB);
+      VG_(sprintf)(default_alignment,    "%d",  VG_MIN_MALLOC_SZB);
+      VG_(sprintf)(default_redzone_size, "%lu", VG_(tdict).tool_client_redzone_szB);
    } else {
       VG_(strcpy)(default_alignment,    "not used by this tool");
       VG_(strcpy)(default_redzone_size, "not used by this tool");
@@ -360,7 +360,7 @@ static void usage_NORETURN ( int need_help )
       VG_(printf)("  user options for %s:\n", VG_(details).name);
       if (VG_(needs).command_line_options)
 	 VG_TDICT_CALL(tool_print_usage);
-	  else
+      else
 	 VG_(printf)("    (none)\n");
    }
    if (need_help == 1) {
@@ -948,9 +948,9 @@ void main_process_cmd_line_options( void )
    vg_assert( VG_(args_for_valgrind) );
 
    VG_(clo_suppressions) = VG_(newXA)(VG_(malloc), "main.mpclo.4",
-									  VG_(free), sizeof(HChar *));
+                                      VG_(free), sizeof(HChar *));
    VG_(clo_fullpath_after) = VG_(newXA)(VG_(malloc), "main.mpclo.5",
-										VG_(free), sizeof(HChar *));
+                                        VG_(free), sizeof(HChar *));
    VG_(clo_req_tsyms) = VG_(newXA)(VG_(malloc), "main.mpclo.6",
                                    VG_(free), sizeof(HChar *));
 
@@ -969,12 +969,12 @@ void main_process_cmd_line_options( void )
 
    /* Determine the path prefix for vgdb */
    if (VG_(clo_vgdb_prefix) == NULL)
-	 VG_(clo_vgdb_prefix) = VG_(vgdb_prefix_default)();
+     VG_(clo_vgdb_prefix) = VG_(vgdb_prefix_default)();
 
    /* Check various option values */
 
    if (VG_(clo_verbosity) < 0)
-	  VG_(clo_verbosity) = 0;
+      VG_(clo_verbosity) = 0;
 
    if (!pos.sigill_diag_set)
       VG_(clo_sigill_diag) = (VG_(clo_verbosity) > 0);
@@ -987,21 +987,21 @@ void main_process_cmd_line_options( void )
    }
 
    if (VG_(clo_trace_notbelow) == -1) {
-	 if (VG_(clo_trace_notabove) == -1) {
-	   /* [] */
-	   VG_(clo_trace_notbelow) = 2147483647;
-	   VG_(clo_trace_notabove) = 0;
-	 } else {
-	   /* [0 .. notabove] */
-	   VG_(clo_trace_notbelow) = 0;
-	 }
+     if (VG_(clo_trace_notabove) == -1) {
+       /* [] */
+       VG_(clo_trace_notbelow) = 2147483647;
+       VG_(clo_trace_notabove) = 0;
+     } else {
+       /* [0 .. notabove] */
+       VG_(clo_trace_notbelow) = 0;
+     }
    } else {
-	 if (VG_(clo_trace_notabove) == -1) {
-	   /* [notbelow .. ]  */
-	   VG_(clo_trace_notabove) = 2147483647;
-	 } else {
-	   /* [notbelow .. notabove]  */
-	 }
+     if (VG_(clo_trace_notabove) == -1) {
+       /* [notbelow .. ]  */
+       VG_(clo_trace_notabove) = 2147483647;
+     } else {
+       /* [notbelow .. notabove]  */
+     }
    }
 
    if (VG_(clo_gen_suppressions) > 0 &&
@@ -1011,9 +1011,9 @@ void main_process_cmd_line_options( void )
          "because it doesn't generate errors.\n", VG_(details).name);
    }
    if ((VG_(clo_exit_on_first_error)) &&
-	   (VG_(clo_error_exitcode)==0)) {
-	  VG_(fmsg_bad_option)("--exit-on-first-error=yes",
-		 "You must define a non nul exit error code, with --error-exitcode=...\n");
+       (VG_(clo_error_exitcode)==0)) {
+      VG_(fmsg_bad_option)("--exit-on-first-error=yes",
+         "You must define a non nul exit error code, with --error-exitcode=...\n");
    }
 
 #  if !defined(VGO_darwin)
@@ -1025,7 +1025,7 @@ void main_process_cmd_line_options( void )
 #  endif
 
    /* If XML output is requested, check that the tool actually
-	  supports it. */
+      supports it. */
    if (VG_(clo_xml) && !VG_(needs).xml_output) {
       VG_(clo_xml) = False;
       VG_(fmsg_bad_option)("--xml=yes",
@@ -1042,36 +1042,36 @@ void main_process_cmd_line_options( void )
    */
    if (VG_(clo_xml)) {
 
-	  /* We can't allow --gen-suppressions=yes, since that requires us
-		 to print the error and then ask the user if she wants a
-		 suppression for it, but in XML mode we won't print it until
-		 we know whether we also need to print a suppression.  Hence a
-		 circular dependency.  So disallow this.
-		 (--gen-suppressions=all is still OK since we don't need any
-		 user interaction in this case.) */
-	  if (VG_(clo_gen_suppressions) == 1) {
-		 VG_(fmsg_bad_option)(
-			"--xml=yes together with --gen-suppressions=yes",
-			"When --xml=yes is specified, --gen-suppressions=no\n"
-			"or --gen-suppressions=all is allowed, but not "
-			"--gen-suppressions=yes.\n");
-	  }
+      /* We can't allow --gen-suppressions=yes, since that requires us
+         to print the error and then ask the user if she wants a
+         suppression for it, but in XML mode we won't print it until
+         we know whether we also need to print a suppression.  Hence a
+         circular dependency.  So disallow this.
+         (--gen-suppressions=all is still OK since we don't need any
+         user interaction in this case.) */
+      if (VG_(clo_gen_suppressions) == 1) {
+         VG_(fmsg_bad_option)(
+            "--xml=yes together with --gen-suppressions=yes",
+            "When --xml=yes is specified, --gen-suppressions=no\n"
+            "or --gen-suppressions=all is allowed, but not "
+            "--gen-suppressions=yes.\n");
+      }
 
-	  /* Disallow dump_error in XML mode; sounds like a recipe for
-		 chaos.  No big deal; dump_error is a flag for debugging V
-		 itself. */
-	  if (VG_(clo_dump_error) > 0) {
-		 VG_(fmsg_bad_option)("--xml=yes",
-			"Cannot be used together with --dump-error");
-	  }
+      /* Disallow dump_error in XML mode; sounds like a recipe for
+         chaos.  No big deal; dump_error is a flag for debugging V
+         itself. */
+      if (VG_(clo_dump_error) > 0) {
+         VG_(fmsg_bad_option)("--xml=yes",
+            "Cannot be used together with --dump-error");
+      }
 
-	  /* Disable error limits (this might be a bad idea!) */
-	  VG_(clo_error_limit) = False;
-	  /* Disable emulation warnings */
+      /* Disable error limits (this might be a bad idea!) */
+      VG_(clo_error_limit) = False;
+      /* Disable emulation warnings */
 
-	  /* Also, we want to set options for the leak checker, but that
-		 will have to be done in Memcheck's flag-handling code, not
-		 here. */
+      /* Also, we want to set options for the leak checker, but that
+         will have to be done in Memcheck's flag-handling code, not
+         here. */
    }
 
    /* All non-logging-related options have been checked.  If the logging
@@ -1084,8 +1084,8 @@ void main_process_cmd_line_options( void )
                            pos.tmp_log_fd, pos.tmp_xml_fd);
 
    /* Register child at-fork handler which will take care of handling
-	  --child-silent-after-fork clo and also reopening output sinks for forked
-	  children, if requested via --log|xml-file= options. */
+      --child-silent-after-fork clo and also reopening output sinks for forked
+      children, if requested via --log|xml-file= options. */
    VG_(atfork)(NULL, NULL, VG_(logging_atfork_child));
 
    // Suppressions related stuff
@@ -1118,15 +1118,15 @@ static void setup_file_descriptors(void)
 
    /* Get the current file descriptor limits. */
    if (VG_(getrlimit)(VKI_RLIMIT_NOFILE, &rl) < 0) {
-	  rl.rlim_cur = 1024;
-	  rl.rlim_max = 1024;
+      rl.rlim_cur = 1024;
+      rl.rlim_max = 1024;
    }
 
 #  if defined(VGO_darwin)
    /* Darwin lies. It reports file max as RLIM_INFINITY but
-	  silently disallows anything bigger than 10240. */
+      silently disallows anything bigger than 10240. */
    if (rl.rlim_cur >= 10240  &&  rl.rlim_max == 0x7fffffffffffffffULL) {
-	  rl.rlim_max = 10240;
+      rl.rlim_max = 10240;
    }
 #  endif
 
@@ -1136,9 +1136,9 @@ static void setup_file_descriptors(void)
 
    /* Work out where to move the soft limit to. */
    if (rl.rlim_cur + N_RESERVED_FDS <= rl.rlim_max) {
-	  rl.rlim_cur = rl.rlim_cur + N_RESERVED_FDS;
+      rl.rlim_cur = rl.rlim_cur + N_RESERVED_FDS;
    } else {
-	  rl.rlim_cur = rl.rlim_max;
+      rl.rlim_cur = rl.rlim_max;
    }
 
    /* Reserve some file descriptors for our use. */
@@ -1149,14 +1149,14 @@ static void setup_file_descriptors(void)
    VG_(setrlimit)(VKI_RLIMIT_NOFILE, &rl);
 
    if (show) {
-	  VG_(printf)("fd limits: host,  after: cur %lu max %lu\n",
-				  (UWord)rl.rlim_cur, (UWord)rl.rlim_max);
-	  VG_(printf)("fd limits: guest       : cur %d max %d\n",
-				  VG_(fd_soft_limit), VG_(fd_hard_limit));
+      VG_(printf)("fd limits: host,  after: cur %lu max %lu\n",
+                  (UWord)rl.rlim_cur, (UWord)rl.rlim_max);
+      VG_(printf)("fd limits: guest       : cur %d max %d\n",
+                  VG_(fd_soft_limit), VG_(fd_hard_limit));
    }
 
    if (VG_(cl_exec_fd) != -1)
-	  VG_(cl_exec_fd) = VG_(safe_fd)( VG_(cl_exec_fd) );
+      VG_(cl_exec_fd) = VG_(safe_fd)( VG_(cl_exec_fd) );
 }
 
 
@@ -1279,7 +1279,7 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    }
 
    /* ... and start the debug logger.  Now we can safely emit logging
-	  messages all through startup. */
+      messages all through startup. */
    VG_(debugLog_startup)(loglevel, "Stage 2 (main)");
    VG_(debugLog)(1, "main", "Welcome to Valgrind version "
                             VERSION " debug logging\n");
@@ -1327,10 +1327,10 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //--------------------------------------------------------------
    VG_(debugLog)(1, "main", "Checking initial stack was noted\n");
    if (the_iicii.sp_at_startup == 0) {
-	  VG_(debugLog)(0, "main", "Valgrind: FATAL: "
-							   "Initial stack was not noted.\n");
-	  VG_(debugLog)(0, "main", "   Cannot continue.  Sorry.\n");
-	  VG_(exit)(1);
+      VG_(debugLog)(0, "main", "Valgrind: FATAL: "
+                               "Initial stack was not noted.\n");
+      VG_(debugLog)(0, "main", "   Cannot continue.  Sorry.\n");
+      VG_(exit)(1);
    }
 
    //--------------------------------------------------------------
@@ -1340,11 +1340,11 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //--------------------------------------------------------------
    VG_(debugLog)(1, "main", "Starting the address space manager\n");
    vg_assert(VKI_PAGE_SIZE    == 4096  || VKI_PAGE_SIZE == 8192
-			 || VKI_PAGE_SIZE == 16384 || VKI_PAGE_SIZE == 32768
-			 || VKI_PAGE_SIZE == 65536);
+             || VKI_PAGE_SIZE == 16384 || VKI_PAGE_SIZE == 32768
+             || VKI_PAGE_SIZE == 65536);
    vg_assert(VKI_MAX_PAGE_SIZE    == 4096  || VKI_MAX_PAGE_SIZE == 8192
-			 || VKI_MAX_PAGE_SIZE == 16384 || VKI_MAX_PAGE_SIZE == 32768
-			 || VKI_MAX_PAGE_SIZE == 65536);
+             || VKI_MAX_PAGE_SIZE == 16384 || VKI_MAX_PAGE_SIZE == 32768
+             || VKI_MAX_PAGE_SIZE == 65536);
    vg_assert(VKI_PAGE_SIZE <= VKI_MAX_PAGE_SIZE);
    vg_assert(VKI_PAGE_SIZE     == (1 << VKI_PAGE_SHIFT));
    vg_assert(VKI_MAX_PAGE_SIZE == (1 << VKI_MAX_PAGE_SHIFT));
@@ -1361,7 +1361,7 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //--------------------------------------------------------------
    VG_(debugLog)(1, "main", "Starting the dynamic memory manager\n");
    { void* p = VG_(malloc)( "main.vm.1", 12345 );
-	 VG_(free)( p );
+     VG_(free)( p );
    }
    VG_(debugLog)(1, "main", "Dynamic memory manager is running\n");
 
@@ -1380,9 +1380,9 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //--------------------------------------------------------------
    // Look for alternative libdir
    { HChar *cp = VG_(getenv)(VALGRIND_LIB);
-	 if (cp != NULL)
-		VG_(libdir) = cp;
-	 VG_(debugLog)(1, "main", "VG_(libdir) = %s\n", VG_(libdir));
+     if (cp != NULL)
+        VG_(libdir) = cp;
+     VG_(debugLog)(1, "main", "VG_(libdir) = %s\n", VG_(libdir));
    }
 
    //--------------------------------------------------------------
@@ -1390,9 +1390,9 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    VG_(debugLog)(1, "main", "Getting launcher's name ...\n");
    VG_(name_of_launcher) = VG_(getenv)(VALGRIND_LAUNCHER);
    if (VG_(name_of_launcher) == NULL) {
-	  VG_(printf)("valgrind: You cannot run '%s' directly.\n", argv[0]);
-	  VG_(printf)("valgrind: You should use $prefix/bin/valgrind.\n");
-	  VG_(exit)(1);
+      VG_(printf)("valgrind: You cannot run '%s' directly.\n", argv[0]);
+      VG_(printf)("valgrind: You should use $prefix/bin/valgrind.\n");
+      VG_(exit)(1);
    }
    VG_(debugLog)(1, "main", "... %s\n", VG_(name_of_launcher));
 
@@ -1414,8 +1414,8 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    // Figure out what sort of CPU we're on, and whether it is
    // able to run V.
    /* The vex_archinfo structure is passed down later to the client
-	* to verify the HW info settings are consistent.
-	*/
+    * to verify the HW info settings are consistent.
+    */
    VexArchInfo vex_archinfo;
    VG_(debugLog)(1, "main", "Get hardware capabilities ...\n");
    { VexArch     vex_arch;
@@ -1488,7 +1488,7 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //   p: split_up_argv [for VG_(args_for_valgrind)]
    //--------------------------------------------------------------
    VG_(debugLog)(1, "main",
-					"(early_) Process Valgrind's command line options\n");
+                    "(early_) Process Valgrind's command line options\n");
    early_process_cmd_line_options(&need_help);
 
    // BEGIN HACK
@@ -1498,15 +1498,15 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    vg_assert(VG_(clo_read_inline_info) == False);
 #  if !defined(VGO_darwin)
    if (0 == VG_(strcmp)(VG_(clo_toolname), "memcheck")
-	   || 0 == VG_(strcmp)(VG_(clo_toolname), "helgrind")
-	   || 0 == VG_(strcmp)(VG_(clo_toolname), "drd")
-	   || 0 == VG_(strcmp)(VG_(clo_toolname), "massif")
-	   || 0 == VG_(strcmp)(VG_(clo_toolname), "dhat")) {
-	  /* Change the default setting.  Later on (just below)
-		 main_process_cmd_line_options should pick up any
-		 user-supplied setting for it and will override the default
-		 set here. */
-	  VG_(clo_read_inline_info) = True;
+       || 0 == VG_(strcmp)(VG_(clo_toolname), "helgrind")
+       || 0 == VG_(strcmp)(VG_(clo_toolname), "drd")
+       || 0 == VG_(strcmp)(VG_(clo_toolname), "massif")
+       || 0 == VG_(strcmp)(VG_(clo_toolname), "dhat")) {
+      /* Change the default setting.  Later on (just below)
+         main_process_cmd_line_options should pick up any
+         user-supplied setting for it and will override the default
+         set here. */
+      VG_(clo_read_inline_info) = True;
    }
 #  endif
    // END HACK
@@ -1537,18 +1537,18 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //    initial values into it)
    //--------------------------------------------------------------
    if (!need_help) {
-	  VG_(debugLog)(1, "main", "Create initial image\n");
+      VG_(debugLog)(1, "main", "Create initial image\n");
 
 #     if defined(VGO_linux) || defined(VGO_darwin) || defined(VGO_solaris)
-	  the_iicii.argv              = argv;
-	  the_iicii.envp              = envp;
-	  the_iicii.toolname          = VG_(clo_toolname);
+      the_iicii.argv              = argv;
+      the_iicii.envp              = envp;
+      the_iicii.toolname          = VG_(clo_toolname);
 #     else
 #       error "Unknown platform"
 #     endif
 
-	  /* NOTE: this call reads VG_(clo_main_stacksize). */
-	  the_iifii = VG_(ii_create_image)( the_iicii, &vex_archinfo );
+      /* NOTE: this call reads VG_(clo_main_stacksize). */
+      the_iifii = VG_(ii_create_image)( the_iicii, &vex_archinfo );
    }
 
    //==============================================================
@@ -1580,91 +1580,91 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
 
 #if defined(VGO_linux) || defined(VGO_solaris)
    if (!need_help) {
-	  HChar  buf[50];   // large enough
-	  HChar  buf2[VG_(mkstemp_fullname_bufsz)(sizeof buf - 1)];
-	  Int    fd, r;
+      HChar  buf[50];   // large enough
+      HChar  buf2[VG_(mkstemp_fullname_bufsz)(sizeof buf - 1)];
+      Int    fd, r;
 
 #if defined(VGO_linux) || defined(SOLARIS_PROC_CMDLINE)
-	  /* Fake /proc/<pid>/cmdline only on Linux and Solaris if supported. */
-	  HChar  nul[1];
-	  const HChar* exename;
+      /* Fake /proc/<pid>/cmdline only on Linux and Solaris if supported. */
+      HChar  nul[1];
+      const HChar* exename;
 
-	  VG_(debugLog)(1, "main", "Create fake /proc/<pid>/cmdline\n");
+      VG_(debugLog)(1, "main", "Create fake /proc/<pid>/cmdline\n");
 
-	  VG_(sprintf)(buf, "proc_%d_cmdline", VG_(getpid)());
-	  fd = VG_(mkstemp)( buf, buf2 );
-	  if (fd == -1)
-		 VG_(err_config_error)("Can't create client cmdline file in %s\n", buf2);
+      VG_(sprintf)(buf, "proc_%d_cmdline", VG_(getpid)());
+      fd = VG_(mkstemp)( buf, buf2 );
+      if (fd == -1)
+         VG_(err_config_error)("Can't create client cmdline file in %s\n", buf2);
 
-	  nul[0] = 0;
-	  exename = VG_(args_the_exename);
-	  VG_(write)(fd, exename, VG_(strlen)( exename ));
-	  VG_(write)(fd, nul, 1);
+      nul[0] = 0;
+      exename = VG_(args_the_exename);
+      VG_(write)(fd, exename, VG_(strlen)( exename ));
+      VG_(write)(fd, nul, 1);
 
-	  for (i = 0; i < VG_(sizeXA)( VG_(args_for_client) ); i++) {
-		 HChar* arg = * (HChar**) VG_(indexXA)( VG_(args_for_client), i );
-		 VG_(write)(fd, arg, VG_(strlen)( arg ));
-		 VG_(write)(fd, nul, 1);
-	  }
+      for (i = 0; i < VG_(sizeXA)( VG_(args_for_client) ); i++) {
+         HChar* arg = * (HChar**) VG_(indexXA)( VG_(args_for_client), i );
+         VG_(write)(fd, arg, VG_(strlen)( arg ));
+         VG_(write)(fd, nul, 1);
+      }
 
-	  /* Don't bother to seek the file back to the start; instead do
+      /* Don't bother to seek the file back to the start; instead do
 	 it every time a copy of it is given out (by PRE(sys_open) or
 	 PRE(sys_openat)). That is probably more robust across fork() etc. */
 
-	  /* Now delete it, but hang on to the fd. */
-	  r = VG_(unlink)( buf2 );
-	  if (r)
-		 VG_(err_config_error)("Can't delete client cmdline file in %s\n", buf2);
+      /* Now delete it, but hang on to the fd. */
+      r = VG_(unlink)( buf2 );
+      if (r)
+         VG_(err_config_error)("Can't delete client cmdline file in %s\n", buf2);
 
-	  VG_(cl_cmdline_fd) = fd;
+      VG_(cl_cmdline_fd) = fd;
 #endif // defined(VGO_linux) || defined(SOLARIS_PROC_CMDLINE)
 
-	  /* Fake /proc/<pid>/auxv on both Linux and Solaris. */
-	  VG_(debugLog)(1, "main", "Create fake /proc/<pid>/auxv\n");
+      /* Fake /proc/<pid>/auxv on both Linux and Solaris. */
+      VG_(debugLog)(1, "main", "Create fake /proc/<pid>/auxv\n");
 
-	  VG_(sprintf)(buf, "proc_%d_auxv", VG_(getpid)());
-	  fd = VG_(mkstemp)( buf, buf2 );
-	  if (fd == -1)
-		 VG_(err_config_error)("Can't create client auxv file in %s\n", buf2);
+      VG_(sprintf)(buf, "proc_%d_auxv", VG_(getpid)());
+      fd = VG_(mkstemp)( buf, buf2 );
+      if (fd == -1)
+         VG_(err_config_error)("Can't create client auxv file in %s\n", buf2);
 
-	  UWord *client_auxv = VG_(client_auxv);
-	  unsigned int client_auxv_len = 0;
-	  while (*client_auxv != 0) {
-		 client_auxv++;
-		 client_auxv++;
-		 client_auxv_len += 2 * sizeof(UWord);
-	  }
-	  client_auxv_len += 2 * sizeof(UWord);
+      UWord *client_auxv = VG_(client_auxv);
+      unsigned int client_auxv_len = 0;
+      while (*client_auxv != 0) {
+         client_auxv++;
+         client_auxv++;
+         client_auxv_len += 2 * sizeof(UWord);
+      }
+      client_auxv_len += 2 * sizeof(UWord);
 
-	  VG_(write)(fd, VG_(client_auxv), client_auxv_len);
+      VG_(write)(fd, VG_(client_auxv), client_auxv_len);
 
       /* Don't bother to seek the file back to the start; instead do
 	 it every time a copy of it is given out (by PRE(sys_open)).
 	 That is probably more robust across fork() etc. */
 
-	  /* Now delete it, but hang on to the fd. */
-	  r = VG_(unlink)( buf2 );
-	  if (r)
-		 VG_(err_config_error)("Can't delete client auxv file in %s\n", buf2);
+      /* Now delete it, but hang on to the fd. */
+      r = VG_(unlink)( buf2 );
+      if (r)
+         VG_(err_config_error)("Can't delete client auxv file in %s\n", buf2);
 
-	  VG_(cl_auxv_fd) = fd;
+      VG_(cl_auxv_fd) = fd;
 
 #if defined(VGO_solaris)
-	  /* Fake /proc/<pid>/psinfo on Solaris.
-	   * Contents will be fetched and partially faked later on the fly. */
-	  VG_(debugLog)(1, "main", "Create fake /proc/<pid>/psinfo\n");
+      /* Fake /proc/<pid>/psinfo on Solaris.
+       * Contents will be fetched and partially faked later on the fly. */
+      VG_(debugLog)(1, "main", "Create fake /proc/<pid>/psinfo\n");
 
-	  VG_(sprintf)(buf, "proc_%d_psinfo", VG_(getpid)());
-	  fd = VG_(mkstemp)( buf, buf2 );
-	  if (fd == -1)
-		 VG_(err_config_error)("Can't create client psinfo file in %s\n", buf2);
+      VG_(sprintf)(buf, "proc_%d_psinfo", VG_(getpid)());
+      fd = VG_(mkstemp)( buf, buf2 );
+      if (fd == -1)
+         VG_(err_config_error)("Can't create client psinfo file in %s\n", buf2);
 
-	  /* Now delete it, but hang on to the fd. */
-	  r = VG_(unlink)( buf2 );
-	  if (r)
-		 VG_(err_config_error)("Can't delete client psinfo file in %s\n", buf2);
+      /* Now delete it, but hang on to the fd. */
+      r = VG_(unlink)( buf2 );
+      if (r)
+         VG_(err_config_error)("Can't delete client psinfo file in %s\n", buf2);
 
-	  VG_(cl_psinfo_fd) = fd;
+      VG_(cl_psinfo_fd) = fd;
 #endif /* VGO_solaris */
    }
 #endif
@@ -1678,7 +1678,7 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    VG_(tl_pre_clo_init)();
    // Activate var info readers, if the tool asked for it:
    if (VG_(needs).var_info)
-	  VG_(clo_read_var_info) = True;
+      VG_(clo_read_var_info) = True;
 
    //--------------------------------------------------------------
    // If --tool and --help/--help-debug was given, now give the core+tool
@@ -1697,8 +1697,8 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //   p: setup_file_descriptors()  [for 'VG_(fd_xxx_limit)']
    //--------------------------------------------------------------
    VG_(debugLog)(1, "main",
-					"(main_) Process Valgrind's command line options, "
-					"setup logging\n");
+                    "(main_) Process Valgrind's command line options, "
+                    "setup logging\n");
    main_process_cmd_line_options();
 
    //--------------------------------------------------------------
@@ -1727,15 +1727,15 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    VG_(debugLog)(1, "main", "Initialise the tool part 2 (post_clo_init)\n");
    VG_TDICT_CALL(tool_post_clo_init);
    {
-	  /* The tool's "needs" will by now be finalised, since it has no
-		 further opportunity to specify them.  So now sanity check
-		 and finish initialising the needs. */
-	  const HChar* s;
-	  Bool  ok;
-	  ok = VG_(finish_needs_init)( &s );
-	  if (!ok) {
-		 VG_(core_panic)(s);
-	  }
+      /* The tool's "needs" will by now be finalised, since it has no
+         further opportunity to specify them.  So now sanity check
+         and finish initialising the needs. */
+      const HChar* s;
+      Bool  ok;
+      ok = VG_(finish_needs_init)( &s );
+      if (!ok) {
+         VG_(core_panic)(s);
+      }
    }
 
    //--------------------------------------------------------------
@@ -1759,8 +1759,8 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //   p: main_process_cmd_line_options  [for VG_(clo_track_fds)]
    //--------------------------------------------------------------
    if (VG_(clo_track_fds)) {
-	  VG_(debugLog)(1, "main", "Init preopened fds\n");
-	  VG_(init_preopened_fds)();
+      VG_(debugLog)(1, "main", "Init preopened fds\n");
+      VG_(init_preopened_fds)();
    }
 
 #if defined(VGO_solaris)
@@ -1789,31 +1789,31 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
 
    vg_assert(!addr2dihandle);
    addr2dihandle = VG_(newXA)( VG_(malloc), "main.vm.2",
-							   VG_(free), sizeof(Addr_n_ULong) );
+                               VG_(free), sizeof(Addr_n_ULong) );
 
 #  if defined(VGO_linux) || defined(VGO_solaris)
    { Addr* seg_starts;
-	 Int   n_seg_starts;
-	 Addr_n_ULong anu;
+     Int   n_seg_starts;
+     Addr_n_ULong anu;
 
-	 seg_starts = VG_(get_segment_starts)( SkFileC | SkFileV, &n_seg_starts );
-	 vg_assert(seg_starts && n_seg_starts >= 0);
+     seg_starts = VG_(get_segment_starts)( SkFileC | SkFileV, &n_seg_starts );
+     vg_assert(seg_starts && n_seg_starts >= 0);
 
-	 /* show them all to the debug info reader.  allow_SkFileV has to
-		be True here so that we read info from the valgrind executable
-		itself. */
-	 for (i = 0; i < n_seg_starts; i++) {
-		anu.ull = VG_(di_notify_mmap)( seg_starts[i], True/*allow_SkFileV*/,
-									   -1/*Don't use_fd*/);
-		/* anu.ull holds the debuginfo handle returned by di_notify_mmap,
-		   if any. */
-		if (anu.ull > 0) {
-		   anu.a = seg_starts[i];
-		   VG_(addToXA)( addr2dihandle, &anu );
-		}
-	 }
+     /* show them all to the debug info reader.  allow_SkFileV has to
+        be True here so that we read info from the valgrind executable
+        itself. */
+     for (i = 0; i < n_seg_starts; i++) {
+        anu.ull = VG_(di_notify_mmap)( seg_starts[i], True/*allow_SkFileV*/,
+                                       -1/*Don't use_fd*/);
+        /* anu.ull holds the debuginfo handle returned by di_notify_mmap,
+           if any. */
+        if (anu.ull > 0) {
+           anu.a = seg_starts[i];
+           VG_(addToXA)( addr2dihandle, &anu );
+        }
+     }
 
-	 VG_(free)( seg_starts );
+     VG_(free)( seg_starts );
    }
 #  elif defined(VGO_darwin)
    { Addr* seg_starts;
@@ -1855,14 +1855,14 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    }
 
    if (VG_(clo_xml)) {
-	  HChar buf[50];    // large enough
-	  VG_(elapsed_wallclock_time)(buf, sizeof buf);
-	  VG_(printf_xml)( "<status>\n"
-					   "  <state>RUNNING</state>\n"
-					   "  <time>%pS</time>\n"
-					   "</status>\n",
-					   buf );
-	  VG_(printf_xml)( "\n" );
+      HChar buf[50];    // large enough
+      VG_(elapsed_wallclock_time)(buf, sizeof buf);
+      VG_(printf_xml)( "<status>\n"
+                       "  <state>RUNNING</state>\n"
+                       "  <time>%pS</time>\n"
+                       "</status>\n",
+                       buf );
+      VG_(printf_xml)( "\n" );
    }
 
    VG_(init_Threads)();
@@ -1874,7 +1874,7 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    VG_(debugLog)(1, "main", "Initialise scheduler (phase 1)\n");
    tid_main = VG_(scheduler_init_phase1)();
    vg_assert(tid_main >= 0 && tid_main < VG_N_THREADS
-			 && tid_main != VG_INVALID_THREADID);
+             && tid_main != VG_INVALID_THREADID);
    /* Tell the tool about tid_main */
    VG_TRACK( pre_thread_ll_create, VG_INVALID_THREADID, tid_main );
 
@@ -1993,15 +1993,15 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
         since the mapping doesn't appear in the kernel-supplied
         process map.  So do it here instead. */
 #    if defined(VGP_amd64_darwin)
-	 VG_TRACK( new_mem_startup,
-			   0x7fffffe00000, 0x7ffffffff000-0x7fffffe00000,
-			   True, False, True, /* r-x */
-			   0 /* di_handle: no associated debug info */ );
+     VG_TRACK( new_mem_startup,
+               0x7fffffe00000, 0x7ffffffff000-0x7fffffe00000,
+               True, False, True, /* r-x */
+               0 /* di_handle: no associated debug info */ );
 #    elif defined(VGP_x86_darwin)
-	 VG_TRACK( new_mem_startup,
-			   0xfffec000, 0xfffff000-0xfffec000,
-			   True, False, True, /* r-x */
-			   0 /* di_handle: no associated debug info */ );
+     VG_TRACK( new_mem_startup,
+               0xfffec000, 0xfffff000-0xfffec000,
+               True, False, True, /* r-x */
+               0 /* di_handle: no associated debug info */ );
 #    endif
    }
 
@@ -2030,17 +2030,17 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //--------------------------------------------------------------
    VG_(debugLog)(1, "main", "Finalise initial image\n");
    { /* Mark the main thread as running while we tell the tool about
-		the client memory which could be tracked during initial image
-		finalisation. So the tool can associate that memory with the
-		main thread. */
-	 vg_assert(VG_(running_tid) == VG_INVALID_THREADID);
-	 VG_(running_tid) = tid_main;
+        the client memory which could be tracked during initial image
+        finalisation. So the tool can associate that memory with the
+        main thread. */
+     vg_assert(VG_(running_tid) == VG_INVALID_THREADID);
+     VG_(running_tid) = tid_main;
 
-	 VG_(ii_finalise_image)( the_iifii );
+     VG_(ii_finalise_image)( the_iifii );
 
-	 /* Clear the running thread indicator */
-	 VG_(running_tid) = VG_INVALID_THREADID;
-	 vg_assert(VG_(running_tid) == VG_INVALID_THREADID);
+     /* Clear the running thread indicator */
+     VG_(running_tid) = VG_INVALID_THREADID;
+     vg_assert(VG_(running_tid) == VG_INVALID_THREADID);
    }
 
    //--------------------------------------------------------------
@@ -2059,8 +2059,8 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    //   p: main_process_cmd_line_options()  [for VG_(clo_suppressions)]
    //--------------------------------------------------------------
    if (VG_(needs).core_errors || VG_(needs).tool_errors) {
-	  VG_(debugLog)(1, "main", "Load suppressions\n");
-	  VG_(load_suppressions)();
+      VG_(debugLog)(1, "main", "Load suppressions\n");
+      VG_(load_suppressions)();
    }
 
    //--------------------------------------------------------------
@@ -2083,20 +2083,20 @@ Int valgrind_main ( Int argc, HChar **argv, HChar **envp )
    VG_(debugLog)(1, "main", "Running thread 1\n");
 
    /* As a result of the following call, the last thread standing
-	  eventually winds up running shutdown_actions_NORETURN
-	  just below.  Unfortunately, simply exporting said function
-	  causes m_main to be part of a module cycle, which is pretty
-	  nonsensical.  So instead of doing that, the address of said
-	  function is stored in a global variable 'owned' by m_syswrap,
-	  and it uses that function pointer to get back here when it needs
-	  to. */
+      eventually winds up running shutdown_actions_NORETURN
+      just below.  Unfortunately, simply exporting said function
+      causes m_main to be part of a module cycle, which is pretty
+      nonsensical.  So instead of doing that, the address of said
+      function is stored in a global variable 'owned' by m_syswrap,
+      and it uses that function pointer to get back here when it needs
+      to. */
 
    /* Set continuation address. */
    VG_(address_of_m_main_shutdown_actions_NORETURN)
-	  = & shutdown_actions_NORETURN;
+      = & shutdown_actions_NORETURN;
 
    /* Run the first thread, eventually ending up at the continuation
-	  address. */
+      address. */
    VG_(main_thread_wrapper_NORETURN)(1);
 
    /*NOTREACHED*/
@@ -2129,48 +2129,48 @@ void shutdown_actions_NORETURN( ThreadId tid,
 
    vg_assert(VG_(is_running_thread)(tid));
    vg_assert(tids_schedretcode == VgSrc_ExitThread
-		 || tids_schedretcode == VgSrc_ExitProcess
-			 || tids_schedretcode == VgSrc_FatalSig );
+	     || tids_schedretcode == VgSrc_ExitProcess
+             || tids_schedretcode == VgSrc_FatalSig );
 
    if (tids_schedretcode == VgSrc_ExitThread) {
 
-	  // We are the last surviving thread.  Right?
-	  vg_assert( VG_(count_living_threads)() == 1 );
+      // We are the last surviving thread.  Right?
+      vg_assert( VG_(count_living_threads)() == 1 );
 
-	  // Wait for all other threads to exit.
-	  // jrs: Huh?  but they surely are already gone
-	  VG_(reap_threads)(tid);
+      // Wait for all other threads to exit.
+      // jrs: Huh?  but they surely are already gone
+      VG_(reap_threads)(tid);
 
-	  // Clean the client up before the final report.
-	  // This causes __gnu_cxx::__freeres and libc_freeres functions to run.
-	  final_tidyup(tid);
+      // Clean the client up before the final report.
+      // This causes __gnu_cxx::__freeres and libc_freeres functions to run.
+      final_tidyup(tid);
 
-	  /* be paranoid */
-	  vg_assert(VG_(is_running_thread)(tid));
-	  vg_assert(VG_(count_living_threads)() == 1);
+      /* be paranoid */
+      vg_assert(VG_(is_running_thread)(tid));
+      vg_assert(VG_(count_living_threads)() == 1);
 
    } else {
 
-	  // We may not be the last surviving thread.  However, we
-	  // want to shut down the entire process.  We hold the lock
-	  // and we need to keep hold of it all the way out, in order
-	  // that none of the other threads ever run again.
-	  vg_assert( VG_(count_living_threads)() >= 1 );
+      // We may not be the last surviving thread.  However, we
+      // want to shut down the entire process.  We hold the lock
+      // and we need to keep hold of it all the way out, in order
+      // that none of the other threads ever run again.
+      vg_assert( VG_(count_living_threads)() >= 1 );
 
-	  // Clean the client up before the final report.
-	  // This causes __gnu_cxx::__freeres and libc_freeres functions to run.
-	  // Perhaps this is unsafe, as per comment above.
-	  final_tidyup(tid);
+      // Clean the client up before the final report.
+      // This causes __gnu_cxx::__freeres and libc_freeres functions to run.
+      // Perhaps this is unsafe, as per comment above.
+      final_tidyup(tid);
 
-	  /* be paranoid */
-	  vg_assert(VG_(is_running_thread)(tid));
-	  vg_assert(VG_(count_living_threads)() >= 1);
+      /* be paranoid */
+      vg_assert(VG_(is_running_thread)(tid));
+      vg_assert(VG_(count_living_threads)() >= 1);
    }
 
    /* Final call to gdbserver, if requested. */
    if (VG_(gdbserver_stop_at) (VgdbStopAt_Exit)) {
-	  VG_(umsg)("(action at exit) vgdb me ... \n");
-	  VG_(gdbserver) (tid);
+      VG_(umsg)("(action at exit) vgdb me ... \n");
+      VG_(gdbserver) (tid);
    }
    VG_(threads)[tid].status = VgTs_Empty;
 
@@ -2180,84 +2180,84 @@ void shutdown_actions_NORETURN( ThreadId tid,
    //--------------------------------------------------------------
    // First thing in the post-amble is a blank line.
    if (VG_(clo_xml))
-	  VG_(printf_xml)("\n");
+      VG_(printf_xml)("\n");
    else if (VG_(clo_verbosity) > 0)
-	  VG_(message)(Vg_UserMsg, "\n");
+      VG_(message)(Vg_UserMsg, "\n");
 
    if (VG_(clo_xml)) {
-	  HChar buf[50];    // large enough
-	  VG_(elapsed_wallclock_time)(buf, sizeof buf);
-	  VG_(printf_xml)( "<status>\n"
-							  "  <state>FINISHED</state>\n"
-							  "  <time>%pS</time>\n"
-							  "</status>\n"
-							  "\n",
-							  buf);
+      HChar buf[50];    // large enough
+      VG_(elapsed_wallclock_time)(buf, sizeof buf);
+      VG_(printf_xml)( "<status>\n"
+                              "  <state>FINISHED</state>\n"
+                              "  <time>%pS</time>\n"
+                              "</status>\n"
+                              "\n",
+                              buf);
    }
 
    /* Print out file descriptor summary and stats. */
    if (VG_(clo_track_fds))
-	  VG_(show_open_fds)("at exit");
+      VG_(show_open_fds)("at exit");
 
    /* Call the tool's finalisation function.  This makes Memcheck's
-	  leak checker run, and possibly chuck a bunch of leak errors into
-	  the error management machinery. */
+      leak checker run, and possibly chuck a bunch of leak errors into
+      the error management machinery. */
    VG_TDICT_CALL(tool_fini, 0/*exitcode*/);
 
    if (VG_(needs).core_errors || VG_(needs).tool_errors) {
-	  if (VG_(clo_verbosity) == 1
-		  && !VG_(clo_xml)
-		  && !VG_(clo_show_error_list))
-		 VG_(message)(Vg_UserMsg,
-					  "For lists of detected and suppressed errors,"
-					  " rerun with: -s\n");
+      if (VG_(clo_verbosity) == 1
+          && !VG_(clo_xml)
+          && !VG_(clo_show_error_list))
+         VG_(message)(Vg_UserMsg,
+                      "For lists of detected and suppressed errors,"
+                      " rerun with: -s\n");
 
-	  /* Show the error counts. */
-	  if (VG_(clo_xml)) {
-		 VG_(show_error_counts_as_XML)();
-	  }
+      /* Show the error counts. */
+      if (VG_(clo_xml)) {
+         VG_(show_error_counts_as_XML)();
+      }
 
-	  /* In XML mode, this merely prints the used suppressions. */
-	  VG_(show_all_errors)(VG_(clo_verbosity), VG_(clo_xml));
+      /* In XML mode, this merely prints the used suppressions. */
+      VG_(show_all_errors)(VG_(clo_verbosity), VG_(clo_xml));
    }
 
    if (VG_(clo_xml)) {
-	  VG_(printf_xml)("\n");
-	  VG_(printf_xml)("</valgrindoutput>\n");
-	  VG_(printf_xml)("\n");
+      VG_(printf_xml)("\n");
+      VG_(printf_xml)("</valgrindoutput>\n");
+      VG_(printf_xml)("\n");
    }
 
    VG_(sanity_check_general)( True /*include expensive checks*/ );
 
    if (VG_(clo_stats))
-	  VG_(print_all_stats)(VG_(clo_verbosity) >= 1, /* Memory stats */
-						   False /* tool prints stats in the tool fini */);
+      VG_(print_all_stats)(VG_(clo_verbosity) >= 1, /* Memory stats */
+                           False /* tool prints stats in the tool fini */);
 
    /* Show a profile of the heap(s) at shutdown.  Optionally, first
-	  throw away all the debug info, as that makes it easy to spot
-	  leaks in the debuginfo reader. */
+      throw away all the debug info, as that makes it easy to spot
+      leaks in the debuginfo reader. */
    if (VG_(clo_profile_heap)) {
-	  if (0) VG_(di_discard_ALL_debuginfo)();
-	  VG_(print_arena_cc_analysis)();
+      if (0) VG_(di_discard_ALL_debuginfo)();
+      VG_(print_arena_cc_analysis)();
    }
 
    /* If profiling has been requested, but with zero interval, it
-	  means "profile at the end of the run only".  In which case we
-	  need to dump the profile now. */
+      means "profile at the end of the run only".  In which case we
+      need to dump the profile now. */
    if (VG_(clo_profyle_sbs) && VG_(clo_profyle_interval) == 0) {
-	  VG_(get_and_show_SB_profile)(0/*denoting end-of-run*/);
+      VG_(get_and_show_SB_profile)(0/*denoting end-of-run*/);
    }
 
    /* Print Vex storage stats */
    if (0)
-	   LibVEX_ShowAllocStats();
+       LibVEX_ShowAllocStats();
 
    /* Flush any output cached by previous calls to VG_(message). */
    VG_(message_flush)();
 
    /* Terminate gdbserver if ever it was started. We terminate it here
-	  so that it get the output above if output was redirected to
-	  gdb */
+      so that it get the output above if output was redirected to
+      gdb */
    VG_(gdbserver_exit) (tid, tids_schedretcode);
 
    /* Ok, finally exit in the os-specific way, according to the scheduler's
@@ -2289,21 +2289,21 @@ void shutdown_actions_NORETURN( ThreadId tid,
       break; /* what the hell :) */
 
    case VgSrc_FatalSig:
-	  /* We were killed by a fatal signal, so replicate the effect */
-	  vg_assert(VG_(threads)[tid].os_state.fatalsig != 0);
-	  VG_(kill_self)(VG_(threads)[tid].os_state.fatalsig);
-	  /* we shouldn't be alive at this point.  But VG_(kill_self)
-		 sometimes fails with EPERM on Darwin, for unclear reasons. */
+      /* We were killed by a fatal signal, so replicate the effect */
+      vg_assert(VG_(threads)[tid].os_state.fatalsig != 0);
+      VG_(kill_self)(VG_(threads)[tid].os_state.fatalsig);
+      /* we shouldn't be alive at this point.  But VG_(kill_self)
+         sometimes fails with EPERM on Darwin, for unclear reasons. */
 #     if defined(VGO_darwin)
-	  VG_(debugLog)(0, "main", "VG_(kill_self) failed.  Exiting normally.\n");
-	  VG_(exit)(0); /* bogus, but we really need to exit now */
-	  /* fall through .. */
+      VG_(debugLog)(0, "main", "VG_(kill_self) failed.  Exiting normally.\n");
+      VG_(exit)(0); /* bogus, but we really need to exit now */
+      /* fall through .. */
 #     endif
-	  VG_(core_panic)("main(): signal was supposed to be fatal");
-	  break;
+      VG_(core_panic)("main(): signal was supposed to be fatal");
+      break;
 
    default:
-	  VG_(core_panic)("main(): unexpected scheduler return code");
+      VG_(core_panic)("main(): unexpected scheduler return code");
    }
 }
 
@@ -2321,25 +2321,25 @@ static void final_tidyup(ThreadId tid)
    vg_assert(VG_(is_running_thread)(tid));
 
    if (freeres_wrapper == 0) {
-	  return; /* can't do it */
+      return; /* can't do it */
    }
 
    Vg_FreeresToRun to_run = 0;
    if (VG_(needs).cxx_freeres && VG_(clo_run_cxx_freeres)) {
-	  to_run |= VG_RUN__GNU_CXX__FREERES;
+      to_run |= VG_RUN__GNU_CXX__FREERES;
    }
 
    if (VG_(needs).libc_freeres && VG_(clo_run_libc_freeres)) {
-	  to_run |= VG_RUN__LIBC_FREERES;
+      to_run |= VG_RUN__LIBC_FREERES;
    }
 
    if (to_run == 0) {
-	  return; /* won't do it */
+      return; /* won't do it */
    }
 
 #  if defined(VGP_ppc64be_linux)
    Addr r2 = VG_(get_tocptr)(VG_(current_DiEpoch)(),
-							 freeres_wrapper);
+                             freeres_wrapper);
    if (r2 == 0) {
       VG_(message)(Vg_UserMsg,
                    "Caught __NR_exit, but can't run __gnu_cxx::__freeres()\n");
@@ -2351,52 +2351,52 @@ static void final_tidyup(ThreadId tid)
 #  endif
 
    if (VG_(clo_verbosity) > 2  ||
-	   VG_(clo_trace_syscalls) ||
-	   VG_(clo_trace_sched)) {
+       VG_(clo_trace_syscalls) ||
+       VG_(clo_trace_sched)) {
 
-	  vg_assert(to_run > 0);
-	  vg_assert(to_run <= (VG_RUN__GNU_CXX__FREERES | VG_RUN__LIBC_FREERES));
+      vg_assert(to_run > 0);
+      vg_assert(to_run <= (VG_RUN__GNU_CXX__FREERES | VG_RUN__LIBC_FREERES));
 
-	  const HChar *msgs[] = {"__gnu_cxx::__freeres()", "__libc_freeres()",
-							 "__gnu_cxx::__freeres and __libc_freeres()"};
-	  VG_(message)(Vg_DebugMsg,
-				   "Caught __NR_exit; running %s wrapper\n", msgs[to_run - 1]);
+      const HChar *msgs[] = {"__gnu_cxx::__freeres()", "__libc_freeres()",
+                             "__gnu_cxx::__freeres and __libc_freeres()"};
+      VG_(message)(Vg_DebugMsg,
+                   "Caught __NR_exit; running %s wrapper\n", msgs[to_run - 1]);
    }
 
    /* Set thread context to point to freeres_wrapper.
-	  ppc64be-linux note: freeres_wrapper gives us the real
-	  function entry point, not a fn descriptor, so can use it
-	  directly.  However, we need to set R2 (the toc pointer)
-	  appropriately. */
+      ppc64be-linux note: freeres_wrapper gives us the real
+      function entry point, not a fn descriptor, so can use it
+      directly.  However, we need to set R2 (the toc pointer)
+      appropriately. */
    VG_(set_IP)(tid, freeres_wrapper);
 
 #  if defined(VGP_ppc64be_linux)
    VG_(threads)[tid].arch.vex.guest_GPR2 = r2;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestPPC64State, guest_GPR2),
-			sizeof(VG_(threads)[tid].arch.vex.guest_GPR2));
+            offsetof(VexGuestPPC64State, guest_GPR2),
+            sizeof(VG_(threads)[tid].arch.vex.guest_GPR2));
 #  elif  defined(VGP_ppc64le_linux)
    /* setting GPR2 but not really needed, GPR12 is needed */
    VG_(threads)[tid].arch.vex.guest_GPR2  = freeres_wrapper;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestPPC64State, guest_GPR2),
-			sizeof(VG_(threads)[tid].arch.vex.guest_GPR2));
+            offsetof(VexGuestPPC64State, guest_GPR2),
+            sizeof(VG_(threads)[tid].arch.vex.guest_GPR2));
    VG_(threads)[tid].arch.vex.guest_GPR12 = freeres_wrapper;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestPPC64State, guest_GPR12),
-			sizeof(VG_(threads)[tid].arch.vex.guest_GPR12));
+            offsetof(VexGuestPPC64State, guest_GPR12),
+            sizeof(VG_(threads)[tid].arch.vex.guest_GPR12));
 #  endif
    /* mips-linux note: we need to set t9 */
 #  if defined(VGP_mips32_linux) || defined(VGP_nanomips_linux)
    VG_(threads)[tid].arch.vex.guest_r25 = freeres_wrapper;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestMIPS32State, guest_r25),
-			sizeof(VG_(threads)[tid].arch.vex.guest_r25));
+            offsetof(VexGuestMIPS32State, guest_r25),
+            sizeof(VG_(threads)[tid].arch.vex.guest_r25));
 #  elif defined(VGP_mips64_linux)
    VG_(threads)[tid].arch.vex.guest_r25 = freeres_wrapper;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestMIPS64State, guest_r25),
-			sizeof(VG_(threads)[tid].arch.vex.guest_r25));
+            offsetof(VexGuestMIPS64State, guest_r25),
+            sizeof(VG_(threads)[tid].arch.vex.guest_r25));
 #  endif
 
    /* Pass a parameter to freeres_wrapper(). */
@@ -2407,18 +2407,18 @@ static void final_tidyup(ThreadId tid)
    sp = sp - sizeof(UWord);
    VG_(threads)[tid].arch.vex.guest_ESP = sp;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestX86State, guest_ESP),
-			sizeof(VG_(threads)[tid].arch.vex.guest_ESP));
+            offsetof(VexGuestX86State, guest_ESP),
+            sizeof(VG_(threads)[tid].arch.vex.guest_ESP));
 #  elif defined(VGA_amd64)
    VG_(threads)[tid].arch.vex.guest_RDI = to_run;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestAMD64State, guest_RDI),
-			sizeof(VG_(threads)[tid].arch.vex.guest_RDI));
+            offsetof(VexGuestAMD64State, guest_RDI),
+            sizeof(VG_(threads)[tid].arch.vex.guest_RDI));
 #   elif defined(VGA_arm)
    VG_(threads)[tid].arch.vex.guest_R0 = to_run;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestARMState, guest_R0),
-			sizeof(VG_(threads)[tid].arch.vex.guest_R0));
+            offsetof(VexGuestARMState, guest_R0),
+            sizeof(VG_(threads)[tid].arch.vex.guest_R0));
 #  elif defined(VGA_arm64)
    VG_(threads)[tid].arch.vex.guest_X0 = to_run;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
@@ -2427,34 +2427,34 @@ static void final_tidyup(ThreadId tid)
 #  elif defined(VGA_mips32) || defined(VGA_nanomips)
    VG_(threads)[tid].arch.vex.guest_r4 = to_run;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestMIPS32State, guest_r4),
-			sizeof(VG_(threads)[tid].arch.vex.guest_r4));
+            offsetof(VexGuestMIPS32State, guest_r4),
+            sizeof(VG_(threads)[tid].arch.vex.guest_r4));
 #  elif defined(VGA_mips64)
    VG_(threads)[tid].arch.vex.guest_r4 = to_run;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestMIPS64State, guest_r4),
-			sizeof(VG_(threads)[tid].arch.vex.guest_r4));
+            offsetof(VexGuestMIPS64State, guest_r4),
+            sizeof(VG_(threads)[tid].arch.vex.guest_r4));
 #  elif defined(VGA_ppc32)
    VG_(threads)[tid].arch.vex.guest_GPR3 = to_run;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestPPC32State, guest_GPR3),
-			sizeof(VG_(threads)[tid].arch.vex.guest_GPR3));
+            offsetof(VexGuestPPC32State, guest_GPR3),
+            sizeof(VG_(threads)[tid].arch.vex.guest_GPR3));
 #  elif defined(VGA_ppc64be) || defined(VGA_ppc64le)
    VG_(threads)[tid].arch.vex.guest_GPR3 = to_run;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestPPC64State, guest_GPR3),
-			sizeof(VG_(threads)[tid].arch.vex.guest_GPR3));
+            offsetof(VexGuestPPC64State, guest_GPR3),
+            sizeof(VG_(threads)[tid].arch.vex.guest_GPR3));
 #  elif defined(VGA_s390x)
    VG_(threads)[tid].arch.vex.guest_r2 = to_run;
    VG_TRACK(post_reg_write, Vg_CoreClientReq, tid,
-			offsetof(VexGuestS390XState, guest_r2),
-			sizeof(VG_(threads)[tid].arch.vex.guest_r2));
+            offsetof(VexGuestS390XState, guest_r2),
+            sizeof(VG_(threads)[tid].arch.vex.guest_r2));
 #else
    I_die_here : architecture missing in m_main.c
 #endif
 
    /* Block all blockable signals by copying the real block state into
-	  the thread's block state */
+      the thread's block state */
    VG_(sigprocmask)(VKI_SIG_BLOCK, NULL, &VG_(threads)[tid].sig_mask);
    VG_(threads)[tid].tmp_sig_mask = VG_(threads)[tid].sig_mask;
 
@@ -2495,12 +2495,12 @@ static void final_tidyup(ThreadId tid)
    From this derive two requirements:
 
    1. gcc may emit calls to memcpy, memmove and memset to deal with
-	  structure assignments etc.  Since we have chosen to ignore all the
-	  "normal" supporting libraries, we have to provide our own
-	  implementations of them.  No problem.
+      structure assignments etc.  Since we have chosen to ignore all the
+      "normal" supporting libraries, we have to provide our own
+      implementations of them.  No problem.
 
    2. We have to provide a symbol "_start", to which the kernel
-	  hands control at startup.  Hence the code below.
+      hands control at startup.  Hence the code below.
 */
 
 /* ---------------- Requirement 1 ---------------- */
@@ -2552,47 +2552,47 @@ void __aeabi_unwind_cpp_pr1(void){
 
 /* Some Android helpers.  See bug 368529. */
 #if defined(__clang__) \
-	&& (defined(VGPV_arm_linux_android) \
-		|| defined(VGPV_x86_linux_android) \
-		|| defined(VGPV_mips32_linux_android) \
-		|| defined(VGPV_arm64_linux_android))
+    && (defined(VGPV_arm_linux_android) \
+        || defined(VGPV_x86_linux_android) \
+        || defined(VGPV_mips32_linux_android) \
+        || defined(VGPV_arm64_linux_android))
 
 /* Replace __aeabi_memcpy* functions with vgPlain_memcpy. */
 void *__aeabi_memcpy(void *dest, const void *src, SizeT n);
 void *__aeabi_memcpy(void *dest, const void *src, SizeT n)
 {
-	return VG_(memcpy)(dest, src, n);
+    return VG_(memcpy)(dest, src, n);
 }
 
 void *__aeabi_memcpy4(void *dest, const void *src, SizeT n);
 void *__aeabi_memcpy4(void *dest, const void *src, SizeT n)
 {
-	return VG_(memcpy)(dest, src, n);
+    return VG_(memcpy)(dest, src, n);
 }
 
 void *__aeabi_memcpy8(void *dest, const void *src, SizeT n);
 void *__aeabi_memcpy8(void *dest, const void *src, SizeT n)
 {
-	return VG_(memcpy)(dest, src, n);
+    return VG_(memcpy)(dest, src, n);
 }
 
 /* Replace __aeabi_memclr* functions with vgPlain_memset. */
 void *__aeabi_memclr(void *dest, SizeT n);
 void *__aeabi_memclr(void *dest, SizeT n)
 {
-	return VG_(memset)(dest, 0, n);
+    return VG_(memset)(dest, 0, n);
 }
 
 void *__aeabi_memclr4(void *dest, SizeT n);
 void *__aeabi_memclr4(void *dest, SizeT n)
 {
-	return VG_(memset)(dest, 0, n);
+    return VG_(memset)(dest, 0, n);
 }
 
 void *__aeabi_memclr8(void *dest, SizeT n);
 void *__aeabi_memclr8(void *dest, SizeT n)
 {
-	return VG_(memset)(dest, 0, n);
+    return VG_(memset)(dest, 0, n);
 }
 #endif /* clang and android, basically */
 
@@ -2609,18 +2609,18 @@ void *__aeabi_memclr8(void *dest, SizeT n)
    point runs, most registers' values are unspecified, except for:
 
    %edx         Contains a function pointer to be registered with `atexit'.
-				This is how the dynamic linker arranges to have DT_FINI
-				functions called for shared libraries that have been loaded
-				before this code runs.
+                This is how the dynamic linker arranges to have DT_FINI
+                functions called for shared libraries that have been loaded
+                before this code runs.
 
    %esp         The stack contains the arguments and environment:
-				0(%esp)                 argc
-				4(%esp)                 argv[0]
-				...
-				(4*argc)(%esp)          NULL
-				(4*(argc+1))(%esp)      envp[0]
-				...
-										NULL
+                0(%esp)                 argc
+                4(%esp)                 argv[0]
+                ...
+                (4*argc)(%esp)          NULL
+                (4*(argc+1))(%esp)      envp[0]
+                ...
+                                        NULL
 */
 
 /* The kernel hands control to _start, which extracts the initial
@@ -2649,226 +2649,226 @@ asm("\n"
 );
 #elif defined(VGP_amd64_linux)
 asm("\n"
-	".text\n"
-	"\t.globl _start\n"
-	"\t.type _start,@function\n"
-	"_start:\n"
-	/* set up the new stack in %rdi */
-	"\tmovq  $vgPlain_interim_stack, %rdi\n"
-	"\taddq  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rdi\n"
-	"\taddq  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rdi\n"
-	"\tandq  $~15, %rdi\n"
-	/* install it, and collect the original one */
-	"\txchgq %rdi, %rsp\n"
-	/* call _start_in_C_linux, passing it the startup %rsp */
-	"\tcall  _start_in_C_linux\n"
-	"\thlt\n"
-	".previous\n"
+    ".text\n"
+    "\t.globl _start\n"
+    "\t.type _start,@function\n"
+    "_start:\n"
+    /* set up the new stack in %rdi */
+    "\tmovq  $vgPlain_interim_stack, %rdi\n"
+    "\taddq  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rdi\n"
+    "\taddq  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rdi\n"
+    "\tandq  $~15, %rdi\n"
+    /* install it, and collect the original one */
+    "\txchgq %rdi, %rsp\n"
+    /* call _start_in_C_linux, passing it the startup %rsp */
+    "\tcall  _start_in_C_linux\n"
+    "\thlt\n"
+    ".previous\n"
 );
 #elif defined(VGP_ppc32_linux)
 asm("\n"
-	".text\n"
-	"\t.globl _start\n"
-	"\t.type _start,@function\n"
-	"_start:\n"
-	/* set up the new stack in r16 */
-	"\tlis 16,vgPlain_interim_stack@ha\n"
-	"\tla  16,vgPlain_interim_stack@l(16)\n"
-	"\tlis    17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" >> 16)\n"
-	"\tori 17,17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" & 0xFFFF)\n"
-	"\tlis    18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" >> 16)\n"
-	"\tori 18,18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" & 0xFFFF)\n"
-	"\tadd 16,17,16\n"
-	"\tadd 16,18,16\n"
-	"\trlwinm 16,16,0,0,27\n"
-	/* now r16 = &vgPlain_interim_stack + VG_STACK_GUARD_SZB +
-	   VG_DEFAULT_STACK_ACTIVE_SZB rounded down to the nearest 16-byte
-	   boundary.  And r1 is the original SP.  Set the SP to r16 and
-	   call _start_in_C_linux, passing it the initial SP. */
-	"\tmr 3,1\n"
-	"\tmr 1,16\n"
-	"\tbl _start_in_C_linux\n"
-	"\ttrap\n"
-	".previous\n"
+    ".text\n"
+    "\t.globl _start\n"
+    "\t.type _start,@function\n"
+    "_start:\n"
+    /* set up the new stack in r16 */
+    "\tlis 16,vgPlain_interim_stack@ha\n"
+    "\tla  16,vgPlain_interim_stack@l(16)\n"
+    "\tlis    17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" >> 16)\n"
+    "\tori 17,17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" & 0xFFFF)\n"
+    "\tlis    18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" >> 16)\n"
+    "\tori 18,18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" & 0xFFFF)\n"
+    "\tadd 16,17,16\n"
+    "\tadd 16,18,16\n"
+    "\trlwinm 16,16,0,0,27\n"
+    /* now r16 = &vgPlain_interim_stack + VG_STACK_GUARD_SZB +
+       VG_DEFAULT_STACK_ACTIVE_SZB rounded down to the nearest 16-byte
+       boundary.  And r1 is the original SP.  Set the SP to r16 and
+       call _start_in_C_linux, passing it the initial SP. */
+    "\tmr 3,1\n"
+    "\tmr 1,16\n"
+    "\tbl _start_in_C_linux\n"
+    "\ttrap\n"
+    ".previous\n"
 );
 #elif defined(VGP_ppc64be_linux)
 asm("\n"
-	/* PPC64 ELF ABI says '_start' points to a function descriptor.
-	   So we must have one, and that is what goes into the .opd section. */
-	"\t.align 2\n"
-	"\t.global _start\n"
-	"\t.section \".opd\",\"aw\"\n"
-	"\t.align 3\n"
-	"_start:\n"
-	"\t.quad ._start,.TOC.@tocbase,0\n"
-	"\t.previous\n"
-	"\t.type ._start,@function\n"
-	"\t.global  ._start\n"
-	"._start:\n"
-	/* set up the new stack in r16 */
-	"\tlis  16,   vgPlain_interim_stack@highest\n"
-	"\tori  16,16,vgPlain_interim_stack@higher\n"
-	"\tsldi 16,16,32\n"
-	"\toris 16,16,vgPlain_interim_stack@h\n"
-	"\tori  16,16,vgPlain_interim_stack@l\n"
-	"\txor  17,17,17\n"
-	"\tlis    17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" >> 16)\n"
-	"\tori 17,17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" & 0xFFFF)\n"
-	"\txor 18,18,18\n"
-	"\tlis    18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" >> 16)\n"
-	"\tori 18,18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" & 0xFFFF)\n"
-	"\tadd 16,17,16\n"
-	"\tadd 16,18,16\n"
-	"\trldicr 16,16,0,59\n"
-	/* now r16 = &vgPlain_interim_stack + VG_STACK_GUARD_SZB +
-	   VG_DEFAULT_STACK_ACTIVE_SZB rounded down to the nearest 16-byte
-	   boundary.  And r1 is the original SP.  Set the SP to r16 and
-	   call _start_in_C_linux, passing it the initial SP. */
-	"\tmr 3,1\n"
-	"\tmr 1,16\n"
-	"\tlis  14,   _start_in_C_linux@highest\n"
-	"\tori  14,14,_start_in_C_linux@higher\n"
-	"\tsldi 14,14,32\n"
-	"\toris 14,14,_start_in_C_linux@h\n"
-	"\tori  14,14,_start_in_C_linux@l\n"
-	"\tld 14,0(14)\n"
-	"\tmtctr 14\n"
-	"\tbctrl\n"
-	"\tnop\n"
-	"\ttrap\n"
+    /* PPC64 ELF ABI says '_start' points to a function descriptor.
+       So we must have one, and that is what goes into the .opd section. */
+    "\t.align 2\n"
+    "\t.global _start\n"
+    "\t.section \".opd\",\"aw\"\n"
+    "\t.align 3\n"
+    "_start:\n"
+    "\t.quad ._start,.TOC.@tocbase,0\n"
+    "\t.previous\n"
+    "\t.type ._start,@function\n"
+    "\t.global  ._start\n"
+    "._start:\n"
+    /* set up the new stack in r16 */
+    "\tlis  16,   vgPlain_interim_stack@highest\n"
+    "\tori  16,16,vgPlain_interim_stack@higher\n"
+    "\tsldi 16,16,32\n"
+    "\toris 16,16,vgPlain_interim_stack@h\n"
+    "\tori  16,16,vgPlain_interim_stack@l\n"
+    "\txor  17,17,17\n"
+    "\tlis    17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" >> 16)\n"
+    "\tori 17,17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" & 0xFFFF)\n"
+    "\txor 18,18,18\n"
+    "\tlis    18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" >> 16)\n"
+    "\tori 18,18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" & 0xFFFF)\n"
+    "\tadd 16,17,16\n"
+    "\tadd 16,18,16\n"
+    "\trldicr 16,16,0,59\n"
+    /* now r16 = &vgPlain_interim_stack + VG_STACK_GUARD_SZB +
+       VG_DEFAULT_STACK_ACTIVE_SZB rounded down to the nearest 16-byte
+       boundary.  And r1 is the original SP.  Set the SP to r16 and
+       call _start_in_C_linux, passing it the initial SP. */
+    "\tmr 3,1\n"
+    "\tmr 1,16\n"
+    "\tlis  14,   _start_in_C_linux@highest\n"
+    "\tori  14,14,_start_in_C_linux@higher\n"
+    "\tsldi 14,14,32\n"
+    "\toris 14,14,_start_in_C_linux@h\n"
+    "\tori  14,14,_start_in_C_linux@l\n"
+    "\tld 14,0(14)\n"
+    "\tmtctr 14\n"
+    "\tbctrl\n"
+    "\tnop\n"
+    "\ttrap\n"
 );
 #elif defined(VGP_ppc64le_linux)
 /* Little Endian uses ELF version 2 but in the future may also
  * support other ELF versions.
  */
 asm("\n"
-	"\t.align 2\n"
-	"\t.global _start\n"
-	"\t.type _start,@function\n"
-	"_start:\n"
-	"#if _CALL_ELF == 2    \n"
-	"0:  addis        2,12,.TOC.-0b@ha\n"
-	"    addi         2,2,.TOC.-0b@l\n"
-	"    .localentry  _start, .-_start\n"
-	"#endif \n"
-	/* set up the new stack in r16 */
-	"\tlis  16,   vgPlain_interim_stack@highest\n"
-	"\tori  16,16,vgPlain_interim_stack@higher\n"
-	"\tsldi 16,16,32\n"
-	"\toris 16,16,vgPlain_interim_stack@h\n"
-	"\tori  16,16,vgPlain_interim_stack@l\n"
-	"\txor  17,17,17\n"
-	"\tlis    17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" >> 16)\n"
-	"\tori 17,17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" & 0xFFFF)\n"
-	"\txor 18,18,18\n"
-	"\tlis    18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" >> 16)\n"
-	"\tori 18,18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" & 0xFFFF)\n"
-	"\tadd 16,17,16\n"
-	"\tadd 16,18,16\n"
-	"\trldicr 16,16,0,59\n"
-	/* now r16 = &vgPlain_interim_stack + VG_STACK_GUARD_SZB +
-	   VG_DEFAULT_STACK_ACTIVE_SZB rounded down to the nearest 16-byte
-	   boundary.  And r1 is the original SP.  Set the SP to r16 and
-	   call _start_in_C_linux, passing it the initial SP. */
-	"\tmr 3,1\n"
-	"\tmr 1,16\n"
-	"\tlis  14,   _start_in_C_linux@highest\n"
-	"\tori  14,14,_start_in_C_linux@higher\n"
-	"\tsldi 14,14,32\n"
-	"\toris 14,14,_start_in_C_linux@h\n"
-	"\tori  14,14,_start_in_C_linux@l\n"
-	"\tmtctr 14\n"
-	"\tbctrl\n"
-	"\tnop\n"
-	"\ttrap\n"
+    "\t.align 2\n"
+    "\t.global _start\n"
+    "\t.type _start,@function\n"
+    "_start:\n"
+    "#if _CALL_ELF == 2    \n"
+    "0:  addis        2,12,.TOC.-0b@ha\n"
+    "    addi         2,2,.TOC.-0b@l\n"
+    "    .localentry  _start, .-_start\n"
+    "#endif \n"
+    /* set up the new stack in r16 */
+    "\tlis  16,   vgPlain_interim_stack@highest\n"
+    "\tori  16,16,vgPlain_interim_stack@higher\n"
+    "\tsldi 16,16,32\n"
+    "\toris 16,16,vgPlain_interim_stack@h\n"
+    "\tori  16,16,vgPlain_interim_stack@l\n"
+    "\txor  17,17,17\n"
+    "\tlis    17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" >> 16)\n"
+    "\tori 17,17,("VG_STRINGIFY(VG_STACK_GUARD_SZB)" & 0xFFFF)\n"
+    "\txor 18,18,18\n"
+    "\tlis    18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" >> 16)\n"
+    "\tori 18,18,("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)" & 0xFFFF)\n"
+    "\tadd 16,17,16\n"
+    "\tadd 16,18,16\n"
+    "\trldicr 16,16,0,59\n"
+    /* now r16 = &vgPlain_interim_stack + VG_STACK_GUARD_SZB +
+       VG_DEFAULT_STACK_ACTIVE_SZB rounded down to the nearest 16-byte
+       boundary.  And r1 is the original SP.  Set the SP to r16 and
+       call _start_in_C_linux, passing it the initial SP. */
+    "\tmr 3,1\n"
+    "\tmr 1,16\n"
+    "\tlis  14,   _start_in_C_linux@highest\n"
+    "\tori  14,14,_start_in_C_linux@higher\n"
+    "\tsldi 14,14,32\n"
+    "\toris 14,14,_start_in_C_linux@h\n"
+    "\tori  14,14,_start_in_C_linux@l\n"
+    "\tmtctr 14\n"
+    "\tbctrl\n"
+    "\tnop\n"
+    "\ttrap\n"
 );
 #elif defined(VGP_s390x_linux)
 /*
-	This is the canonical entry point, usually the first thing in the text
-	segment. Most registers' values are unspecified, except for:
+    This is the canonical entry point, usually the first thing in the text
+    segment. Most registers' values are unspecified, except for:
 
-	%r14         Contains a function pointer to be registered with `atexit'.
-				 This is how the dynamic linker arranges to have DT_FINI
-				 functions called for shared libraries that have been loaded
-				 before this code runs.
+    %r14         Contains a function pointer to be registered with `atexit'.
+                 This is how the dynamic linker arranges to have DT_FINI
+                 functions called for shared libraries that have been loaded
+                 before this code runs.
 
-	%r15         The stack contains the arguments and environment:
-				 0(%r15)              argc
-				 8(%r15)              argv[0]
-				 ...
-				 (8*argc)(%r15)       NULL
-				 (8*(argc+1))(%r15)   envp[0]
-				 ...
-									  NULL
+    %r15         The stack contains the arguments and environment:
+                 0(%r15)              argc
+                 8(%r15)              argv[0]
+                 ...
+                 (8*argc)(%r15)       NULL
+                 (8*(argc+1))(%r15)   envp[0]
+                 ...
+                                      NULL
 */
 asm("\n\t"
-	".text\n\t"
-	".globl _start\n\t"
-	".type  _start,@function\n\t"
-	"_start:\n\t"
-	/* set up the new stack in %r1 */
-	"larl   %r1,  vgPlain_interim_stack\n\t"
-	"larl   %r5,  1f\n\t"
-	"ag     %r1,  0(%r5)\n\t"
-	"ag     %r1,  2f-1f(%r5)\n\t"
-	"nill   %r1,  0xFFF0\n\t"
-	/* install it, and collect the original one */
-	"lgr    %r2,  %r15\n\t"
-	"lgr    %r15, %r1\n\t"
-	/* call _start_in_C_linux, passing it the startup %r15 */
-	"brasl  %r14, _start_in_C_linux\n\t"
-	/* trigger execution of an invalid opcode -> halt machine */
-	"j      .+2\n\t"
-	"1:   .quad "VG_STRINGIFY(VG_STACK_GUARD_SZB)"\n\t"
-	"2:   .quad "VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)"\n\t"
-	".previous\n"
+    ".text\n\t"
+    ".globl _start\n\t"
+    ".type  _start,@function\n\t"
+    "_start:\n\t"
+    /* set up the new stack in %r1 */
+    "larl   %r1,  vgPlain_interim_stack\n\t"
+    "larl   %r5,  1f\n\t"
+    "ag     %r1,  0(%r5)\n\t"
+    "ag     %r1,  2f-1f(%r5)\n\t"
+    "nill   %r1,  0xFFF0\n\t"
+    /* install it, and collect the original one */
+    "lgr    %r2,  %r15\n\t"
+    "lgr    %r15, %r1\n\t"
+    /* call _start_in_C_linux, passing it the startup %r15 */
+    "brasl  %r14, _start_in_C_linux\n\t"
+    /* trigger execution of an invalid opcode -> halt machine */
+    "j      .+2\n\t"
+    "1:   .quad "VG_STRINGIFY(VG_STACK_GUARD_SZB)"\n\t"
+    "2:   .quad "VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)"\n\t"
+    ".previous\n"
 );
 #elif defined(VGP_arm_linux)
 asm("\n"
-	"\t.text\n"
-	"\t.align 4\n"
-	"\t.type _start,#function\n"
-	"\t.global _start\n"
-	"_start:\n"
-	"\tldr  r0, [pc, #36]\n"
-	"\tldr  r1, [pc, #36]\n"
-	"\tadd  r0, r1, r0\n"
-	"\tldr  r1, [pc, #32]\n"
-	"\tadd  r0, r1, r0\n"
-	"\tmvn  r1, #15\n"
-	"\tand  r0, r0, r1\n"
-	"\tmov  r1, sp\n"
-	"\tmov  sp, r0\n"
-	"\tmov  r0, r1\n"
-	"\tb _start_in_C_linux\n"
-	"\t.word vgPlain_interim_stack\n"
-	"\t.word "VG_STRINGIFY(VG_STACK_GUARD_SZB)"\n"
-	"\t.word "VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)"\n"
+    "\t.text\n"
+    "\t.align 4\n"
+    "\t.type _start,#function\n"
+    "\t.global _start\n"
+    "_start:\n"
+    "\tldr  r0, [pc, #36]\n"
+    "\tldr  r1, [pc, #36]\n"
+    "\tadd  r0, r1, r0\n"
+    "\tldr  r1, [pc, #32]\n"
+    "\tadd  r0, r1, r0\n"
+    "\tmvn  r1, #15\n"
+    "\tand  r0, r0, r1\n"
+    "\tmov  r1, sp\n"
+    "\tmov  sp, r0\n"
+    "\tmov  r0, r1\n"
+    "\tb _start_in_C_linux\n"
+    "\t.word vgPlain_interim_stack\n"
+    "\t.word "VG_STRINGIFY(VG_STACK_GUARD_SZB)"\n"
+    "\t.word "VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)"\n"
 );
 #elif defined(VGP_arm64_linux)
 asm("\n"
-	"\t.text\n"
-	"\t.align 2\n"
-	"\t.type _start,#function\n"
-	"\t.global _start\n"
-	"_start:\n"
-	"\tadrp x0, vgPlain_interim_stack\n"
-	"\tadd  x0, x0, :lo12:vgPlain_interim_stack\n"
-	// The next 2 assume that VG_STACK_GUARD_SZB fits in 32 bits
-	"\tmov  x1, (("VG_STRINGIFY(VG_STACK_GUARD_SZB)") >> 0) & 0xFFFF\n"
-	"\tmovk x1, (("VG_STRINGIFY(VG_STACK_GUARD_SZB)") >> 16) & 0xFFFF,"
-				" lsl 16\n"
-	"\tadd  x0, x0, x1\n"
-	// The next 2 assume that VG_DEFAULT_STACK_ACTIVE_SZB fits in 32 bits
-	"\tmov  x1, (("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)") >> 0) & 0xFFFF\n"
-	"\tmovk x1, (("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)") >> 16) & 0xFFFF,"
-				" lsl 16\n"
-	"\tadd  x0, x0, x1\n"
-	"\tand  x0, x0, -16\n"
-	"\tmov  x1, sp\n"
-	"\tmov  sp, x0\n"
-	"\tmov  x0, x1\n"
-	"\tb _start_in_C_linux\n"
+    "\t.text\n"
+    "\t.align 2\n"
+    "\t.type _start,#function\n"
+    "\t.global _start\n"
+    "_start:\n"
+    "\tadrp x0, vgPlain_interim_stack\n"
+    "\tadd  x0, x0, :lo12:vgPlain_interim_stack\n"
+    // The next 2 assume that VG_STACK_GUARD_SZB fits in 32 bits
+    "\tmov  x1, (("VG_STRINGIFY(VG_STACK_GUARD_SZB)") >> 0) & 0xFFFF\n"
+    "\tmovk x1, (("VG_STRINGIFY(VG_STACK_GUARD_SZB)") >> 16) & 0xFFFF,"
+                " lsl 16\n"
+    "\tadd  x0, x0, x1\n"
+    // The next 2 assume that VG_DEFAULT_STACK_ACTIVE_SZB fits in 32 bits
+    "\tmov  x1, (("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)") >> 0) & 0xFFFF\n"
+    "\tmovk x1, (("VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)") >> 16) & 0xFFFF,"
+                " lsl 16\n"
+    "\tadd  x0, x0, x1\n"
+    "\tand  x0, x0, -16\n"
+    "\tmov  x1, sp\n"
+    "\tmov  sp, x0\n"
+    "\tmov  x0, x1\n"
+    "\tb _start_in_C_linux\n"
 );
 #elif defined(VGP_mips32_linux)
 asm("\n"
@@ -2920,37 +2920,37 @@ asm(
 ".globl __start\n"
 ".type __start,@function\n"
 "__start:\n"
-	"\t.set noreorder\n"
-	"\t.cpload $25\n"
-	"\t.set reorder\n"
-	"\t.cprestore 16\n"
-	"\tlui    $9, %hi(vgPlain_interim_stack)\n"
-	/* t1/$9 <- Addr(interim_stack) */
-	"\tdaddiu $9, %lo(vgPlain_interim_stack)\n"
+    "\t.set noreorder\n"
+    "\t.cpload $25\n"
+    "\t.set reorder\n"
+    "\t.cprestore 16\n"
+    "\tlui    $9, %hi(vgPlain_interim_stack)\n"
+    /* t1/$9 <- Addr(interim_stack) */
+    "\tdaddiu $9, %lo(vgPlain_interim_stack)\n"
 
-	"\tli     $10, "VG_STRINGIFY(VG_STACK_GUARD_SZB)"\n"
-	"\tli     $11, "VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)"\n"
+    "\tli     $10, "VG_STRINGIFY(VG_STACK_GUARD_SZB)"\n"
+    "\tli     $11, "VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)"\n"
 
-	"\tdaddu  $9, $9, $10\n"
-	"\tdaddu  $9, $9, $11\n"
-	"\tli     $12, 0xFFFFFF00\n"
-	"\tand    $9, $9, $12\n"
-	/* now t1/$9 = &vgPlain_interim_stack + VG_STACK_GUARD_SZB +
-	   VG_DEFAULT_STACK_ACTIVE_SZB rounded down to the nearest 16-byte
-	   boundary.  And $29 is the original SP.  Set the SP to t1 and
-	   call _start_in_C, passing it the initial SP. */
+    "\tdaddu  $9, $9, $10\n"
+    "\tdaddu  $9, $9, $11\n"
+    "\tli     $12, 0xFFFFFF00\n"
+    "\tand    $9, $9, $12\n"
+    /* now t1/$9 = &vgPlain_interim_stack + VG_STACK_GUARD_SZB +
+       VG_DEFAULT_STACK_ACTIVE_SZB rounded down to the nearest 16-byte
+       boundary.  And $29 is the original SP.  Set the SP to t1 and
+       call _start_in_C, passing it the initial SP. */
 
-	"\tmove   $4, $29\n"     // a0 <- $sp (_start_in_C first arg)
-	"\tmove   $29, $9\n"     // $sp <- t1 (new sp)
+    "\tmove   $4, $29\n"     // a0 <- $sp (_start_in_C first arg)
+    "\tmove   $29, $9\n"     // $sp <- t1 (new sp)
 
-	"\tlui    $9, %highest(_start_in_C_linux)\n"
-	"\tori    $9, %higher(_start_in_C_linux)\n"
-	"\tdsll32 $9, $9, 0x0\n"
-	"\tlui    $10, %hi(_start_in_C_linux)\n"
-	"\tdaddiu $10, %lo(_start_in_C_linux)\n"
-	"\tdaddu  $25, $9, $10\n"
-	"\tjalr   $25\n"
-	"\tnop\n"
+    "\tlui    $9, %highest(_start_in_C_linux)\n"
+    "\tori    $9, %higher(_start_in_C_linux)\n"
+    "\tdsll32 $9, $9, 0x0\n"
+    "\tlui    $10, %hi(_start_in_C_linux)\n"
+    "\tdaddiu $10, %lo(_start_in_C_linux)\n"
+    "\tdaddu  $25, $9, $10\n"
+    "\tjalr   $25\n"
+    "\tnop\n"
 ".previous\n"
 );
 #elif defined(VGP_nanomips_linux)
@@ -3009,9 +3009,9 @@ void _start_in_C_linux ( UWord* pArgc )
    // in run_a_thread_NORETURN to do the unregistration only for the
    // main thread. This unregistration is not worth this complexity.
    INNER_REQUEST
-	  ((void) VALGRIND_STACK_REGISTER
-	   (&VG_(interim_stack).bytes[0],
-		&VG_(interim_stack).bytes[0] + sizeof(VG_(interim_stack))));
+      ((void) VALGRIND_STACK_REGISTER
+       (&VG_(interim_stack).bytes[0],
+        &VG_(interim_stack).bytes[0] + sizeof(VG_(interim_stack))));
 
    VG_(memset)( &the_iicii, 0, sizeof(the_iicii) );
    VG_(memset)( &the_iifii, 0, sizeof(the_iifii) );
@@ -3023,20 +3023,20 @@ void _start_in_C_linux ( UWord* pArgc )
       || defined(VGP_mips32_linux)  || defined(VGP_mips64_linux) \
       || defined(VGP_nanomips_linux)
    {
-	  /* ppc32/ppc64, arm64, mips32/64 can be configured with different
-		 page sizes. Determine this early. This is an ugly hack and really
-		 should be moved into valgrind_main. */
-	  UWord *sp = &pArgc[1+argc+1];
-	  while (*sp++ != 0)
-		 ;
-	  for (; *sp != AT_NULL && *sp != AT_PAGESZ; sp += 2);
-	  if (*sp == AT_PAGESZ) {
-		 VKI_PAGE_SIZE = sp[1];
-		 for (VKI_PAGE_SHIFT = 12;
-			  VKI_PAGE_SHIFT <= VKI_MAX_PAGE_SHIFT; VKI_PAGE_SHIFT++)
-			if (VKI_PAGE_SIZE == (1UL << VKI_PAGE_SHIFT))
-		 break;
-	  }
+      /* ppc32/ppc64, arm64, mips32/64 can be configured with different
+         page sizes. Determine this early. This is an ugly hack and really
+         should be moved into valgrind_main. */
+      UWord *sp = &pArgc[1+argc+1];
+      while (*sp++ != 0)
+         ;
+      for (; *sp != AT_NULL && *sp != AT_PAGESZ; sp += 2);
+      if (*sp == AT_PAGESZ) {
+         VKI_PAGE_SIZE = sp[1];
+         for (VKI_PAGE_SHIFT = 12;
+              VKI_PAGE_SHIFT <= VKI_MAX_PAGE_SHIFT; VKI_PAGE_SHIFT++)
+            if (VKI_PAGE_SIZE == (1UL << VKI_PAGE_SHIFT))
+         break;
+      }
    }
 #  endif
 
@@ -3057,15 +3057,15 @@ void _start_in_C_linux ( UWord* pArgc )
 
    0(%esp)   argc
    4(%esp)   argv[0]
-			 ...
-			 argv[argc-1]
-			 NULL
-			 envp[0]
-			 ...
-			 envp[n]
-			 NULL
-			 executable name (presumably, a pointer to it)
-			 NULL
+             ...
+             argv[argc-1]
+             NULL
+             envp[0]
+             ...
+             envp[n]
+             NULL
+             executable name (presumably, a pointer to it)
+             NULL
 
    Ditto in the 64-bit case, except all offsets from SP are obviously
    twice as large.
@@ -3076,62 +3076,62 @@ void _start_in_C_linux ( UWord* pArgc )
    switches to the new stack.  */
 #if defined(VGP_x86_darwin)
 asm("\n"
-	".text\n"
-	".align 2,0x90\n"
-	"\t.globl __start\n"
-	"__start:\n"
-	/* set up the new stack in %eax */
-	"\tmovl  $_vgPlain_interim_stack, %eax\n"
-	"\taddl  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %eax\n"
-	"\taddl  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %eax\n"
-	"\tsubl  $16, %eax\n"
-	"\tandl  $~15, %eax\n"
-	/* install it, and collect the original one */
-	"\txchgl %eax, %esp\n"
-	"\tsubl  $12, %esp\n"  // keep stack 16 aligned; see #295428
-	/* call _start_in_C_darwin, passing it the startup %esp */
-	"\tpushl %eax\n"
-	"\tcall  __start_in_C_darwin\n"
-	"\tint $3\n"
-	"\tint $3\n"
+    ".text\n"
+    ".align 2,0x90\n"
+    "\t.globl __start\n"
+    "__start:\n"
+    /* set up the new stack in %eax */
+    "\tmovl  $_vgPlain_interim_stack, %eax\n"
+    "\taddl  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %eax\n"
+    "\taddl  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %eax\n"
+    "\tsubl  $16, %eax\n"
+    "\tandl  $~15, %eax\n"
+    /* install it, and collect the original one */
+    "\txchgl %eax, %esp\n"
+    "\tsubl  $12, %esp\n"  // keep stack 16 aligned; see #295428
+    /* call _start_in_C_darwin, passing it the startup %esp */
+    "\tpushl %eax\n"
+    "\tcall  __start_in_C_darwin\n"
+    "\tint $3\n"
+    "\tint $3\n"
 );
 #elif defined(VGP_amd64_darwin)
 asm("\n"
-	".text\n"
-	"\t.globl __start\n"
-	".align 3,0x90\n"
-	"__start:\n"
-	/* set up the new stack in %rdi */
-	"\tmovabsq $_vgPlain_interim_stack, %rdi\n"
-	"\taddq    $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rdi\n"
-	"\taddq    $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rdi\n"
-	"\tandq    $~15, %rdi\n"
-	/* install it, and collect the original one */
-	"\txchgq %rdi, %rsp\n"
-	/* call _start_in_C_darwin, passing it the startup %rsp */
-	"\tcall  __start_in_C_darwin\n"
-	"\tint $3\n"
-	"\tint $3\n"
+    ".text\n"
+    "\t.globl __start\n"
+    ".align 3,0x90\n"
+    "__start:\n"
+    /* set up the new stack in %rdi */
+    "\tmovabsq $_vgPlain_interim_stack, %rdi\n"
+    "\taddq    $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rdi\n"
+    "\taddq    $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rdi\n"
+    "\tandq    $~15, %rdi\n"
+    /* install it, and collect the original one */
+    "\txchgq %rdi, %rsp\n"
+    /* call _start_in_C_darwin, passing it the startup %rsp */
+    "\tcall  __start_in_C_darwin\n"
+    "\tint $3\n"
+    "\tint $3\n"
 );
 #endif
 
 void* __memcpy_chk(void *dest, const void *src, SizeT n, SizeT n2);
 void* __memcpy_chk(void *dest, const void *src, SizeT n, SizeT n2) {
-	// skip check
+    // skip check
    return VG_(memcpy)(dest,src,n);
 }
 void* __memset_chk(void *s, int c, SizeT n, SizeT n2);
 void* __memset_chk(void *s, int c, SizeT n, SizeT n2) {
-	// skip check
+    // skip check
   return VG_(memset)(s,c,n);
 }
 void __bzero(void* s, UWord n);
 void __bzero(void* s, UWord n) {
-	(void)VG_(memset)(s,0,n);
+    (void)VG_(memset)(s,0,n);
 }
 void bzero(void *s, SizeT n);
 void bzero(void *s, SizeT n) {
-	VG_(memset)(s,0,n);
+    VG_(memset)(s,0,n);
 }
 
 void* memcpy(void *dest, const void *src, SizeT n);
@@ -3155,9 +3155,9 @@ void _start_in_C_darwin ( UWord* pArgc )
 
    // See _start_in_C_linux
    INNER_REQUEST
-	  ((void) VALGRIND_STACK_REGISTER
-	   (&VG_(interim_stack).bytes[0],
-		&VG_(interim_stack).bytes[0] + sizeof(VG_(interim_stack))));
+      ((void) VALGRIND_STACK_REGISTER
+       (&VG_(interim_stack).bytes[0],
+        &VG_(interim_stack).bytes[0] + sizeof(VG_(interim_stack))));
 
    VG_(memset)( &the_iicii, 0, sizeof(the_iicii) );
    VG_(memset)( &the_iifii, 0, sizeof(the_iifii) );
@@ -3178,43 +3178,43 @@ void _start_in_C_darwin ( UWord* pArgc )
    pointer and calls onwards to _start_in_C_solaris.  This also switches to
    the new stack. */
 asm("\n"
-	"\t.text\n"
-	"\t.globl _start\n"
-	"\t.type _start, @function\n"
-	"_start:\n"
-	/* Set up the new stack in %eax. */
-	"\tmovl  $vgPlain_interim_stack, %eax\n"
-	"\taddl  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %eax\n"
-	"\taddl  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %eax\n"
-	"\tandl  $~15, %eax\n"
-	/* Install it, and collect the original one. */
-	"\txchgl %eax, %esp\n"
-	"\tsubl  $12, %esp\n"  /* Keep stack 16-byte aligned. */
-	/* Call _start_in_C_solaris, passing it the startup %esp. */
-	"\tpushl %eax\n"
-	"\tcall  _start_in_C_solaris\n"
-	/* NOTREACHED */
-	"\thlt\n"
-	"\t.previous\n"
+    "\t.text\n"
+    "\t.globl _start\n"
+    "\t.type _start, @function\n"
+    "_start:\n"
+    /* Set up the new stack in %eax. */
+    "\tmovl  $vgPlain_interim_stack, %eax\n"
+    "\taddl  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %eax\n"
+    "\taddl  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %eax\n"
+    "\tandl  $~15, %eax\n"
+    /* Install it, and collect the original one. */
+    "\txchgl %eax, %esp\n"
+    "\tsubl  $12, %esp\n"  /* Keep stack 16-byte aligned. */
+    /* Call _start_in_C_solaris, passing it the startup %esp. */
+    "\tpushl %eax\n"
+    "\tcall  _start_in_C_solaris\n"
+    /* NOTREACHED */
+    "\thlt\n"
+    "\t.previous\n"
 );
 #elif defined(VGP_amd64_solaris)
 asm("\n"
-	".text\n"
-	"\t.globl _start\n"
-	"\t.type _start, @function\n"
-	"_start:\n"
-	/* Set up the new stack in %rdi. */
-	"\tmovq  $vgPlain_interim_stack, %rdi\n"
-	"\taddq  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rdi\n"
-	"\taddq  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rdi\n"
-	"\tandq  $~15, %rdi\n"
-	/* Install it, and collect the original one. */
-	"\txchgq %rdi, %rsp\n"
-	/* Call _start_in_C_solaris, passing it the startup %rsp. */
-	"\tcall  _start_in_C_solaris\n"
-	/* NOTREACHED */
-	"\thlt\n"
-	".previous\n"
+    ".text\n"
+    "\t.globl _start\n"
+    "\t.type _start, @function\n"
+    "_start:\n"
+    /* Set up the new stack in %rdi. */
+    "\tmovq  $vgPlain_interim_stack, %rdi\n"
+    "\taddq  $"VG_STRINGIFY(VG_STACK_GUARD_SZB)", %rdi\n"
+    "\taddq  $"VG_STRINGIFY(VG_DEFAULT_STACK_ACTIVE_SZB)", %rdi\n"
+    "\tandq  $~15, %rdi\n"
+    /* Install it, and collect the original one. */
+    "\txchgq %rdi, %rsp\n"
+    /* Call _start_in_C_solaris, passing it the startup %rsp. */
+    "\tcall  _start_in_C_solaris\n"
+    /* NOTREACHED */
+    "\thlt\n"
+    ".previous\n"
 );
 #else
 #  error "Unknown Solaris platform"
@@ -3263,8 +3263,8 @@ Addr VG_(get_initial_client_SP)( void )
    integer division code, else the link dies thusly:
 
    ld_classic: Undefined symbols:
-	 ___udivdi3
-	 ___umoddi3
+     ___udivdi3
+     ___umoddi3
 */
 #if defined(VGP_x86_darwin)
 
@@ -3281,11 +3281,11 @@ Addr VG_(get_initial_client_SP)( void )
 
    http://www.hackersdelight.org/permissions.htm
 
-	  You are free to use, copy, and distribute any of the code on
-	  this web site, whether modified by you or not. You need not give
-	  attribution. This includes the algorithms (some of which appear
-	  in Hacker's Delight), the Hacker's Assistant, and any code
-	  submitted by readers. Submitters implicitly agree to this.
+      You are free to use, copy, and distribute any of the code on
+      this web site, whether modified by you or not. You need not give
+      attribution. This includes the algorithms (some of which appear
+      in Hacker's Delight), the Hacker's Assistant, and any code
+      submitted by readers. Submitters implicitly agree to this.
 */
 
 /* Long division, unsigned (64/32 ==> 32).
@@ -3317,16 +3317,16 @@ static UInt divlu2(UInt u1, UInt u0, UInt v, UInt *r)
 {
    const UInt b = 65536;     // Number base (16 bits).
    UInt un1, un0,            // Norm. dividend LSD's.
-		vn1, vn0,            // Norm. divisor digits.
-		q1, q0,              // Quotient digits.
-		un32, un21, un10,    // Dividend digit pairs.
-		rhat;                // A remainder.
+        vn1, vn0,            // Norm. divisor digits.
+        q1, q0,              // Quotient digits.
+        un32, un21, un10,    // Dividend digit pairs.
+        rhat;                // A remainder.
    Int s;                    // Shift amount for norm.
 
    if (u1 >= v) {            // If overflow, set rem.
-	  if (r != NULL)         // to an impossible value,
-		 *r = 0xFFFFFFFF;    // and return the largest
-	  return 0xFFFFFFFF;}    // possible quotient.
+      if (r != NULL)         // to an impossible value,
+         *r = 0xFFFFFFFF;    // and return the largest
+      return 0xFFFFFFFF;}    // possible quotient.
 
    s = nlz32(v);             // 0 <= s <= 31.
    v = v << s;               // Normalize divisor.
@@ -3343,9 +3343,9 @@ static UInt divlu2(UInt u1, UInt u0, UInt v, UInt *r)
    rhat = un32 - q1*vn1;     // quotient digit, q1.
  again1:
    if (q1 >= b || q1*vn0 > b*rhat + un1) {
-	 q1 = q1 - 1;
-	 rhat = rhat + vn1;
-	 if (rhat < b) goto again1;}
+     q1 = q1 - 1;
+     rhat = rhat + vn1;
+     if (rhat < b) goto again1;}
 
    un21 = un32*b + un1 - q1*v;  // Multiply and subtract.
 
@@ -3353,12 +3353,12 @@ static UInt divlu2(UInt u1, UInt u0, UInt v, UInt *r)
    rhat = un21 - q0*vn1;     // quotient digit, q0.
  again2:
    if (q0 >= b || q0*vn0 > b*rhat + un0) {
-	 q0 = q0 - 1;
-	 rhat = rhat + vn1;
-	 if (rhat < b) goto again2;}
+     q0 = q0 - 1;
+     rhat = rhat + vn1;
+     if (rhat < b) goto again2;}
 
    if (r != NULL)            // If remainder is wanted,
-	  *r = (un21*b + un0 - q0*v) >> s;     // return it.
+      *r = (un21*b + un0 - q0*v) >> s;     // return it.
    return q1*b + q0;
 }
 
@@ -3371,9 +3371,9 @@ static Int divls(Int u1, UInt u0, Int v, Int *r)
 
    uneg = u1 >> 31;          // -1 if u < 0.
    if (uneg) {               // Compute the absolute
-	  u0 = -u0;              // value of the dividend u.
-	  borrow = (u0 != 0);
-	  u1 = -u1 - borrow;}
+      u0 = -u0;              // value of the dividend u.
+      borrow = (u0 != 0);
+      u1 = -u1 - borrow;}
 
    vneg = v >> 31;           // -1 if v < 0.
    v = (v ^ vneg) - vneg;    // Absolute value of v.
@@ -3385,13 +3385,13 @@ static Int divls(Int u1, UInt u0, Int v, Int *r)
    diff = uneg ^ vneg;       // Negate q if signs of
    q = (q ^ diff) - diff;    // u and v differed.
    if (uneg && r != NULL)
-	  *r = -*r;
+      *r = -*r;
 
    if ((diff ^ q) < 0 && q != 0) {  // If overflow,
  overflow:                    // set remainder
-	  if (r != NULL)         // to an impossible value,
-		 *r = 0x80000000;    // and return the largest
-	  q = 0x80000000;}       // possible neg. quotient.
+      if (r != NULL)         // to an impossible value,
+         *r = 0x80000000;    // and return the largest
+      q = 0x80000000;}       // possible neg. quotient.
    return q;
 }
 
@@ -3441,12 +3441,12 @@ static Int nlz64(ULong x)
    divisions, using the grade school method, with variables used as
    suggested below.
 
-	   q1 q0
-	________
+       q1 q0
+    ________
    v)  u1 u0
-	 q1*v
-	 ____
-		k u0   */
+     q1*v
+     ____
+        k u0   */
 
 /* These macros must be used with arguments of the appropriate type
 (unsigned long long for DIVU and long long for DIVS. They are
@@ -3478,33 +3478,33 @@ static ULong udivdi3(ULong u, ULong v)
    ULong u0, u1, v1, q0, q1, k, n;
 
    if (v >> 32 == 0) {          // If v < 2**32:
-	  if (u >> 32 < v)          // If u/v cannot overflow,
-		 return DIVU(u, v)      // just do one division.
-			& 0xFFFFFFFF;
-	  else {                    // If u/v would overflow:
-		 u1 = u >> 32;          // Break u up into two
-		 u0 = u & 0xFFFFFFFF;   // halves.
-		 q1 = DIVU(u1, v)       // First quotient digit.
-			& 0xFFFFFFFF;
-		 k = u1 - q1*v;         // First remainder, < v.
-		 q0 = DIVU((k << 32) + u0, v) // 2nd quot. digit.
-			& 0xFFFFFFFF;
-		 return (q1 << 32) + q0;
-	  }
+      if (u >> 32 < v)          // If u/v cannot overflow,
+         return DIVU(u, v)      // just do one division.
+            & 0xFFFFFFFF;
+      else {                    // If u/v would overflow:
+         u1 = u >> 32;          // Break u up into two
+         u0 = u & 0xFFFFFFFF;   // halves.
+         q1 = DIVU(u1, v)       // First quotient digit.
+            & 0xFFFFFFFF;
+         k = u1 - q1*v;         // First remainder, < v.
+         q0 = DIVU((k << 32) + u0, v) // 2nd quot. digit.
+            & 0xFFFFFFFF;
+         return (q1 << 32) + q0;
+      }
    }
-								// Here v >= 2**32.
+                                // Here v >= 2**32.
    n = nlz64(v);                // 0 <= n <= 31.
    v1 = (v << n) >> 32;         // Normalize the divisor
-								// so its MSB is 1.
+                                // so its MSB is 1.
    u1 = u >> 1;                 // To ensure no overflow.
    q1 = DIVU(u1, v1)            // Get quotient from
-	   & 0xFFFFFFFF;            // divide unsigned insn.
+       & 0xFFFFFFFF;            // divide unsigned insn.
    q0 = (q1 << n) >> 31;        // Undo normalization and
-								// division of u by 2.
+                                // division of u by 2.
    if (q0 != 0)                 // Make q0 correct or
-	  q0 = q0 - 1;              // too small by 1.
+      q0 = q0 - 1;              // too small by 1.
    if ((u - q0*v) >= v)
-	  q0 = q0 + 1;              // Now q0 is correct.
+      q0 = q0 + 1;              // Now q0 is correct.
    return q0;
 }
 
@@ -3536,10 +3536,10 @@ static Long divdi3(Long u, Long v)
    av = my_llabs(v);
    if (av >> 31 == 0) {         // If |v| < 2**31 and
    // if (v << 32 >> 32 == v) { // If v is in range and
-	  if (au < av << 31) {      // |u|/|v| cannot
-		 q = DIVS(u, v);        // overflow, use DIVS.
-		 return (q << 32) >> 32;
-	  }
+      if (au < av << 31) {      // |u|/|v| cannot
+         q = DIVS(u, v);        // overflow, use DIVS.
+         return (q << 32) >> 32;
+      }
    }
    q = udivdi3(au,av);          // Invoke udivdi3.
    t = (u ^ v) >> 63;           // If u, v have different
@@ -3578,7 +3578,7 @@ Long __moddi3 (Long u, Long v)
 
 /* ------------------------------------------------
    ld_classic: Undefined symbols:
-	  ___fixunsdfdi
+      ___fixunsdfdi
    ------------------------------------------------
 */
 
@@ -3634,23 +3634,23 @@ typedef unsigned su_int;
 
 typedef union
 {
-	du_int all;
-	struct
-	{
+    du_int all;
+    struct
+    {
 #if VG_LITTLEENDIAN
-		su_int low;
-		su_int high;
+        su_int low;
+        su_int high;
 #else
-		su_int high;
-		su_int low;
+        su_int high;
+        su_int low;
 #endif /* VG_LITTLEENDIAN */
-	}s;
+    }s;
 } udwords;
 
 typedef union
 {
-	udwords u;
-	double  f;
+    udwords u;
+    double  f;
 } double_bits;
 
 du_int __fixunsdfdi(double a);
@@ -3658,19 +3658,19 @@ du_int __fixunsdfdi(double a);
 du_int
 __fixunsdfdi(double a)
 {
-	double_bits fb;
-	fb.f = a;
-	int e = ((fb.u.s.high & 0x7FF00000) >> 20) - 1023;
-	if (e < 0 || (fb.u.s.high & 0x80000000))
-		return 0;
-	udwords r;
-	r.s.high = (fb.u.s.high & 0x000FFFFF) | 0x00100000;
-	r.s.low = fb.u.s.low;
-	if (e > 52)
-		r.all <<= (e - 52);
-	else
-		r.all >>= (52 - e);
-	return r.all;
+    double_bits fb;
+    fb.f = a;
+    int e = ((fb.u.s.high & 0x7FF00000) >> 20) - 1023;
+    if (e < 0 || (fb.u.s.high & 0x80000000))
+        return 0;
+    udwords r;
+    r.s.high = (fb.u.s.high & 0x000FFFFF) | 0x00100000;
+    r.s.low = fb.u.s.low;
+    if (e > 52)
+        r.all <<= (e - 52);
+    else
+        r.all >>= (52 - e);
+    return r.all;
 }
 
 

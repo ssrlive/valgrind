@@ -1,2 +1,1 @@
-prog: cet_nops_fs
-vgopts: -q
+../x86-linux/cet_nops_fs.vgtest

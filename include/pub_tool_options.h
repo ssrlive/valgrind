@@ -8,7 +8,7 @@
    framework.
 
    Copyright (C) 2000-2017 Julian Seward
-	  jseward@acm.org
+      jseward@acm.org
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -362,7 +362,7 @@ extern Bool VG_(clo_keep_debuginfo);
    'format':
    - "%p" is replaced with PID.
    - "%q{QUAL}" is replaced with the environment variable $QUAL.  If $QUAL
-	 isn't set, we abort.  If the "{QUAL}" part is malformed, we abort.
+     isn't set, we abort.  If the "{QUAL}" part is malformed, we abort.
    - "%%" is replaced with "%".
    Anything else after '%' causes an abort.
    If the format specifies a relative file name, it's put in the program's
@@ -376,7 +376,7 @@ extern Bool VG_(clo_keep_debuginfo);
    to be printed due to malformedness of the "format" argument.
 */
 extern HChar* VG_(expand_file_name)(const HChar* option_name,
-									const HChar* format);
+                                    const HChar* format);
 
 #endif   // __PUB_TOOL_OPTIONS_H
 

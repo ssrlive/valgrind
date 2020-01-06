@@ -7,8 +7,8 @@
    This file is part of Valgrind, a dynamic binary instrumentation
    framework.
 
-   Copyright (C) 2000-2017 Julian Seward
-	  jseward@acm.org
+   Copyright (C) 2000-2017 Julian Seward 
+      jseward@acm.org
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -86,7 +86,7 @@ SysRes VG_(mk_SysRes_SuccessEx) ( UWord res, UWord resEx ) {
 
 
 #elif defined(VGO_linux) \
-	  && !defined(VGP_mips32_linux) && !defined(VGP_mips64_linux)
+      && !defined(VGP_mips32_linux) && !defined(VGP_mips64_linux)
 
 /*
    From:
@@ -117,9 +117,9 @@ SysRes VG_(mk_SysRes_x86_linux) ( Int val ) {
    SysRes res;
    res._isError = val >= -4095 && val <= -1;
    if (res._isError) {
-	  res._val = (UInt)(-val);
+      res._val = (UInt)(-val);
    } else {
-	  res._val = (UInt)val;
+      res._val = (UInt)val;
    }
    return res;
 }
@@ -129,9 +129,9 @@ SysRes VG_(mk_SysRes_amd64_linux) ( Long val ) {
    SysRes res;
    res._isError = val >= -4095 && val <= -1;
    if (res._isError) {
-	  res._val = (ULong)(-val);
+      res._val = (ULong)(-val);
    } else {
-	  res._val = (ULong)val;
+      res._val = (ULong)val;
    }
    return res;
 }
@@ -157,9 +157,9 @@ SysRes VG_(mk_SysRes_s390x_linux) ( Long val ) {
    SysRes res;
    res._isError = val >= -4095 && val <= -1;
    if (res._isError) {
-	  res._val = -val;
+      res._val = -val;
    } else {
-	  res._val = val;
+      res._val = val;
    }
    return res;
 }
@@ -168,9 +168,9 @@ SysRes VG_(mk_SysRes_arm_linux) ( Int val ) {
    SysRes res;
    res._isError = val >= -4095 && val <= -1;
    if (res._isError) {
-	  res._val = (UInt)(-val);
+      res._val = (UInt)(-val);
    } else {
-	  res._val = (UInt)val;
+      res._val = (UInt)val;
    }
    return res;
 }
@@ -179,9 +179,9 @@ SysRes VG_(mk_SysRes_arm64_linux) ( Long val ) {
    SysRes res;
    res._isError = val >= -4095 && val <= -1;
    if (res._isError) {
-	  res._val = (ULong)(-val);
+      res._val = (ULong)(-val);
    } else {
-	  res._val = (ULong)val;
+      res._val = (ULong)val;
    }
    return res;
 }
@@ -216,7 +216,7 @@ SysRes VG_(mk_SysRes_Error) ( UWord err ) {
 
 /* Darwin: Some syscalls return a double-word result. */
 SysRes VG_(mk_SysRes_x86_darwin) ( UChar scclass, Bool isErr,
-								   UInt wHI, UInt wLO )
+                                   UInt wHI, UInt wLO )
 {
    SysRes res;
    res._wHI  = 0;
@@ -225,31 +225,31 @@ SysRes VG_(mk_SysRes_x86_darwin) ( UChar scclass, Bool isErr,
    vg_assert(isErr == False || isErr == True);
    vg_assert(sizeof(UWord) == sizeof(UInt));
    switch (scclass) {
-	  case VG_DARWIN_SYSCALL_CLASS_UNIX:
-		 res._wLO  = wLO;
-		 res._wHI  = wHI;
-		 res._mode = isErr ? SysRes_UNIX_ERR : SysRes_UNIX_OK;
-		 break;
-	  case VG_DARWIN_SYSCALL_CLASS_MACH:
-		 vg_assert(!isErr);
-		 vg_assert(wHI == 0);
-		 res._wLO  = wLO;
-		 res._mode = SysRes_MACH;
-		 break;
-	  case VG_DARWIN_SYSCALL_CLASS_MDEP:
-		 vg_assert(!isErr);
-		 vg_assert(wHI == 0);
-		 res._wLO  = wLO;
-		 res._mode = SysRes_MDEP;
-		 break;
-	  default:
-		 vg_assert(0);
+      case VG_DARWIN_SYSCALL_CLASS_UNIX:
+         res._wLO  = wLO;
+         res._wHI  = wHI;
+         res._mode = isErr ? SysRes_UNIX_ERR : SysRes_UNIX_OK;
+         break;
+      case VG_DARWIN_SYSCALL_CLASS_MACH:
+         vg_assert(!isErr);
+         vg_assert(wHI == 0);
+         res._wLO  = wLO;
+         res._mode = SysRes_MACH;
+         break;
+      case VG_DARWIN_SYSCALL_CLASS_MDEP:
+         vg_assert(!isErr);
+         vg_assert(wHI == 0);
+         res._wLO  = wLO;
+         res._mode = SysRes_MDEP;
+         break;
+      default:
+         vg_assert(0);
    }
    return res;
 }
 
 SysRes VG_(mk_SysRes_amd64_darwin) ( UChar scclass, Bool isErr,
-									 ULong wHI, ULong wLO )
+                                     ULong wHI, ULong wLO )
 {
    SysRes res;
    res._wHI  = 0;
@@ -258,25 +258,25 @@ SysRes VG_(mk_SysRes_amd64_darwin) ( UChar scclass, Bool isErr,
    vg_assert(isErr == False || isErr == True);
    vg_assert(sizeof(UWord) == sizeof(ULong));
    switch (scclass) {
-	  case VG_DARWIN_SYSCALL_CLASS_UNIX:
-		 res._wLO  = wLO;
-		 res._wHI  = wHI;
-		 res._mode = isErr ? SysRes_UNIX_ERR : SysRes_UNIX_OK;
-		 break;
-	  case VG_DARWIN_SYSCALL_CLASS_MACH:
-		 vg_assert(!isErr);
-		 vg_assert(wHI == 0);
-		 res._wLO  = wLO;
-		 res._mode = SysRes_MACH;
-		 break;
-	  case VG_DARWIN_SYSCALL_CLASS_MDEP:
-		 vg_assert(!isErr);
-		 vg_assert(wHI == 0);
-		 res._wLO  = wLO;
-		 res._mode = SysRes_MDEP;
-		 break;
-	  default:
-		 vg_assert(0);
+      case VG_DARWIN_SYSCALL_CLASS_UNIX:
+         res._wLO  = wLO;
+         res._wHI  = wHI;
+         res._mode = isErr ? SysRes_UNIX_ERR : SysRes_UNIX_OK;
+         break;
+      case VG_DARWIN_SYSCALL_CLASS_MACH:
+         vg_assert(!isErr);
+         vg_assert(wHI == 0);
+         res._wLO  = wLO;
+         res._mode = SysRes_MACH;
+         break;
+      case VG_DARWIN_SYSCALL_CLASS_MDEP:
+         vg_assert(!isErr);
+         vg_assert(wHI == 0);
+         res._wLO  = wLO;
+         res._mode = SysRes_MDEP;
+         break;
+      default:
+         vg_assert(0);
    }
    return res;
 }
@@ -368,10 +368,10 @@ SysRes VG_(mk_SysRes_amd64_solaris) ( Bool isErr, ULong val, ULong val2 )
    %ebp).
 */
 extern UWord do_syscall_WRK (
-		  UWord syscall_no,
-		  UWord a1, UWord a2, UWord a3,
-		  UWord a4, UWord a5, UWord a6
-	   );
+          UWord syscall_no, 
+          UWord a1, UWord a2, UWord a3,
+          UWord a4, UWord a5, UWord a6
+       );
 asm(
 ".text\n"
 ".globl do_syscall_WRK\n"
@@ -428,16 +428,16 @@ asm(
    regs, so we don't have to do any register saving/restoring).
 */
 extern UWord do_syscall_WRK (
-		  UWord syscall_no,
-		  UWord a1, UWord a2, UWord a3,
-		  UWord a4, UWord a5, UWord a6
-	   );
+          UWord syscall_no, 
+          UWord a1, UWord a2, UWord a3,
+          UWord a4, UWord a5, UWord a6
+       );
 asm(
 ".text\n"
 ".globl do_syscall_WRK\n"
 "do_syscall_WRK:\n"
-		/* Convert function calling convention --> syscall calling
-		   convention */
+        /* Convert function calling convention --> syscall calling
+           convention */
 "	movq	%rdi, %rax\n"
 "	movq	%rsi, %rdi\n"
 "	movq	%rdx, %rsi\n"
@@ -457,16 +457,16 @@ asm(
    the regs %r3:%r8, i.e. the kernel's syscall calling convention.
 
    The %cr0.so bit flags an error.
-   We return the syscall return value in %r3, and the %cr0.so in
+   We return the syscall return value in %r3, and the %cr0.so in 
    the lowest bit of %r4.
    We return a ULong, of which %r3 is the high word, and %r4 the low.
    No callee-save regs are clobbered, so no saving/restoring is needed.
 */
 extern ULong do_syscall_WRK (
-		  UWord syscall_no,
-		  UWord a1, UWord a2, UWord a3,
-		  UWord a4, UWord a5, UWord a6
-	   );
+          UWord syscall_no, 
+          UWord a1, UWord a2, UWord a3,
+          UWord a4, UWord a5, UWord a6
+       );
 asm(
 ".text\n"
 ".globl do_syscall_WRK\n"
@@ -569,10 +569,10 @@ asm(
    values.
 */
 extern UWord do_syscall_WRK (
-		  UWord a1, UWord a2, UWord a3,
-		  UWord a4, UWord a5, UWord a6,
-		  UWord syscall_no
-	   );
+          UWord a1, UWord a2, UWord a3,
+          UWord a4, UWord a5, UWord a6,
+          UWord syscall_no
+       );
 asm(
 ".text\n"
 ".globl do_syscall_WRK\n"
@@ -595,14 +595,14 @@ asm(
    -4096 .. -1 is an error value.  All other values are success
    values.
 
-   r0 to r5 remain unchanged, but syscall_no is in r6 and needs
+   r0 to r5 remain unchanged, but syscall_no is in r6 and needs 
    to be moved to r8 (??)
 */
 extern UWord do_syscall_WRK (
-		  UWord a1, UWord a2, UWord a3,
-		  UWord a4, UWord a5, UWord a6,
-		  UWord syscall_no
-	   );
+          UWord a1, UWord a2, UWord a3,
+          UWord a4, UWord a5, UWord a6,
+          UWord syscall_no
+       );
 asm(
 ".text\n"
 ".globl do_syscall_WRK\n"
@@ -622,9 +622,9 @@ asm(
    The kernel's syscall calling convention is:
    * the syscall number goes in eax
    * the args are passed to the syscall on the stack,
-	 pushed onto the stack R->L (that is, the usual x86
-	 calling conventions, with the leftmost arg at the lowest
-	 address)
+     pushed onto the stack R->L (that is, the usual x86
+     calling conventions, with the leftmost arg at the lowest
+     address)
    Call instruction:
    * UNIX: sysenter
    * UNIX: int $0x80
@@ -643,52 +643,52 @@ asm(
    nb here, sizeof(UWord) == sizeof(UInt)
 */
 
-__private_extern__ ULong
+__private_extern__ ULong 
 do_syscall_unix_WRK ( UWord a1, UWord a2, UWord a3, /* 4(esp)..12(esp) */
-					  UWord a4, UWord a5, UWord a6, /* 16(esp)..24(esp) */
-					  UWord a7, UWord a8, /* 28(esp)..32(esp) */
-					  UWord syscall_no, /* 36(esp) */
-					  /*OUT*/UInt* errflag /* 40(esp) */ );
+                      UWord a4, UWord a5, UWord a6, /* 16(esp)..24(esp) */
+                      UWord a7, UWord a8, /* 28(esp)..32(esp) */
+                      UWord syscall_no, /* 36(esp) */
+                      /*OUT*/UInt* errflag /* 40(esp) */ );
 // Unix syscall: 64-bit return in edx:eax, with LSB in eax
 // error indicated by carry flag: clear=good, set=bad
 asm(".private_extern _do_syscall_unix_WRK\n"
-	"_do_syscall_unix_WRK:\n"
-	"        movl    40(%esp), %ecx   \n"  /* assume syscall success */
-	"        movl    $0, (%ecx)       \n"
-	"        movl    36(%esp), %eax   \n"
-	"        int     $0x80            \n"
-	"        jnc     1f               \n"  /* jump if success */
-	"        movl    40(%esp), %ecx   \n"  /* syscall failed - set *errflag */
-	"        movl    $1, (%ecx)       \n"
-	"    1:  ret                      \n"
-	);
+    "_do_syscall_unix_WRK:\n"
+    "        movl    40(%esp), %ecx   \n"  /* assume syscall success */
+    "        movl    $0, (%ecx)       \n"
+    "        movl    36(%esp), %eax   \n"
+    "        int     $0x80            \n"
+    "        jnc     1f               \n"  /* jump if success */
+    "        movl    40(%esp), %ecx   \n"  /* syscall failed - set *errflag */
+    "        movl    $1, (%ecx)       \n"
+    "    1:  ret                      \n"
+    );
 
-__private_extern__ UInt
+__private_extern__ UInt 
 do_syscall_mach_WRK ( UWord a1, UWord a2, UWord a3, /* 4(esp)..12(esp) */
-					  UWord a4, UWord a5, UWord a6, /* 16(esp)..24(esp) */
-					  UWord a7, UWord a8, /* 28(esp)..32(esp) */
-					  UWord syscall_no /* 36(esp) */ );
+                      UWord a4, UWord a5, UWord a6, /* 16(esp)..24(esp) */
+                      UWord a7, UWord a8, /* 28(esp)..32(esp) */
+                      UWord syscall_no /* 36(esp) */ );
 // Mach trap: 32-bit result in %eax, no error flag
 asm(".private_extern _do_syscall_mach_WRK\n"
-	"_do_syscall_mach_WRK:\n"
-	"        movl    36(%esp), %eax   \n"
-	"        int     $0x81            \n"
-	"        ret                      \n"
-	);
+    "_do_syscall_mach_WRK:\n"
+    "        movl    36(%esp), %eax   \n"
+    "        int     $0x81            \n"
+    "        ret                      \n"
+    );
 
-__private_extern__ UInt
+__private_extern__ UInt 
 do_syscall_mdep_WRK ( UWord a1, UWord a2, UWord a3, /* 4(esp)..12(esp) */
-					  UWord a4, UWord a5, UWord a6, /* 16(esp)..24(esp) */
-					  UWord a7, UWord a8, /* 28(esp)..32(esp) */
-					  UWord syscall_no /* 36(esp) */ );
+                      UWord a4, UWord a5, UWord a6, /* 16(esp)..24(esp) */
+                      UWord a7, UWord a8, /* 28(esp)..32(esp) */
+                      UWord syscall_no /* 36(esp) */ );
 // mdep trap: 32-bit result in %eax, no error flag
 asm(
-	".private_extern _do_syscall_mdep_WRK\n"
-	"_do_syscall_mdep_WRK:\n"
-	"        movl    36(%esp), %eax   \n"
-	"        int     $0x82            \n"
-	"        ret                      \n"
-	);
+    ".private_extern _do_syscall_mdep_WRK\n"
+    "_do_syscall_mdep_WRK:\n"
+    "        movl    36(%esp), %eax   \n"
+    "        int     $0x82            \n"
+    "        ret                      \n"
+    );
 
 
 #elif defined(VGP_amd64_darwin)
@@ -709,43 +709,43 @@ asm(
    nb here, sizeof(UWord) == sizeof(ULong)
 */
 
-__private_extern__ UWord
+__private_extern__ UWord 
 do_syscall_unix_WRK ( UWord a1, UWord a2, UWord a3, /* rdi, rsi, rdx */
-					  UWord a4, UWord a5, UWord a6, /* rcx, r8,  r9 */
-					  UWord a7, UWord a8,           /* 8(rsp), 16(rsp) */
-					  UWord syscall_no,             /* 24(rsp) */
-					  /*OUT*/ULong* errflag,        /* 32(rsp) */
-					  /*OUT*/ULong* res2 );         /* 40(rsp) */
+                      UWord a4, UWord a5, UWord a6, /* rcx, r8,  r9 */
+                      UWord a7, UWord a8,           /* 8(rsp), 16(rsp) */
+                      UWord syscall_no,             /* 24(rsp) */
+                      /*OUT*/ULong* errflag,        /* 32(rsp) */
+                      /*OUT*/ULong* res2 );         /* 40(rsp) */
 // Unix syscall: 128-bit return in rax:rdx, with LSB in rax
 // error indicated by carry flag: clear=good, set=bad
 asm(".private_extern _do_syscall_unix_WRK\n"
-	"_do_syscall_unix_WRK:\n"
-	"        movq    %rcx, %r10       \n"  /* pass rcx in r10 instead */
-	"        movq    32(%rsp), %rax   \n"  /* assume syscall success */
-	"        movq    $0, (%rax)       \n"
-	"        movq    24(%rsp), %rax   \n"  /* load syscall_no */
-	"        syscall                  \n"
-	"        jnc     1f               \n"  /* jump if success */
-	"        movq    32(%rsp), %rcx   \n"  /* syscall failed - set *errflag */
-	"        movq    $1, (%rcx)       \n"
-	"    1:  movq    40(%rsp), %rcx   \n"  /* save 2nd result word */
-	"        movq    %rdx, (%rcx)     \n"
-	"        retq                     \n"  /* return 1st result word */
-	);
+    "_do_syscall_unix_WRK:\n"
+    "        movq    %rcx, %r10       \n"  /* pass rcx in r10 instead */
+    "        movq    32(%rsp), %rax   \n"  /* assume syscall success */
+    "        movq    $0, (%rax)       \n"
+    "        movq    24(%rsp), %rax   \n"  /* load syscall_no */
+    "        syscall                  \n"
+    "        jnc     1f               \n"  /* jump if success */
+    "        movq    32(%rsp), %rcx   \n"  /* syscall failed - set *errflag */
+    "        movq    $1, (%rcx)       \n"
+    "    1:  movq    40(%rsp), %rcx   \n"  /* save 2nd result word */
+    "        movq    %rdx, (%rcx)     \n"
+    "        retq                     \n"  /* return 1st result word */
+    );
 
-__private_extern__ UWord
+__private_extern__ UWord 
 do_syscall_mach_WRK ( UWord a1, UWord a2, UWord a3, /* rdi, rsi, rdx */
-					  UWord a4, UWord a5, UWord a6, /* rcx, r8,  r9 */
-					  UWord a7, UWord a8,           /* 8(rsp), 16(rsp) */
-					  UWord syscall_no );           /* 24(rsp) */
+                      UWord a4, UWord a5, UWord a6, /* rcx, r8,  r9 */
+                      UWord a7, UWord a8,           /* 8(rsp), 16(rsp) */
+                      UWord syscall_no );           /* 24(rsp) */
 // Mach trap: 64-bit result, no error flag
 asm(".private_extern _do_syscall_mach_WRK\n"
-	"_do_syscall_mach_WRK:\n"
-	"        movq    %rcx, %r10       \n"  /* pass rcx in r10 instead */
-	"        movq    24(%rsp), %rax   \n"  /* load syscall_no */
-	"        syscall                  \n"
-	"        retq                     \n"
-	);
+    "_do_syscall_mach_WRK:\n"
+    "        movq    %rcx, %r10       \n"  /* pass rcx in r10 instead */
+    "        movq    24(%rsp), %rax   \n"  /* load syscall_no */
+    "        syscall                  \n"
+    "        retq                     \n"
+    );
 
 #elif defined(VGP_s390x_linux)
 
@@ -764,8 +764,8 @@ static UWord do_syscall_WRK (
    register ULong __svcres asm("2");
 
    __asm__ __volatile__ (
-				 "lgr %%r1,%1\n\t"
-				 "svc 0\n\t"
+                 "lgr %%r1,%1\n\t"
+                 "svc 0\n\t"
 		: "=d" (__svcres)
 		: "a" (syscall_no),
 		  "0" (__arg1),
@@ -868,10 +868,10 @@ asm (
 
 extern ULong
 do_syscall_WRK(UWord a1, UWord a2, UWord a3,    /* 4(esp)..12(esp) */
-			   UWord a4, UWord a5, UWord a6,    /* 16(esp)..24(esp) */
-			   UWord a7, UWord a8,              /* 28(esp)..32(esp) */
-			   UWord syscall_no,                /* 36(esp) */
-			   /*OUT*/UInt *errflag);           /* 40(esp) */
+               UWord a4, UWord a5, UWord a6,    /* 16(esp)..24(esp) */
+               UWord a7, UWord a8,              /* 28(esp)..32(esp) */
+               UWord syscall_no,                /* 36(esp) */
+               /*OUT*/UInt *errflag);           /* 40(esp) */
 /* Classic unix syscall.. parameters on the stack, an unused (by the kernel)
    return address at 0(esp), a sysno in eax, a result in edx:eax, the carry
    flag set on error. */
@@ -908,11 +908,11 @@ __asm__ (
 
 extern ULong
 do_syscall_WRK(UWord a1, UWord a2, UWord a3,    /* rdi, rsi, rdx */
-			   UWord a4, UWord a5, UWord a6,    /* rcx, r8, r9 */
-			   UWord a7, UWord a8,              /* 8(rsp), 16(rsp) */
-			   UWord syscall_no,                /* 24(rsp) */
-			   /*OUT*/ULong *errflag,           /* 32(rsp) */
-			   /*OUT*/ULong *res2);             /* 40(rsp) */
+               UWord a4, UWord a5, UWord a6,    /* rcx, r8, r9 */
+               UWord a7, UWord a8,              /* 8(rsp), 16(rsp) */
+               UWord syscall_no,                /* 24(rsp) */
+               /*OUT*/ULong *errflag,           /* 32(rsp) */
+               /*OUT*/ULong *res2);             /* 40(rsp) */
 /* First 6 parameters in registers rdi, rsi, rdx, r10, r8, r9, next
    2 parameters on the stack, an unused (by the kernel) return address at
    0(rsp), a sysno in rax, a result in rdx:rax, the carry flag set on
@@ -937,7 +937,7 @@ __asm__ (
 
 extern ULong
 do_syscall_fast_WRK(UWord syscall_no,           /* rdi */
-					/*OUT*/ULong *res2);        /* rsi */
+                    /*OUT*/ULong *res2);        /* rsi */
 /* Fasttrap syscall.. no parameters, a sysno in rax, a result in rdx:rax,
    never fails (if the sysno is valid). */
 __asm__ (
@@ -960,8 +960,8 @@ __asm__ (
    helper. */
 
 SysRes VG_(do_syscall) ( UWord sysno, RegWord a1, RegWord a2, RegWord a3,
-									  RegWord a4, RegWord a5, RegWord a6,
-									  RegWord a7, RegWord a8 )
+                                      RegWord a4, RegWord a5, RegWord a6,
+                                      RegWord a7, RegWord a8 )
 {
 #  if defined(VGP_x86_linux)
    UWord val = do_syscall_WRK(sysno,a1,a2,a3,a4,a5,a6);
@@ -1002,25 +1002,25 @@ SysRes VG_(do_syscall) ( UWord sysno, RegWord a1, RegWord a2, RegWord a3,
    ULong u64;
    UChar scclass = VG_DARWIN_SYSNO_CLASS(sysno);
    switch (scclass) {
-	  case VG_DARWIN_SYSCALL_CLASS_UNIX:
-		 u64 = do_syscall_unix_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
-								   VG_DARWIN_SYSNO_FOR_KERNEL(sysno), &err);
-		 wLO = (UInt)u64;
-		 wHI = (UInt)(u64 >> 32);
-		 break;
-	  case VG_DARWIN_SYSCALL_CLASS_MACH:
-		 wLO = do_syscall_mach_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
-								   VG_DARWIN_SYSNO_FOR_KERNEL(sysno));
-		 err = 0;
-		 break;
-	  case VG_DARWIN_SYSCALL_CLASS_MDEP:
-		 wLO = do_syscall_mdep_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
-								   VG_DARWIN_SYSNO_FOR_KERNEL(sysno));
-		 err = 0;
-		 break;
-	  default:
-		 vg_assert(0);
-		 break;
+      case VG_DARWIN_SYSCALL_CLASS_UNIX:
+         u64 = do_syscall_unix_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
+                                   VG_DARWIN_SYSNO_FOR_KERNEL(sysno), &err);
+         wLO = (UInt)u64;
+         wHI = (UInt)(u64 >> 32);
+         break;
+      case VG_DARWIN_SYSCALL_CLASS_MACH:
+         wLO = do_syscall_mach_WRK(a1,a2,a3,a4,a5,a6,a7,a8, 
+                                   VG_DARWIN_SYSNO_FOR_KERNEL(sysno));
+         err = 0;
+         break;
+      case VG_DARWIN_SYSCALL_CLASS_MDEP:
+         wLO = do_syscall_mdep_WRK(a1,a2,a3,a4,a5,a6,a7,a8, 
+                                   VG_DARWIN_SYSNO_FOR_KERNEL(sysno));
+         err = 0;
+         break;
+      default:
+         vg_assert(0);
+         break;
    }
    return VG_(mk_SysRes_x86_darwin)( scclass, err ? True : False, wHI, wLO );
 
@@ -1028,37 +1028,37 @@ SysRes VG_(do_syscall) ( UWord sysno, RegWord a1, RegWord a2, RegWord a3,
    ULong wLO = 0, wHI = 0, err = 0;
    UChar scclass = VG_DARWIN_SYSNO_CLASS(sysno);
    switch (scclass) {
-	  case VG_DARWIN_SYSCALL_CLASS_UNIX:
-		 wLO = do_syscall_unix_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
-								   VG_DARWIN_SYSNO_FOR_KERNEL(sysno), &err, &wHI);
-		 break;
-	  case VG_DARWIN_SYSCALL_CLASS_MACH:
-	  case VG_DARWIN_SYSCALL_CLASS_MDEP:
-		 wLO = do_syscall_mach_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
-								   VG_DARWIN_SYSNO_FOR_KERNEL(sysno));
-		 err = 0;
-		 break;
-	  default:
-		 vg_assert(0);
-		 break;
+      case VG_DARWIN_SYSCALL_CLASS_UNIX:
+         wLO = do_syscall_unix_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
+                                   VG_DARWIN_SYSNO_FOR_KERNEL(sysno), &err, &wHI);
+         break;
+      case VG_DARWIN_SYSCALL_CLASS_MACH:
+      case VG_DARWIN_SYSCALL_CLASS_MDEP:
+         wLO = do_syscall_mach_WRK(a1,a2,a3,a4,a5,a6,a7,a8, 
+                                   VG_DARWIN_SYSNO_FOR_KERNEL(sysno));
+         err = 0;
+         break;
+      default:
+         vg_assert(0);
+         break;
    }
    return VG_(mk_SysRes_amd64_darwin)( scclass, err ? True : False, wHI, wLO );
-
+  
 #elif defined(VGP_s390x_linux)
    UWord val;
 
    if (sysno == __NR_mmap) {
-	 ULong argbuf[6];
+     ULong argbuf[6];
 
-	 argbuf[0] = a1;
-	 argbuf[1] = a2;
-	 argbuf[2] = a3;
-	 argbuf[3] = a4;
-	 argbuf[4] = a5;
-	 argbuf[5] = a6;
-	 val = do_syscall_WRK(sysno,(UWord)&argbuf[0],0,0,0,0,0);
+     argbuf[0] = a1;
+     argbuf[1] = a2;
+     argbuf[2] = a3;
+     argbuf[3] = a4;
+     argbuf[4] = a5;
+     argbuf[5] = a6;
+     val = do_syscall_WRK(sysno,(UWord)&argbuf[0],0,0,0,0,0);
    } else {
-	 val = do_syscall_WRK(sysno,a1,a2,a3,a4,a5,a6);
+     val = do_syscall_WRK(sysno,a1,a2,a3,a4,a5,a6);
    }
 
    return VG_(mk_SysRes_s390x_linux)( val );
@@ -1091,28 +1091,28 @@ SysRes VG_(do_syscall) ( UWord sysno, RegWord a1, RegWord a2, RegWord a3,
    UChar ssclass = VG_SOLARIS_SYSNO_CLASS(sysno);
 
    switch (ssclass) {
-	  case VG_SOLARIS_SYSCALL_CLASS_CLASSIC:
-		 /* The Solaris kernel does not restart syscalls automatically so it
-			is done here. */
-		 do {
-			u64 = do_syscall_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
-								 VG_SOLARIS_SYSNO_INDEX(sysno), &err);
-			val = (UInt)u64;
-			restart = err && (val == VKI_EINTR || val == VKI_ERESTART);
-		 } while (restart);
-		 break;
-	  case VG_SOLARIS_SYSCALL_CLASS_FASTTRAP:
-		 u64 = do_syscall_fast_WRK(VG_SOLARIS_SYSNO_INDEX(sysno));
-		 break;
-	  default:
-		 vg_assert(0);
-		 break;
+      case VG_SOLARIS_SYSCALL_CLASS_CLASSIC:
+         /* The Solaris kernel does not restart syscalls automatically so it
+            is done here. */
+         do {
+            u64 = do_syscall_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
+                                 VG_SOLARIS_SYSNO_INDEX(sysno), &err);
+            val = (UInt)u64;
+            restart = err && (val == VKI_EINTR || val == VKI_ERESTART);
+         } while (restart);
+         break;
+      case VG_SOLARIS_SYSCALL_CLASS_FASTTRAP:
+         u64 = do_syscall_fast_WRK(VG_SOLARIS_SYSNO_INDEX(sysno));
+         break;
+      default:
+         vg_assert(0);
+         break;
    }
 
    val = (UInt)u64;
    val2 = (UInt)(u64 >> 32);
    return VG_(mk_SysRes_x86_solaris)(err ? True : False, val,
-									 err ? 0 : val2);
+                                     err ? 0 : val2);
 
 #  elif defined(VGP_amd64_solaris)
    ULong val, val2, err = False;
@@ -1120,25 +1120,25 @@ SysRes VG_(do_syscall) ( UWord sysno, RegWord a1, RegWord a2, RegWord a3,
    UChar ssclass = VG_SOLARIS_SYSNO_CLASS(sysno);
 
    switch (ssclass) {
-	  case VG_SOLARIS_SYSCALL_CLASS_CLASSIC:
-		 /* The Solaris kernel does not restart syscalls automatically so it
-			is done here. */
-		 do {
-			val = do_syscall_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
-								 VG_SOLARIS_SYSNO_INDEX(sysno), &err, &val2);
-			restart = err && (val == VKI_EINTR || val == VKI_ERESTART);
-		 } while (restart);
-		 break;
-	  case VG_SOLARIS_SYSCALL_CLASS_FASTTRAP:
-		 val = do_syscall_fast_WRK(VG_SOLARIS_SYSNO_INDEX(sysno), &val2);
-		 break;
-	  default:
-		 vg_assert(0);
-		 break;
+      case VG_SOLARIS_SYSCALL_CLASS_CLASSIC:
+         /* The Solaris kernel does not restart syscalls automatically so it
+            is done here. */
+         do {
+            val = do_syscall_WRK(a1,a2,a3,a4,a5,a6,a7,a8,
+                                 VG_SOLARIS_SYSNO_INDEX(sysno), &err, &val2);
+            restart = err && (val == VKI_EINTR || val == VKI_ERESTART);
+         } while (restart);
+         break;
+      case VG_SOLARIS_SYSCALL_CLASS_FASTTRAP:
+         val = do_syscall_fast_WRK(VG_SOLARIS_SYSNO_INDEX(sysno), &val2);
+         break;
+      default:
+         vg_assert(0);
+         break;
    }
 
    return VG_(mk_SysRes_amd64_solaris)(err ? True : False, val,
-									   err ? 0 : val2);
+                                       err ? 0 : val2);
 
 #else
 #  error Unknown platform
@@ -1151,7 +1151,7 @@ SysRes VG_(do_syscall) ( UWord sysno, RegWord a1, RegWord a2, RegWord a3,
 
 /* Return a string which gives the name of an error value.  Note,
    unlike the standard C syserror fn, the returned string is not
-   malloc-allocated or writable -- treat it as a constant.
+   malloc-allocated or writable -- treat it as a constant. 
    TODO: implement this properly. */
 
 const HChar* VG_(strerror) ( UWord errnum )
@@ -1195,7 +1195,7 @@ const HChar* VG_(strerror) ( UWord errnum )
    case VKI_ENOSYS:      return "Function not implemented";
    case VKI_EOVERFLOW:   return "Value too large for defined data type";
 #     if defined(VKI_ERESTARTSYS)
-	  case VKI_ERESTARTSYS: return "ERESTARTSYS";
+      case VKI_ERESTARTSYS: return "ERESTARTSYS";
 #     endif
    default:              return "VG_(strerror): unknown error";
    }

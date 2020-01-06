@@ -1,2 +1,1 @@
-prog: cet_nops_gs
-vgopts: -q
+../amd64-linux/cet_nops_gs.vgtest

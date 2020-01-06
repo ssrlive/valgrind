@@ -8,7 +8,7 @@
    framework.
 
    Copyright (C) 2000-2017 Julian Seward
-	  jseward@acm.org
+      jseward@acm.org
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License as
@@ -191,7 +191,7 @@ void VG_(set_SP) ( ThreadId tid, Addr sp );
 // Get hold of the values needed for a stack unwind, for the specified
 // (client) thread.
 void VG_(get_UnwindStartRegs) ( /*OUT*/UnwindStartRegs* regs,
-								ThreadId tid );
+                                ThreadId tid );
 
 
 //-------------------------------------------------------------
@@ -205,34 +205,34 @@ void VG_(get_UnwindStartRegs) ( /*OUT*/UnwindStartRegs* regs,
 
    x86:   initially:  call VG_(machine_get_hwcaps)
 
-		  then safe to use VG_(machine_get_VexArchInfo)
-					   and VG_(machine_x86_have_mxcsr)
+          then safe to use VG_(machine_get_VexArchInfo) 
+                       and VG_(machine_x86_have_mxcsr)
    -------------
    amd64: initially:  call VG_(machine_get_hwcaps)
 
-		  then safe to use VG_(machine_get_VexArchInfo)
+          then safe to use VG_(machine_get_VexArchInfo) 
    -------------
    ppc32: initially:  call VG_(machine_get_hwcaps)
-					  call VG_(machine_ppc32_set_clszB)
+                      call VG_(machine_ppc32_set_clszB)
 
-		  then safe to use VG_(machine_get_VexArchInfo)
-					   and VG_(machine_ppc32_has_FP)
-					   and VG_(machine_ppc32_has_VMX)
+          then safe to use VG_(machine_get_VexArchInfo) 
+                       and VG_(machine_ppc32_has_FP)
+                       and VG_(machine_ppc32_has_VMX)
    -------------
    ppc64: initially:  call VG_(machine_get_hwcaps)
-					  call VG_(machine_ppc64_set_clszB)
+                      call VG_(machine_ppc64_set_clszB)
 
-		  then safe to use VG_(machine_get_VexArchInfo)
-					   and VG_(machine_ppc64_has_VMX)
+          then safe to use VG_(machine_get_VexArchInfo) 
+                       and VG_(machine_ppc64_has_VMX)
    -------------
    arm:   initially:  call VG_(machine_get_hwcaps)
-					  call VG_(machine_arm_set_has_NEON)
+                      call VG_(machine_arm_set_has_NEON)
 
-		  then safe to use VG_(machine_get_VexArchInfo)
+          then safe to use VG_(machine_get_VexArchInfo) 
    -------------
    s390x: initially:  call VG_(machine_get_hwcaps)
 
-		  then safe to use VG_(machine_get_VexArchInfo)
+          then safe to use VG_(machine_get_VexArchInfo)
 
    VG_(machine_get_hwcaps) may use signals (although it attempts to
    leave signal state unchanged) and therefore should only be

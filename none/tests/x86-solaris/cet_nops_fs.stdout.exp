@@ -1,2 +1,1 @@
-start testing FS prefix ..
-done
+../x86-linux/cet_nops_fs.stdout.exp

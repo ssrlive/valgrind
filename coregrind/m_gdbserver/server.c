@@ -64,13 +64,13 @@ int decode_xfer_read (char *buf, const char **annex, CORE_ADDR *ofs, unsigned in
    /* Extract and NUL-terminate the annex.  */
    *annex = buf;
    while (*buf && *buf != ':')
-	  buf++;
+      buf++;
    if (*buf == '\0')
-	  return -1;
+      return -1;
    *buf++ = 0;
 
    /* After the read/write marker and annex, qXfer looks like a
-	  traditional 'm' packet.  */
+      traditional 'm' packet.  */
    decode_m_packet (buf, ofs, len);
 
    return 0;
@@ -86,12 +86,12 @@ int write_qxfer_response (char *buf, unsigned char *data, int len, int is_more)
    int out_len;
 
    if (is_more)
-	  buf[0] = 'm';
+      buf[0] = 'm';
    else
-	  buf[0] = 'l';
+      buf[0] = 'l';
 
    return remote_escape_output (data, len, (unsigned char *) buf + 1, &out_len,
-								PBUFSIZ - POVERHSIZ - 1) + 1;
+                                PBUFSIZ - POVERHSIZ - 1) + 1;
 }
 
 static Bool initial_valgrind_sink_saved = False;
@@ -104,10 +104,10 @@ static Bool command_output_to_log = False;
 void reset_valgrind_sink(const char *info)
 {
    if (VG_(log_output_sink).fd != initial_valgrind_sink.fd
-	   && initial_valgrind_sink_saved) {
-	  VG_(log_output_sink).fd = initial_valgrind_sink.fd;
-	  VG_(umsg) ("Reset valgrind output to log (%s)\n",
-				 (info == NULL ? "" : info));
+       && initial_valgrind_sink_saved) {
+      VG_(log_output_sink).fd = initial_valgrind_sink.fd;
+      VG_(umsg) ("Reset valgrind output to log (%s)\n",
+                 (info == NULL ? "" : info));
    }
 }
 
@@ -135,17 +135,17 @@ const char *wordn (const char *s, int n)
    Bool searching_word = True;
 
    while (*s) {
-	  if (*s == ' ')
-		 searching_word = True;
-	  else {
-		 if (searching_word) {
-			searching_word = False;
-			word_seen++;
-			if (word_seen == n)
-			   return s;
-		 }
-	  }
-	  s++;
+      if (*s == ' ')
+         searching_word = True;
+      else {
+         if (searching_word) {
+            searching_word = False;
+            word_seen++;
+            if (word_seen == n)
+               return s;
+         }
+      }
+      s++;
    }
    return s;
 }
@@ -173,7 +173,7 @@ void VG_(print_all_stats) (Bool memory_stats, Bool tool_stats)
    VG_(print_ExeContext_stats)( False /* with_stacktraces */ );
    VG_(print_errormgr_stats)();
    if (tool_stats && VG_(needs).print_stats) {
-	  VG_TDICT_CALL(tool_print_stats);
+      VG_TDICT_CALL(tool_print_stats);
    }
 }
 
@@ -202,8 +202,8 @@ int handle_gdb_valgrind_command (char *mon, OutputSink *sink_wanted_at_return)
    strcpy (s, mon);
    wcmd = strtok_r (s, " ", &ssaveptr);
    /* NB: if possible, avoid introducing a new command below which
-	  starts with the same 3 first letters as an already existing
-	  command. This ensures a shorter abbreviation for the user. */
+      starts with the same 3 first letters as an already existing
+      command. This ensures a shorter abbreviation for the user. */
    switch (VG_(keyword_id) ("help v.set v.info v.wait v.kill v.translate"
                             " v.do v.clo",
                             wcmd, kwd_report_duplicated_matches)) {
@@ -213,20 +213,20 @@ int handle_gdb_valgrind_command (char *mon, OutputSink *sink_wanted_at_return)
    case -1:
       break;
    case  0: /* help */
-	  ret = 1;
-	  wcmd = strtok_r (NULL, " ", &ssaveptr);
-	  if (wcmd == NULL) {
-		 int_value = 0;
-	  } else {
-		 switch (VG_(keyword_id) ("debug", wcmd, kwd_report_all)) {
-		 case -2: int_value = 0; break;
-		 case -1: int_value = 0; break;
-		 case  0: int_value = 1; break;
-		 default: vg_assert (0);
-		 }
-	  }
+      ret = 1;
+      wcmd = strtok_r (NULL, " ", &ssaveptr);
+      if (wcmd == NULL) {
+         int_value = 0;
+      } else {
+         switch (VG_(keyword_id) ("debug", wcmd, kwd_report_all)) {
+         case -2: int_value = 0; break;
+         case -1: int_value = 0; break;
+         case  0: int_value = 1; break;
+         default: vg_assert (0);
+         }
+      }
 
-	  VG_(gdb_printf) (
+      VG_(gdb_printf) (
 "general valgrind monitor commands:\n"
 "  help [debug]            : monitor command help. With debug: + debugging commands\n"
 "  v.wait [<ms>]           : sleep <ms> (default 0) then continue\n"
@@ -243,7 +243,7 @@ int handle_gdb_valgrind_command (char *mon, OutputSink *sink_wanted_at_return)
 "  v.set mixed_output      : set valgrind output to log, interactive output to gdb\n"
 "  v.set merge-recursive-frames <num> : merge recursive calls in max <num> frames\n"
 "  v.set vgdb-error <errornr> : debug me at error >= <errornr> \n");
-	  if (int_value) { VG_(gdb_printf) (
+      if (int_value) { VG_(gdb_printf) (
 "debugging valgrind internals monitor commands:\n"
 "  v.do   expensive_sanity_check_general : do an expensive sanity check now\n"
 "  v.info gdbserver_status : show gdbserver status\n"
@@ -259,8 +259,8 @@ int handle_gdb_valgrind_command (char *mon, OutputSink *sink_wanted_at_return)
 "  v.translate <addr> [<traceflags>]  : debug translation of <addr> with <traceflags>\n"
 "    (default traceflags 0b00100000 : show after instrumentation)\n"
 "   An additional flag  0b100000000 allows to show gdbserver instrumentation\n");
-	  }
-	  break;
+      }
+      break;
    case  1: /* v.set */
       ret = 1;
       wcmd = strtok_r (NULL, " ", &ssaveptr);
@@ -478,18 +478,18 @@ int handle_gdb_valgrind_command (char *mon, OutputSink *sink_wanted_at_return)
       break;
    }
    case  3: /* v.wait */
-	  wcmd = strtok_r (NULL, " ", &ssaveptr);
-	  if (wcmd != NULL) {
-		 int_value = strtol (wcmd, NULL, 10);
-		 VG_(printf) ("gdbserver: continuing in %d ms ...\n", int_value);
-		 VG_(poll)(NULL, 0, int_value);
-	  }
-	  VG_(printf) ("gdbserver: continuing after wait ...\n");
-	  ret = 1;
-	  break;
+      wcmd = strtok_r (NULL, " ", &ssaveptr);
+      if (wcmd != NULL) {
+         int_value = strtol (wcmd, NULL, 10);
+         VG_(printf) ("gdbserver: continuing in %d ms ...\n", int_value);
+         VG_(poll)(NULL, 0, int_value);
+      }
+      VG_(printf) ("gdbserver: continuing after wait ...\n");
+      ret = 1;
+      break;
    case  4: /* v.kill */
-	  kill_request ("monitor command request to kill this process\n");
-	  break;
+      kill_request ("monitor command request to kill this process\n");
+      break;
    case  5: { /* v.translate */
       Addr address;
       SizeT verbosity = 0x20;
@@ -509,9 +509,9 @@ int handle_gdb_valgrind_command (char *mon, OutputSink *sink_wanted_at_return)
             // to force gdbserver instrumentation.
          }
 #        if defined(VGA_arm)
-		 // on arm, we need to (potentially) convert this address
-		 // to the thumb form.
-		 address = thumb_pc (address);
+         // on arm, we need to (potentially) convert this address
+         // to the thumb form.
+         address = thumb_pc (address);
 #        endif
 
          VG_(translate) ( 0 /* dummy ThreadId; irrelevant due to debugging*/,
@@ -563,7 +563,7 @@ int handle_gdb_valgrind_command (char *mon, OutputSink *sink_wanted_at_return)
       break;
 
    default:
-	  vg_assert (0);
+      vg_assert (0);
    }
    return ret;
 }
@@ -588,21 +588,21 @@ int handle_gdb_monitor_command (char *mon)
    VG_(clo_xml) = False;
 
    if (!initial_valgrind_sink_saved) {
-	  /* first time we enter here, we save the valgrind default log sink */
-	  initial_valgrind_sink = sink_wanted_at_return;
-	  initial_valgrind_sink_saved = True;
+      /* first time we enter here, we save the valgrind default log sink */
+      initial_valgrind_sink = sink_wanted_at_return;
+      initial_valgrind_sink_saved = True;
    }
 
    if (!command_output_to_log)
-	  VG_(log_output_sink).fd = -2; /* redirect to monitor_output */
+      VG_(log_output_sink).fd = -2; /* redirect to monitor_output */
 
    ret = handle_gdb_valgrind_command (mon, &sink_wanted_at_return);
 
    /* Even if command was recognised by valgrind core, we call the
-	  tool command handler : this is needed to handle help command
-	  and/or to let the tool do some additional processing of a
-	  valgrind standard command. Note however that if valgrind
-	  recognised the command, we will always return success. */
+      tool command handler : this is needed to handle help command
+      and/or to let the tool do some additional processing of a
+      valgrind standard command. Note however that if valgrind
+      recognised the command, we will always return success. */
    if (VG_(needs).client_requests) {
       /* If the tool reports an error when handling a monitor command,
          we need to avoid calling gdbserver during this command
@@ -625,9 +625,9 @@ int handle_gdb_monitor_command (char *mon)
    VG_(clo_xml) = save_clo_xml;
 
    if (ret | tool_ret)
-	  return 1;
+      return 1;
    else
-	  return 0;
+      return 0;
 }
 
 
@@ -636,55 +636,55 @@ static
 void handle_set (char *arg_own_buf, int *new_packet_len_p)
 {
    if (strcmp ("QStartNoAckMode", arg_own_buf) == 0) {
-	  noack_mode = True;
-	  write_ok (arg_own_buf);
-	  return;
+      noack_mode = True;
+      write_ok (arg_own_buf);
+      return;
    }
 
    if (strcmp ("QCatchSyscalls:0", arg_own_buf) == 0) {
-	  dlog (3, "catch syscall all off\n");
-	  catching_syscalls = False;
-	  write_ok (arg_own_buf);
-	  return;
+      dlog (3, "catch syscall all off\n");
+      catching_syscalls = False;
+      write_ok (arg_own_buf);
+      return;
    }
 
    const char *q1 = "QCatchSyscalls:1";
    if (strncmp (q1, arg_own_buf, strlen(q1)) == 0) {
-	  Int i;
-	  const char *p;
+      Int i;
+      const char *p;
 
-	  if (syscalls_to_catch != NULL) {
-		 free (syscalls_to_catch);
-		 syscalls_to_catch = NULL;
-	  }
-	  syscalls_to_catch_size = 0;
-	  p = arg_own_buf + strlen(q1);
-	  while (*p) {
-		 if (*p++ == ';')
-		syscalls_to_catch_size++;
-	  }
-	  if (syscalls_to_catch_size > 0) {
-		 CORE_ADDR sysno;
-		 char *from, *to;
+      if (syscalls_to_catch != NULL) {
+         free (syscalls_to_catch);
+         syscalls_to_catch = NULL;
+      }
+      syscalls_to_catch_size = 0;
+      p = arg_own_buf + strlen(q1);
+      while (*p) {
+         if (*p++ == ';')
+	    syscalls_to_catch_size++;
+      }
+      if (syscalls_to_catch_size > 0) {
+         CORE_ADDR sysno;
+         char *from, *to;
 
-		 syscalls_to_catch = malloc (syscalls_to_catch_size * sizeof (int));
+         syscalls_to_catch = malloc (syscalls_to_catch_size * sizeof (int));
 
-		 from = strchr (arg_own_buf, ';') + 1;
-		 for (i = 0; i < syscalls_to_catch_size; i++) {
-			to = strchr (from, ';');
-			if (to == NULL)
-			   to = arg_own_buf + strlen (arg_own_buf);
-			decode_address (&sysno, from, to - from);
-			syscalls_to_catch[i] = (Int)sysno;
-			dlog(4, "catch syscall sysno %d\n", (int)sysno);
-			from = to;
-			if (*from == ';') from++;
-		 }
-	  } else
-		 dlog (4, "catch syscall all sysno\n");
-	  catching_syscalls = True;
-	  write_ok (arg_own_buf);
-	  return;
+         from = strchr (arg_own_buf, ';') + 1;
+         for (i = 0; i < syscalls_to_catch_size; i++) {
+            to = strchr (from, ';');
+            if (to == NULL)
+               to = arg_own_buf + strlen (arg_own_buf);
+            decode_address (&sysno, from, to - from);
+            syscalls_to_catch[i] = (Int)sysno;
+            dlog(4, "catch syscall sysno %d\n", (int)sysno);
+            from = to;
+            if (*from == ';') from++;
+         }
+      } else
+         dlog (4, "catch syscall all sysno\n");
+      catching_syscalls = True;
+      write_ok (arg_own_buf);
+      return;
    }
 
    if (strncmp ("QPassSignals:", arg_own_buf, 13) == 0) {
@@ -710,7 +710,7 @@ void handle_set (char *arg_own_buf, int *new_packet_len_p)
       return;
    }
    /* Otherwise we didn't know what packet it was.  Say we didn't
-	  understand it.  */
+      understand it.  */
    arg_own_buf[0] = 0;
 }
 
@@ -721,17 +721,17 @@ Bool VG_(client_monitor_command) (HChar *cmd)
    Bool handled;
 
    if (!connected)
-	  command_output_to_log = True;
+      command_output_to_log = True;
    handled = handle_gdb_monitor_command (cmd);
    if (!connected) {
-	  // reset the log output unless cmd changed it.
-	  if (command_output_to_log)
-		 command_output_to_log = saved_command_output_to_log;
+      // reset the log output unless cmd changed it.
+      if (command_output_to_log)
+         command_output_to_log = saved_command_output_to_log;
    }
    if (handled)
-	  return False; // recognised
+      return False; // recognised
    else
-	  return True; // not recognised
+      return True; // not recognised
 }
 
 /* Handle all of the extended 'q' packets.  */
@@ -844,22 +844,22 @@ void handle_query (char *arg_own_buf, int *new_packet_len_p)
    }
 
    if (strcmp ("qAttached", arg_own_buf) == 0) {
-	  /* tell gdb to always detach, never kill the process */
-	  arg_own_buf[0] = '1';
-	  arg_own_buf[1] = 0;
-	  return;
+      /* tell gdb to always detach, never kill the process */
+      arg_own_buf[0] = '1';
+      arg_own_buf[1] = 0;
+      return;
    }
 
    if (strcmp ("qSymbol::", arg_own_buf) == 0) {
-	  /* We have no symbol to read. */
-	  write_ok (arg_own_buf);
-	  return;
+      /* We have no symbol to read. */
+      write_ok (arg_own_buf);
+      return;
    }
 
    if (strcmp ("qC", arg_own_buf) == 0) {
-	  VG_(sprintf) (arg_own_buf, "QC%x",
-					thread_to_gdb_id (current_inferior));
-	  return;
+      VG_(sprintf) (arg_own_buf, "QC%x",
+                    thread_to_gdb_id (current_inferior));
+      return;
    }
 
    if (strcmp ("qfThreadInfo", arg_own_buf) == 0) {
@@ -1128,7 +1128,7 @@ void handle_query (char *arg_own_buf, int *new_packet_len_p)
    }
 
    /* Otherwise we didn't know what packet it was.  Say we didn't
-	  understand it.  */
+      understand it.  */
    arg_own_buf[0] = 0;
 }
 
@@ -1139,7 +1139,7 @@ void handle_v_requests (char *arg_own_buf, char *status, int *zignal)
    /* vcont packet code from gdb 6.6 removed */
 
    /* Otherwise we didn't know what packet it was.  Say we didn't
-	  understand it.  */
+      understand it.  */
    arg_own_buf[0] = 0;
    return;
 }
@@ -1151,9 +1151,9 @@ void myresume (int step, int sig)
    int n = 0;
 
    if (step || sig) {
-	  resume_info[0].step = step;
-	  resume_info[0].sig = sig;
-	  n++;
+      resume_info[0].step = step;
+      resume_info[0].sig = sig;
+      n++;
    }
    resume_info[n].step = 0;
    resume_info[n].sig = 0;
@@ -1174,9 +1174,9 @@ void gdbserver_init (void)
    // After a fork, gdbserver_init can be called again.
    // We do not have to re-malloc the buffers in such a case.
    if (own_buf == NULL)
-	  own_buf = malloc (PBUFSIZ+POVERHSIZ);
+      own_buf = malloc (PBUFSIZ+POVERHSIZ);
    if (mem_buf == NULL)
-	  mem_buf = malloc (PBUFSIZ+POVERHSIZ);
+      mem_buf = malloc (PBUFSIZ+POVERHSIZ);
    // Note: normally, we should only malloc PBUFSIZ. However,
    // GDB has a bug, and in some cases, sends e.g. 'm' packets
    // asking for slightly more than the PacketSize given at
@@ -1188,8 +1188,8 @@ void gdbserver_terminate (void)
 {
    /* last call to gdbserver is cleanup call */
    if (VG_MINIMAL_SETJMP(toplevel)) {
-	  dlog(0, "error caused VG_MINIMAL_LONGJMP to gdbserver_terminate\n");
-	  return;
+      dlog(0, "error caused VG_MINIMAL_LONGJMP to gdbserver_terminate\n");
+      return;
    }
    remote_close();
 }
@@ -1206,7 +1206,7 @@ void server_main (void)
 
    zignal = valgrind_wait (&status);
    if (VG_MINIMAL_SETJMP(toplevel)) {
-	  dlog(0, "error caused VG_MINIMAL_LONGJMP to server_main\n");
+      dlog(0, "error caused VG_MINIMAL_LONGJMP to server_main\n");
    }
    while (1) {
       unsigned char sig;
@@ -1493,13 +1493,13 @@ void server_main (void)
    }
 
    /* We come here when getpkt fails => close the connection,
-	  and re-open. Then return control to valgrind.
-	  We return the control to valgrind as we assume that
-	  the connection was closed due to vgdb having finished
-	  to execute a command. */
+      and re-open. Then return control to valgrind.
+      We return the control to valgrind as we assume that
+      the connection was closed due to vgdb having finished
+      to execute a command. */
    if (VG_(clo_verbosity) > 1)
-	  VG_(umsg) ("Remote side has terminated connection.  "
-				 "GDBserver will reopen the connection.\n");
+      VG_(umsg) ("Remote side has terminated connection.  "
+                 "GDBserver will reopen the connection.\n");
    remote_finish (reset_after_error);
    remote_open (VG_(clo_vgdb_prefix));
    myresume (0, 0);
