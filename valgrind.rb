@@ -16,7 +16,7 @@ class Valgrind < Formula
   end
 
   head do
-    url "https://github.com/ssrlive/valgrind.git"
+    url "https://github.com/AlexN1ght/valgrind.git"
 
     depends_on "autoconf" => :build
     depends_on "automake" => :build
@@ -38,8 +38,8 @@ class Valgrind < Formula
 
     # Look for headers in the SDK on Xcode-only systems: https://bugs.kde.org/show_bug.cgi?id=295084
     #unless MacOS::CLT.installed?
-    #inreplace "coregrind/Makefile.in", %r{(\s)(?=/usr/include/mach/)}, '\1'+MacOS.sdk_path.to_s
-    inreplace "coregrind/Makefile.in", %r{"\\1/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk"}, '\1'+MacOS.sdk_path.to_s
+    inreplace "coregrind/Makefile.in", %r{(\s)(?=/usr/include/mach/)}, '\1'+MacOS.sdk_path.to_s
+    #inreplace "coregrind/Makefile.in", %r{"\\1/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk"}, '\1'+MacOS.sdk_path.to_s
     #end
 
     system "./configure", *args
