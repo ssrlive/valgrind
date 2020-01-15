@@ -304,6 +304,9 @@ void ppNANOMIPSInstr(const NANOMIPSInstr* i)
             case NMimm_ANDI:
                vex_printf("andi ");
                break;
+            case NMimm_ROTX:
+               vex_printf("rotx ");
+               break;
 
             default:
                vassert(0);
@@ -317,8 +320,11 @@ void ppNANOMIPSInstr(const NANOMIPSInstr* i)
             vex_printf(", ");
          }
 
-         vex_printf("0x%X (%d)", i->NMin.Imm.imm, (Int)i->NMin.Imm.imm);
-
+         if (i->NMin.Imm.op == NMimm_ROTX)
+            vex_printf("%u, %u, %u", (i->NMin.Imm.imm >> 7) & 0xF,
+                       (i->NMin.Imm.imm >> 6) & 1, i->NMin.Imm.imm & 0x1F);
+         else
+            vex_printf("0x%X (%d)", i->NMin.Imm.imm, (Int)i->NMin.Imm.imm);
          break;
 
       case NMin_Alu:
@@ -605,9 +611,8 @@ void ppNANOMIPSInstr(const NANOMIPSInstr* i)
          break;
 
       case NMin_Cas:
-         if (i->NMin.Cas.sz == 4){
-            vex_printf("cas: \n");
-
+         vex_printf("cas: \n");
+         if (i->NMin.Cas.sz == 4) {
             vex_printf("ll ");
             ppHRegNANOMIPS(i->NMin.Cas.oldLo);
             vex_printf(", 0(");
@@ -639,9 +644,61 @@ void ppNANOMIPSInstr(const NANOMIPSInstr* i)
             vex_printf(", ");
             ppHRegNANOMIPS(i->NMin.Cas.dataLo);
             vex_printf("; end:");
-         }
-         else{
-            vassert(0);
+         } else {
+            vex_printf("llwp ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldLo);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldHi);
+            vex_printf(", 0(");
+            ppHRegNANOMIPS(i->NMin.Cas.addr);
+            vex_printf("); ");
+
+            vex_printf("bnec ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldLo);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.expdLo);
+            vex_printf(", end; ");
+
+            vex_printf("bnec ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldHi);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.expdHi);
+            vex_printf(", end; ");
+
+            vex_printf("addiu ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldLo);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldLo);
+            vex_printf(", 1; ");
+
+            vex_printf("addiu ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldHi);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldHi);
+            vex_printf(", 1; ");
+
+            vex_printf("scwp ");
+            ppHRegNANOMIPS(i->NMin.Cas.dataLo);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.dataHi);
+            vex_printf(", 0(");
+            ppHRegNANOMIPS(i->NMin.Cas.addr);
+            vex_printf("); ");
+
+            vex_printf("movn ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldLo);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.expdLo);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.dataLo);
+
+            vex_printf("movn ");
+            ppHRegNANOMIPS(i->NMin.Cas.oldHi);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.expdHi);
+            vex_printf(", ");
+            ppHRegNANOMIPS(i->NMin.Cas.dataHi);
+            vex_printf("; end:");
          }
          break;
 
@@ -807,18 +864,13 @@ void getRegUsage_NANOMIPSInstr(HRegUsage* u, const NANOMIPSInstr* i)
          return;
 
       case NMin_Cas:
-         if (i->NMin.Cas.sz == 4){
-            addHRegUse(u, HRmWrite, i->NMin.Cas.oldLo);
-            addHRegUse(u, HRmRead, i->NMin.Cas.addr);
-            addHRegUse(u, HRmRead, i->NMin.Cas.expdLo);
-            addHRegUse(u, HRmModify, i->NMin.Cas.dataLo);
-         } else {
-            addHRegUse(u, HRmWrite, i->NMin.Cas.oldLo);
+         addHRegUse(u, HRmWrite, i->NMin.Cas.oldLo);
+         addHRegUse(u, HRmRead, i->NMin.Cas.addr);
+         addHRegUse(u, HRmRead, i->NMin.Cas.expdLo);
+         addHRegUse(u, HRmModify, i->NMin.Cas.dataLo);
+         if (i->NMin.Cas.sz == 8) {
             addHRegUse(u, HRmWrite, i->NMin.Cas.oldHi);
-            addHRegUse(u, HRmRead, i->NMin.Cas.addr);
-            addHRegUse(u, HRmRead, i->NMin.Cas.expdLo);
             addHRegUse(u, HRmRead, i->NMin.Cas.expdHi);
-            addHRegUse(u, HRmModify, i->NMin.Cas.dataLo);
             addHRegUse(u, HRmModify, i->NMin.Cas.dataHi);
          }
          return;
@@ -938,7 +990,7 @@ void mapRegs_NANOMIPSInstr(HRegRemap * m, NANOMIPSInstr * i)
          mapReg(m, &i->NMin.Cas.addr);
          mapReg(m, &i->NMin.Cas.expdLo);
          mapReg(m, &i->NMin.Cas.dataLo);
-         if (&i->NMin.Cas.sz){
+         if (i->NMin.Cas.sz == 8) {
             mapReg(m, &i->NMin.Cas.oldHi);
             mapReg(m, &i->NMin.Cas.expdHi);
             mapReg(m, &i->NMin.Cas.dataHi);
@@ -1156,6 +1208,7 @@ static UChar *mkFormNanoPU12(UChar * p, UInt rt, UInt rs, UInt opc2, UInt imm)
       case PU12_ORI:       /* ORI       */
       case PU12_SLTIU:     /* SLTIU     */
       case PU12_XORI:      /* XORI      */
+      case PU12_PROTX:     /* ROTX      */
          theInstr = ((PU12 << 26) | (rt << 21) | (rs << 16) | (opc2 << 12) |
                      (imm));
          return emit32(p, theInstr);
@@ -1333,6 +1386,9 @@ Int emit_NANOMIPSInstr ( /*MB_MOD*/Bool* is_profInc,
             case NMimm_XORI:
                p = mkFormNanoPU12(p, r_dst, r_src, i->NMin.Imm.op - 0x6,
                                   i->NMin.Imm.imm);
+               break;
+            case NMimm_ROTX:
+               p = mkFormNanoPU12(p, r_dst, r_src, PU12_PROTX, i->NMin.Imm.imm);
                break;
 
             default:
@@ -1785,15 +1841,17 @@ Int emit_NANOMIPSInstr ( /*MB_MOD*/Bool* is_profInc,
       }
 
       case NMin_Cas: {
+         vassert((i->NMin.Cas.sz == 4) || (i->NMin.Cas.sz == 8));
          UInt oldLo  = iregNo(i->NMin.Cas.oldLo);
-         UInt oldHi  = iregNo(i->NMin.Cas.oldHi);
          UInt addr = iregNo(i->NMin.Cas.addr);
          UInt expdLo = iregNo(i->NMin.Cas.expdLo);
-         UInt expdHi = iregNo(i->NMin.Cas.expdHi);
          UInt dataLo = iregNo(i->NMin.Cas.dataLo);
-         UInt dataHi = iregNo(i->NMin.Cas.dataHi);
-
-         vassert((i->NMin.Cas.sz == 4) || (i->NMin.Cas.sz == 8));
+         UInt oldHi = 0, expdHi = 0, dataHi = 0;
+         if (i->NMin.Cas.sz == 8) {
+            oldHi  = iregNo(i->NMin.Cas.oldHi);
+            expdHi = iregNo(i->NMin.Cas.expdHi);
+            dataHi = iregNo(i->NMin.Cas.dataHi);
+         }
 
          if (i->NMin.Cas.sz == 4) {
          /*

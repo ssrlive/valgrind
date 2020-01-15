@@ -840,6 +840,23 @@ static HReg iselWordExpr_R_wrk(ISelEnv * env, IRExpr * e)
          vpanic("\n");
       }
 
+      case Iex_Qop: {
+         HReg dst = newVRegI(env);
+         HReg src1 = iselWordExpr_R(env, e->Iex.Qop.details->arg1);
+         UChar src2 = e->Iex.Qop.details->arg2->Iex.Const.con->Ico.U8;
+         UChar src3 = e->Iex.Qop.details->arg3->Iex.Const.con->Ico.U8;
+         UChar src4 = e->Iex.Qop.details->arg4->Iex.Const.con->Ico.U8;
+         UInt imm = (src3 << 6) | (src4 << 6) | src2;
+         switch (e->Iex.Qop.details->op) {
+           case Iop_Rotx32:
+             addInstr(env, NANOMIPSInstr_Imm(NMimm_ROTX, dst, src1, imm));
+             return dst;
+           default:
+             break;
+          }
+          break;
+      }
+
       case Iex_ITE: {
          vassert(typeOfIRExpr(env->type_env, e->Iex.ITE.cond) == Ity_I1);
          HReg r0     = iselWordExpr_R(env, e->Iex.ITE.iffalse);
@@ -860,8 +877,23 @@ static HReg iselWordExpr_R_wrk(ISelEnv * env, IRExpr * e)
       }
 
       case Iex_CCall: {
-         /* unimplemented yet */
-         vassert(0);
+         HReg     r_dst = newVRegI(env);
+         UInt   addToSp = 0;
+         RetLoc rloc    = mk_RetLoc_INVALID();
+
+         /* Be very restrictive for now. Only 32-bit ints allowed for
+            args, and 32 bits for return type. Don't forget to change
+            the RetLoc if more return types are allowed in future. */
+         vassert(Ity_I32 == e->Iex.CCall.retty);
+
+         /* Marshal args, do the call, clear stack. */
+         doHelperCall(&rloc, env, NULL /*guard*/, e->Iex.CCall.cee,
+                      e->Iex.CCall.retty, e->Iex.CCall.args);
+         vassert(is_sane_RetLoc(rloc));
+         vassert(rloc.pri == RLPri_Int);
+         vassert(addToSp == 0);
+         addInstr(env, mk_iMOVds_RR(r_dst, hregNANOMIPS_GPR4()));
+         return r_dst;
       }
 
       default:
