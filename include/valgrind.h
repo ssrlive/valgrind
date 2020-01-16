@@ -7136,14 +7136,6 @@ VALGRIND_PRINTF_BACKTRACE(const char *format, ...)
                                    option, 0, 0, 0, 0)
 
 
-/* Change the value of a dynamic command line option.
-   Note that unknown or not dynamically changeable options
-   will cause a warning message to be output.  */
-#define VALGRIND_CLO_CHANGE(option)                           \
-   VALGRIND_DO_CLIENT_REQUEST_STMT(VG_USERREQ__CLO_CHANGE, \
-                                   option, 0, 0, 0, 0)
-
-
 #undef PLAT_x86_darwin
 #undef PLAT_amd64_darwin
 #undef PLAT_x86_win32
