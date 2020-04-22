@@ -178,6 +178,8 @@ typedef enum {
    S390_ALU_AND,
    S390_ALU_OR,
    S390_ALU_XOR,
+   S390_ALU_ILIH,  /* insert low half of 2nd operand into high half of 1st
+                      operand */
    S390_ALU_LSH,
    S390_ALU_RSH,
    S390_ALU_RSHA   /* arithmetic */
@@ -871,6 +873,7 @@ Int   emit_S390Instr       ( Bool *, UChar *, Int, const s390_insn *, Bool,
 const RRegUniverse *getRRegUniverse_S390( void );
 void  genSpill_S390        ( HInstr **, HInstr **, HReg , Int , Bool );
 void  genReload_S390       ( HInstr **, HInstr **, HReg , Int , Bool );
+HInstr* directReload_S390  ( HInstr *, HReg, Short );
 extern s390_insn* genMove_S390(HReg from, HReg to, Bool mode64);
 HInstrArray *iselSB_S390   ( const IRSB *, VexArch, const VexArchInfo *,
                              const VexAbiInfo *, Int, Int, Bool, Bool, Addr);
@@ -926,6 +929,8 @@ extern UInt s390_host_hwcaps;
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_VX))
 #define s390_host_has_msa5 \
                       (s390_host_hwcaps & (VEX_HWCAPS_S390X_MSA5))
+#define s390_host_has_lsc2 \
+                      (s390_host_hwcaps & (VEX_HWCAPS_S390X_LSC2))
 #endif /* ndef __VEX_HOST_S390_DEFS_H */
 
 /*---------------------------------------------------------------*/

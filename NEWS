@@ -35,7 +35,14 @@ support for X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
 
 * Cachegrind:
 
+  - cg_annotate's --auto and --show-percs options now default to 'yes', because
+    they are usually wanted.
+
 * Callgrind:
+
+  - callgrind_annotate's --auto and --show-percs options now default to 'yes',
+    because they are usually wanted.
+
   - The command option --collect-systime has been enhanced to specify
     the unit used to record the elapsed time spent during system calls.
     The command option now accepts the values no|yes|msec|usec|nsec,
@@ -52,6 +59,8 @@ support for X86/macOS 10.13, AMD64/macOS 10.13 and nanoMIPS/Linux.
 * ==================== OTHER CHANGES ====================
 
 * New and modified GDB server monitor features:
+
+  - Option -T tells vgdb to output a timestamp in the vgdb information messages.
 
   - The gdbserver monitor commands that require an address and an optional
     length argument now accepts the alternate 'C like' syntax "address[length]".
@@ -74,6 +83,7 @@ where XXXXXX is the bug number as listed below.
 385386  Assertion failed "szB >= CACHE_ENTRY_SIZE" at m_debuginfo/image.c:517
 400593  In Coregrind, use statx for some internal syscalls if [f]stat[64] fail
 400872  Add nanoMIPS support to Valgrind
+403212  drd/tests/trylock hangs on FreeBSD
 404406  s390x: z14 miscellaneous instructions not implemented
 405201  Incorrect size of struct vki_siginfo on 64-bit Linux architectures
 406561  mcinfcallWSRU gdbserver_test fails on ppc64
@@ -102,18 +112,35 @@ where XXXXXX is the bug number as listed below.
 413330  avx-1 test fails on AMD EPYC 7401P 24-Core Processor
 413603  callgrind_annotate/cg_annotate truncate function names at '#'
 414565  Specific use case bug found in SysRes VG_(do_sys_sigprocmask)
+415136  ARMv8.1 Compare-and-Swap instructions are not supported
 415757  vex x86->IR: 0x66 0xF 0xCE 0x4F (bswapw)
 416239  valgrind crashes when handling clock_adjtime
 416286  DRD reports "conflicting load" error on std::mutex::lock()
 416301  s390x: "compare and signal" not supported
 416387  finit_module and bpf syscalls are unhandled on arm64
 416464  Fix false reports for uninitialized memory for PR_CAPBSET_READ/DROP
+416667  gcc10 ppc64le impossible constraint in 'asm' in test_isa.
+416753  new 32bit time syscalls for 2038+
+417187  [MIPS] Conditional branch problem since 'grail' changes
+417238  Test memcheck/tests/vbit-test fails on mips64 BE
+417281  s390x: /bin/true segfaults with "grail" enabled
+417427  commit to fix vki_siginfo_t definition created numerous regression
+        errors on ppc64
+417452  s390_insn_store_emit: dst->tag for HRcVec128
+417578  Add suppressions for glibc DTV leaks
+417906  clone with CLONE_VFORK and no CLONE_VM fails
+418435  s390x: memcmp test yields extra "Conditional jump or move depends on
+        uninitialised value(s)"
+417281  s390x: /bin/true segfaults with "grail" enabled
 n-i-bz  Fix minor one time leaks in dhat.
 n-i-bz  Add --run-cxx-freeres=no in outer args to avoid inner crashes.
 n-i-bz  Add support for the Linux io_uring system calls
 n-i-bz  sys_statx: don't complain if both |filename| and |buf| are NULL.
 n-i-bz  Fix non-glibc build of test suite with s390x_features
-416667  gcc10 ppc64le impossible constraint in 'asm' in test_isa.
+418004  Grail code additions break ppc64.
+418435  s390x: spurious "Conditional jump or move depends on uninitialised [..]"
+418997  s390x: Support Iex_ITE for float and vector types
+419503  s390x: Avoid modifying registers returned from isel functions
 
 
 Release 3.15.0 (12 April 2019)

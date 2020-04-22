@@ -581,6 +581,8 @@ static UInt VG_(get_machine_model)(void)
       { "2965", VEX_S390X_MODEL_Z13S },
       { "3906", VEX_S390X_MODEL_Z14 },
       { "3907", VEX_S390X_MODEL_Z14_ZR1 },
+      { "8561", VEX_S390X_MODEL_Z15 },
+      { "8562", VEX_S390X_MODEL_Z15 },
    };
 
    Int    model, n, fh;
@@ -1537,6 +1539,7 @@ Bool VG_(machine_get_hwcaps)( void )
         { False, S390_FAC_VX,    VEX_HWCAPS_S390X_VX,    "VX"    },
         { False, S390_FAC_MSA5,  VEX_HWCAPS_S390X_MSA5,  "MSA5"  },
         { False, S390_FAC_MI2,   VEX_HWCAPS_S390X_MI2,   "MI2"   },
+        { False, S390_FAC_LSC2,  VEX_HWCAPS_S390X_LSC2,  "LSC2"  },
      };
 
      /* Set hwcaps according to the detected facilities */
