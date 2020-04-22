@@ -69,6 +69,9 @@
  * Result:
  *	length of string copied, INCLUDING the trailing 0.
  */
+
+#if defined(VGO_darwin) 
+
 #include <mach/mig_errors.h>
 
 int
@@ -148,4 +151,6 @@ mig_strncpy_zerofill(
 
 	return retval;
 }
+
+#endif // defined(VGO_darwin)
 
